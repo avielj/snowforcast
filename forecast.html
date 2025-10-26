@@ -377,15 +377,23 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>❄️ Val Thorens Snow Forecast</h1>
+            <h1>❄️ <span id="resort-name">Val Thorens</span> Snow Forecast</h1>
             <div class="subtitle">6-Day Weather Forecast</div>
             <div class="elevation">📍 Bottom Elevation (2300m)</div>
         </div>
         
         <div class="elevation-links">
-            <a href="#" class="active" onclick="loadElevation('bot'); return false;">🏔️ Bottom (2300m)</a>
-            <a href="#" onclick="loadElevation('mid'); return false;">⛰️ Mid (2800m)</a>
-            <a href="#" onclick="loadElevation('top'); return false;">🗻 Top (3230m)</a>
+            <div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 2px solid #ecf0f1;">
+                <strong style="color: #2c3e50; margin-right: 10px;">Resort:</strong>
+                <a href="#" class="active" data-resort="Val-Thorens" onclick="switchResort('Val-Thorens'); return false;">⛷️ Val Thorens</a>
+                <a href="#" data-resort="Cervinia" onclick="switchResort('Cervinia'); return false;">🏔️ Cervinia</a>
+            </div>
+            <div>
+                <strong style="color: #2c3e50; margin-right: 10px;">Elevation:</strong>
+                <a href="#" class="active" onclick="loadElevation('bot'); return false;">🏔️ Bottom (2300m)</a>
+                <a href="#" onclick="loadElevation('mid'); return false;">⛰️ Mid (2800m)</a>
+                <a href="#" onclick="loadElevation('top'); return false;">🗻 Top (3230m)</a>
+            </div>
         </div>
         
         <div class="controls">
@@ -413,12 +421,26 @@
 
     <script>
         let currentElevation = 'bot';
+        let currentResort = 'Val-Thorens';
         const API_URL = '/api/forecast';
         
-        const elevationInfo = {
-            'bot': { name: 'Bottom', height: '2300m', emoji: '🏔️' },
-            'mid': { name: 'Mid', height: '2800m', emoji: '⛰️' },
-            'top': { name: 'Top', height: '3230m', emoji: '🗻' }
+        const resortInfo = {
+            'Val-Thorens': {
+                name: 'Val Thorens',
+                elevations: {
+                    'bot': { name: 'Bottom', height: '2300m', emoji: '🏔️' },
+                    'mid': { name: 'Mid', height: '2800m', emoji: '⛰️' },
+                    'top': { name: 'Top', height: '3230m', emoji: '🗻' }
+                }
+            },
+            'Cervinia': {
+                name: 'Cervinia',
+                elevations: {
+                    'bot': { name: 'Bottom', height: '2050m', emoji: '🏔️' },
+                    'mid': { name: 'Mid', height: '2700m', emoji: '⛰️' },
+                    'top': { name: 'Top', height: '3480m', emoji: '🗻' }
+                }
+            }
         };
         
         // Weather condition emoji mapping
@@ -436,17 +458,38 @@
             'sleet': '🌨️💧'
         };
         
+        function switchResort(resort) {
+            currentResort = resort;
+            
+            // Update active link
+            document.querySelectorAll('.elevation-links a[data-resort]').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('data-resort') === resort) {
+                    link.classList.add('active');
+                }
+            });
+            
+            // Update header
+            document.getElementById('resort-name').textContent = resortInfo[resort].name;
+            
+            // Update elevation display
+            const info = resortInfo[currentResort].elevations[currentElevation];
+            document.querySelector('.elevation').textContent = `${info.emoji} ${info.name} Elevation (${info.height})`;
+            
+            loadForecast();
+        }
+        
         function loadElevation(elevation) {
             currentElevation = elevation;
             
-            // Update active link
-            document.querySelectorAll('.elevation-links a').forEach(link => {
+            // Update active link (only for elevation links, not resort links)
+            document.querySelectorAll('.elevation-links a:not([data-resort])').forEach(link => {
                 link.classList.remove('active');
             });
             event.target.classList.add('active');
             
             // Update header
-            const info = elevationInfo[elevation];
+            const info = resortInfo[currentResort].elevations[elevation];
             document.querySelector('.elevation').textContent = `${info.emoji} ${info.name} Elevation (${info.height})`;
             
             loadForecast();
@@ -472,15 +515,31 @@
             content.innerHTML = '';
             
             try {
-                // Fetch the forecast from the Python backend
-                const response = await fetch(`${API_URL}?elevation=${currentElevation}`);
+                // Fetch the forecast for current elevation
+                const response = await fetch(`${API_URL}?elevation=${currentElevation}&resort=${currentResort}`);
                 
                 if (!response.ok) {
                     throw new Error('Failed to fetch forecast');
                 }
                 
                 const data = await response.json();
-                displayForecast(data);
+                
+                // Fetch all elevations for weekly summary
+                const allElevations = ['bot', 'mid', 'top'];
+                const allData = {};
+                
+                for (const elev of allElevations) {
+                    try {
+                        const resp = await fetch(`${API_URL}?elevation=${elev}&resort=${currentResort}`);
+                        if (resp.ok) {
+                            allData[elev] = await resp.json();
+                        }
+                    } catch (e) {
+                        console.error(`Error fetching ${elev}:`, e);
+                    }
+                }
+                
+                displayForecast(data, allData);
                 
                 loading.style.display = 'none';
             } catch (err) {
@@ -491,7 +550,7 @@
             }
         }
         
-        function displayForecast(data) {
+        function displayForecast(data, allData) {
             const content = document.getElementById('forecast-content');
             const lastUpdated = document.getElementById('last-updated');
             const weeklySummary = document.getElementById('weekly-summary');
@@ -501,69 +560,92 @@
                 return;
             }
             
-            // Calculate weekly totals
-            let totalSnow = 0;
-            let totalRain = 0;
-            let snowDays = 0;
-            let maxSnowDay = { name: '', amount: 0 };
-            let avgTemp = 0;
-            let tempCount = 0;
+            // Calculate weekly totals for all elevations
+            const elevationStats = {};
+            const elevations = ['bot', 'mid', 'top'];
             
-            for (const day of data.days) {
-                let daySnow = 0;
+            for (const elev of elevations) {
+                const elevData = allData && allData[elev] ? allData[elev] : (elev === currentElevation ? data : null);
+                if (!elevData || !elevData.days) continue;
                 
-                ['am', 'pm', 'night'].forEach(period => {
-                    if (day[period]) {
-                        const snow = parseFloat(day[period].snow) || 0;
-                        const rain = parseFloat(day[period].rain) || 0;
-                        const temp = parseFloat(day[period].temperature);
-                        
-                        daySnow += snow;
-                        totalSnow += snow;
-                        totalRain += rain;
-                        
-                        if (!isNaN(temp)) {
-                            avgTemp += temp;
-                            tempCount++;
+                let totalSnow = 0;
+                let snowDays = 0;
+                let maxSnowDay = { name: '', amount: 0 };
+                let avgTemp = 0;
+                let tempCount = 0;
+                
+                for (const day of elevData.days) {
+                    let daySnow = 0;
+                    
+                    ['am', 'pm', 'night'].forEach(period => {
+                        if (day[period]) {
+                            const snow = parseFloat(day[period].snow) || 0;
+                            const temp = parseFloat(day[period].temperature);
+                            
+                            daySnow += snow;
+                            totalSnow += snow;
+                            
+                            if (!isNaN(temp)) {
+                                avgTemp += temp;
+                                tempCount++;
+                            }
                         }
+                    });
+                    
+                    if (daySnow > 0) snowDays++;
+                    if (daySnow > maxSnowDay.amount) {
+                        maxSnowDay = { name: day.name, amount: daySnow };
                     }
-                });
-                
-                if (daySnow > 0) snowDays++;
-                if (daySnow > maxSnowDay.amount) {
-                    maxSnowDay = { name: day.name, amount: daySnow };
                 }
+                
+                elevationStats[elev] = {
+                    totalSnow: totalSnow.toFixed(0),
+                    snowDays,
+                    maxSnowDay,
+                    avgTemp: tempCount > 0 ? (avgTemp / tempCount).toFixed(1) : 'N/A'
+                };
             }
             
-            const info = elevationInfo[currentElevation];
-            avgTemp = tempCount > 0 ? (avgTemp / tempCount).toFixed(1) : 'N/A';
+            // Display weekly summary for all elevations
+            let summaryHtml = `<h2>❄️ 7-Day Snow Forecast Summary - ${resortInfo[currentResort].name}</h2>`;
             
-            // Display weekly summary
-            let summaryHtml = `
-                <h2>❄️ 7-Day Snow Forecast Summary - ${info.name} (${info.height})</h2>
-                <div class="summary-stats">
-                    <div class="summary-stat">
-                        <div class="label">Total Snowfall</div>
-                        <div class="value large">${totalSnow.toFixed(0)} cm</div>
-                        <div class="subtitle">Next 7 days</div>
+            for (const elev of elevations) {
+                if (!elevationStats[elev]) continue;
+                const stats = elevationStats[elev];
+                const info = resortInfo[currentResort].elevations[elev];
+                const isActive = elev === currentElevation ? ' style="border: 3px solid #4a90e2; background: #f0f8ff;"' : '';
+                
+                summaryHtml += `
+                    <div${isActive} style="margin: 15px 0; padding: 15px; border-radius: 10px; background: white;">
+                        <h3 style="color: #2c3e50; margin-bottom: 15px; font-size: 1.3em;">
+                            ${info.emoji} ${info.name} (${info.height})
+                        </h3>
+                        <div class="summary-stats">
+                            <div class="summary-stat">
+                                <div class="label">Total Snowfall</div>
+                                <div class="value large">${stats.totalSnow} cm</div>
+                                <div class="subtitle">Next 7 days</div>
+                            </div>
+                            <div class="summary-stat">
+                                <div class="label">Snow Days</div>
+                                <div class="value">${stats.snowDays}</div>
+                                <div class="subtitle">Days with snowfall</div>
+                            </div>
+                            <div class="summary-stat">
+                                <div class="label">Best Day</div>
+                                <div class="value" style="font-size: 1.8em;">${stats.maxSnowDay.name || 'N/A'}</div>
+                                <div class="subtitle">${stats.maxSnowDay.amount > 0 ? stats.maxSnowDay.amount.toFixed(0) + ' cm expected' : 'No snow'}</div>
+                            </div>
+                            <div class="summary-stat">
+                                <div class="label">Avg Temperature</div>
+                                <div class="value">${stats.avgTemp}°C</div>
+                                <div class="subtitle">7-day average</div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="summary-stat">
-                        <div class="label">Snow Days</div>
-                        <div class="value">${snowDays}</div>
-                        <div class="subtitle">Days with snowfall</div>
-                    </div>
-                    <div class="summary-stat">
-                        <div class="label">Best Day</div>
-                        <div class="value" style="font-size: 1.8em;">${maxSnowDay.name}</div>
-                        <div class="subtitle">${maxSnowDay.amount.toFixed(0)} cm expected</div>
-                    </div>
-                    <div class="summary-stat">
-                        <div class="label">Avg Temperature</div>
-                        <div class="value">${avgTemp}°C</div>
-                        <div class="subtitle">7-day average</div>
-                    </div>
-                </div>
-            `;
+                `;
+            }
+            
             weeklySummary.innerHTML = summaryHtml;
             
             let html = '<div class="forecast-grid">';

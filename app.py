@@ -18,13 +18,13 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 @app.route('/')
 def index():
-    """Serve the main HTML page"""
-    html_path = os.path.join(BASE_DIR, 'index.html')
+    """Serve the main forecast page"""
+    html_path = os.path.join(BASE_DIR, 'forecast.html')
     try:
         with open(html_path, 'r') as f:
             return f.read()
     except FileNotFoundError:
-        return "HTML file not found", 404
+        return "Forecast page not found", 404
 
 @app.route('/val_thorens_forecast.json')
 def get_forecast_json():
@@ -114,13 +114,19 @@ def get_formatted_forecast():
     try:
         # Get elevation parameter (bot, mid, or top)
         elevation = request.args.get('elevation', 'bot')
+        resort = request.args.get('resort', 'Val-Thorens')
         
         # Validate elevation
         if elevation not in ['bot', 'mid', 'top']:
             elevation = 'bot'
         
+        # Validate resort
+        valid_resorts = ['Val-Thorens', 'Cervinia']
+        if resort not in valid_resorts:
+            resort = 'Val-Thorens'
+        
         # Fetch fresh data from snow-forecast.com
-        url = f'https://www.snow-forecast.com/resorts/Val-Thorens/6day/{elevation}'
+        url = f'https://www.snow-forecast.com/resorts/{resort}/6day/{elevation}'
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
@@ -285,11 +291,16 @@ if __name__ == '__main__':
     json_path = os.path.join(BASE_DIR, 'val_thorens_forecast.json')
     if not os.path.exists(json_path):
         print("Generating initial forecast data...")
-        parser = SnowForecastParser()
-        forecast_data = parser.get_forecast()
-        if forecast_data:
-            with open(json_path, 'w') as f:
-                json.dump(forecast_data, f, indent=2, default=str)
-            print("Initial forecast data created")
+        try:
+            parser = SnowForecastParser()
+            forecast_data = parser.get_forecast()
+            if forecast_data:
+                with open(json_path, 'w') as f:
+                    json.dump(forecast_data, f, indent=2, default=str)
+                print("Initial forecast data created")
+        except Exception as e:
+            print(f"Could not generate initial data: {e}")
     
-    app.run(debug=True, host='0.0.0.0', port=8080)
+    # Run the app
+    port = int(os.environ.get('PORT', 8080))
+    app.run(debug=False, host='0.0.0.0', port=port)

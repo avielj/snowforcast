@@ -388,11 +388,11 @@
                 <a href="#" class="active" data-resort="Val-Thorens" onclick="switchResort('Val-Thorens'); return false;">⛷️ Val Thorens</a>
                 <a href="#" data-resort="Cervinia" onclick="switchResort('Cervinia'); return false;">🏔️ Cervinia</a>
             </div>
-            <div>
+            <div id="elevation-buttons">
                 <strong style="color: #2c3e50; margin-right: 10px;">Elevation:</strong>
-                <a href="#" class="active" onclick="loadElevation('bot'); return false;">🏔️ Bottom (2300m)</a>
-                <a href="#" onclick="loadElevation('mid'); return false;">⛰️ Mid (2800m)</a>
-                <a href="#" onclick="loadElevation('top'); return false;">🗻 Top (3230m)</a>
+                <a href="#" class="active" data-elevation="bot" onclick="loadElevation('bot'); return false;">🏔️ Bottom (2300m)</a>
+                <a href="#" data-elevation="mid" onclick="loadElevation('mid'); return false;">⛰️ Mid (2800m)</a>
+                <a href="#" data-elevation="top" onclick="loadElevation('top'); return false;">🗻 Top (3230m)</a>
             </div>
         </div>
         
@@ -476,17 +476,33 @@
             const info = resortInfo[currentResort].elevations[currentElevation];
             document.querySelector('.elevation').textContent = `${info.emoji} ${info.name} Elevation (${info.height})`;
             
+            // Update elevation button labels with correct heights for this resort
+            updateElevationButtons();
+            
             loadForecast();
+        }
+        
+        function updateElevationButtons() {
+            const elevations = ['bot', 'mid', 'top'];
+            elevations.forEach(elev => {
+                const info = resortInfo[currentResort].elevations[elev];
+                const link = document.querySelector(`a[data-elevation="${elev}"]`);
+                if (link) {
+                    link.innerHTML = `${info.emoji} ${info.name} (${info.height})`;
+                }
+            });
         }
         
         function loadElevation(elevation) {
             currentElevation = elevation;
             
             // Update active link (only for elevation links, not resort links)
-            document.querySelectorAll('.elevation-links a:not([data-resort])').forEach(link => {
+            document.querySelectorAll('a[data-elevation]').forEach(link => {
                 link.classList.remove('active');
+                if (link.getAttribute('data-elevation') === elevation) {
+                    link.classList.add('active');
+                }
             });
-            event.target.classList.add('active');
             
             // Update header
             const info = resortInfo[currentResort].elevations[elevation];
@@ -564,6 +580,10 @@
             const elevationStats = {};
             const elevations = ['bot', 'mid', 'top'];
             
+            // Get mid elevation stats for best day and snow days
+            let midBestDay = '';
+            let midSnowDays = 0;
+            
             for (const elev of elevations) {
                 const elevData = allData && allData[elev] ? allData[elev] : (elev === currentElevation ? data : null);
                 if (!elevData || !elevData.days) continue;
@@ -571,8 +591,6 @@
                 let totalSnow = 0;
                 let snowDays = 0;
                 let maxSnowDay = { name: '', amount: 0 };
-                let avgTemp = 0;
-                let tempCount = 0;
                 
                 for (const day of elevData.days) {
                     let daySnow = 0;
@@ -580,15 +598,8 @@
                     ['am', 'pm', 'night'].forEach(period => {
                         if (day[period]) {
                             const snow = parseFloat(day[period].snow) || 0;
-                            const temp = parseFloat(day[period].temperature);
-                            
                             daySnow += snow;
                             totalSnow += snow;
-                            
-                            if (!isNaN(temp)) {
-                                avgTemp += temp;
-                                tempCount++;
-                            }
                         }
                     });
                     
@@ -598,16 +609,34 @@
                     }
                 }
                 
+                // Store mid elevation data for best day
+                if (elev === 'mid') {
+                    midBestDay = maxSnowDay.name || 'N/A';
+                    midSnowDays = snowDays;
+                }
+                
                 elevationStats[elev] = {
                     totalSnow: totalSnow.toFixed(0),
                     snowDays,
-                    maxSnowDay,
-                    avgTemp: tempCount > 0 ? (avgTemp / tempCount).toFixed(1) : 'N/A'
+                    maxSnowDay
                 };
             }
             
             // Display weekly summary for all elevations
-            let summaryHtml = `<h2>❄️ 7-Day Snow Forecast Summary - ${resortInfo[currentResort].name}</h2>`;
+            let summaryHtml = `
+                <h2>❄️ 7-Day Snow Forecast Summary - ${resortInfo[currentResort].name}</h2>
+                <div style="margin-bottom: 20px; padding: 15px; background: #f0f8ff; border-radius: 10px; text-align: center;">
+                    <div style="display: inline-block; margin: 0 20px;">
+                        <strong style="color: #2c3e50;">Snow Days:</strong> 
+                        <span style="color: #3498db; font-size: 1.3em; font-weight: bold;">${midSnowDays}</span>
+                    </div>
+                    <div style="display: inline-block; margin: 0 20px;">
+                        <strong style="color: #2c3e50;">Best Day:</strong> 
+                        <span style="color: #3498db; font-size: 1.3em; font-weight: bold;">${midBestDay}</span>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+            `;
             
             for (const elev of elevations) {
                 if (!elevationStats[elev]) continue;
@@ -616,36 +645,18 @@
                 const isActive = elev === currentElevation ? ' style="border: 3px solid #4a90e2; background: #f0f8ff;"' : '';
                 
                 summaryHtml += `
-                    <div${isActive} style="margin: 15px 0; padding: 15px; border-radius: 10px; background: white;">
-                        <h3 style="color: #2c3e50; margin-bottom: 15px; font-size: 1.3em;">
-                            ${info.emoji} ${info.name} (${info.height})
+                    <div${isActive} style="padding: 20px; border-radius: 10px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center;">
+                        <h3 style="color: #2c3e50; margin-bottom: 10px; font-size: 1.1em;">
+                            ${info.emoji} ${info.name}
                         </h3>
-                        <div class="summary-stats">
-                            <div class="summary-stat">
-                                <div class="label">Total Snowfall</div>
-                                <div class="value large">${stats.totalSnow} cm</div>
-                                <div class="subtitle">Next 7 days</div>
-                            </div>
-                            <div class="summary-stat">
-                                <div class="label">Snow Days</div>
-                                <div class="value">${stats.snowDays}</div>
-                                <div class="subtitle">Days with snowfall</div>
-                            </div>
-                            <div class="summary-stat">
-                                <div class="label">Best Day</div>
-                                <div class="value" style="font-size: 1.8em;">${stats.maxSnowDay.name || 'N/A'}</div>
-                                <div class="subtitle">${stats.maxSnowDay.amount > 0 ? stats.maxSnowDay.amount.toFixed(0) + ' cm expected' : 'No snow'}</div>
-                            </div>
-                            <div class="summary-stat">
-                                <div class="label">Avg Temperature</div>
-                                <div class="value">${stats.avgTemp}°C</div>
-                                <div class="subtitle">7-day average</div>
-                            </div>
-                        </div>
+                        <div style="font-size: 0.9em; color: #7f8c8d; margin-bottom: 10px;">${info.height}</div>
+                        <div style="font-size: 2.5em; font-weight: bold; color: #3498db;">${stats.totalSnow} cm</div>
+                        <div style="font-size: 0.85em; color: #95a5a6; margin-top: 5px;">Total snowfall</div>
                     </div>
                 `;
             }
             
+            summaryHtml += '</div>';
             weeklySummary.innerHTML = summaryHtml;
             
             let html = '<div class="forecast-grid">';

@@ -422,7 +422,10 @@
     <script>
         let currentElevation = 'bot';
         let currentResort = 'Val-Thorens';
-        const API_URL = '/api/forecast';
+        
+        // Support both dynamic (API) and static (pre-generated JSON) modes
+        const USE_STATIC_DATA = window.location.search.includes('static=true') || window.location.pathname.includes('index.html');
+        const API_URL = USE_STATIC_DATA ? './data/' : '/api/forecast';
         
         const resortInfo = {
             'Val-Thorens': {
@@ -531,27 +534,52 @@
             content.innerHTML = '';
             
             try {
-                // Fetch the forecast for current elevation
-                const response = await fetch(`${API_URL}?elevation=${currentElevation}&resort=${currentResort}`);
-                
-                if (!response.ok) {
-                    throw new Error('Failed to fetch forecast');
-                }
-                
-                const data = await response.json();
-                
-                // Fetch all elevations for weekly summary
+                let data, allData = {};
                 const allElevations = ['bot', 'mid', 'top'];
-                const allData = {};
                 
-                for (const elev of allElevations) {
-                    try {
-                        const resp = await fetch(`${API_URL}?elevation=${elev}&resort=${currentResort}`);
-                        if (resp.ok) {
-                            allData[elev] = await resp.json();
+                if (USE_STATIC_DATA) {
+                    // Load from static JSON files
+                    const filename = `${currentResort.toLowerCase()}-${currentElevation}.json`;
+                    const response = await fetch(`${API_URL}${filename}`);
+                    
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch forecast data');
+                    }
+                    
+                    data = await response.json();
+                    
+                    // Fetch all elevations for weekly summary
+                    for (const elev of allElevations) {
+                        try {
+                            const elevFilename = `${currentResort.toLowerCase()}-${elev}.json`;
+                            const resp = await fetch(`${API_URL}${elevFilename}`);
+                            if (resp.ok) {
+                                allData[elev] = await resp.json();
+                            }
+                        } catch (e) {
+                            console.error(`Error fetching ${elev}:`, e);
                         }
-                    } catch (e) {
-                        console.error(`Error fetching ${elev}:`, e);
+                    }
+                } else {
+                    // Fetch from API (dynamic mode)
+                    const response = await fetch(`${API_URL}?elevation=${currentElevation}&resort=${currentResort}`);
+                    
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch forecast');
+                    }
+                    
+                    data = await response.json();
+                    
+                    // Fetch all elevations for weekly summary
+                    for (const elev of allElevations) {
+                        try {
+                            const resp = await fetch(`${API_URL}?elevation=${elev}&resort=${currentResort}`);
+                            if (resp.ok) {
+                                allData[elev] = await resp.json();
+                            }
+                        } catch (e) {
+                            console.error(`Error fetching ${elev}:`, e);
+                        }
                     }
                 }
                 

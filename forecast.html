@@ -424,8 +424,15 @@
         let currentResort = 'Val-Thorens';
         
         // Support both dynamic (API) and static (pre-generated JSON) modes
-        const USE_STATIC_DATA = window.location.search.includes('static=true') || window.location.pathname.includes('index.html');
+        // Static mode: if ?static=true in URL, or if /api/forecast endpoint doesn't exist (GitHub Pages)
+        // Dynamic mode: if on Vercel or running Flask locally
+        const USE_STATIC_DATA = window.location.search.includes('static=true') || 
+                                window.location.pathname.includes('index.html') ||
+                                window.location.hostname.includes('github.io');
         const API_URL = USE_STATIC_DATA ? './data/' : '/api/forecast';
+        
+        console.log('Mode:', USE_STATIC_DATA ? 'STATIC (using pre-generated JSON)' : 'DYNAMIC (live API calls)');
+        console.log('API URL:', API_URL);
         
         const resortInfo = {
             'Val-Thorens': {

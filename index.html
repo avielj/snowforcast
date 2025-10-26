@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Val Thorens Snow Forecast</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #4a90e2;
+            padding-bottom: 20px;
+        }
+        
+        .header h1 {
+            color: #2c3e50;
+            margin: 0;
+            font-size: 2.5em;
+        }
+        
+        .header .subtitle {
+            color: #7f8c8d;
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+        
+        .conditions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .condition-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            border-left: 4px solid #4a90e2;
+        }
+        
+        .condition-card h3 {
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+            font-size: 1.1em;
+        }
+        
+        .condition-card .value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #e74c3c;
+        }
+        
+        .forecast-table-container {
+            overflow-x: auto;
+            margin-bottom: 30px;
+        }
+        
+        .forecast-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .forecast-table thead {
+            background: #4a90e2;
+            color: white;
+        }
+        
+        .forecast-table th,
+        .forecast-table td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        
+        .forecast-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .forecast-table tbody tr:nth-child(even) {
+            background: #fdfdfd;
+        }
+        
+        .weather-icon {
+            width: 30px;
+            height: 30px;
+            vertical-align: middle;
+        }
+        
+        .refresh-button {
+            background: #4a90e2;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            margin: 20px 0;
+            transition: background 0.3s;
+        }
+        
+        .refresh-button:hover {
+            background: #357abd;
+        }
+        
+        .loading {
+            text-align: center;
+            font-style: italic;
+            color: #7f8c8d;
+        }
+        
+        .summary-section {
+            background: #e8f4fd;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .summary-section h3 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        
+        .last-updated {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 0.9em;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>❄️ Val Thorens Snow Forecast</h1>
+            <div class="subtitle">2300m Elevation • Live Weather Data</div>
+        </div>
+        
+        <button class="refresh-button" onclick="fetchForecast(true)">🔄 Refresh Forecast</button>
+        <div style="text-align: center; margin: 20px 0;">
+            <a href="comprehensive.html" style="display: inline-block; background: #95a5a6; color: white; padding: 10px 20px; border-radius: 20px; text-decoration: none; margin: 0 10px; font-size: 0.9em;">🏔️ Comprehensive Multi-Elevation Forecast</a>
+        </div>
+        
+        <div id="loading" class="loading" style="display: none;">
+            Loading forecast data...
+        </div>
+        
+        <div id="error" style="display: none; color: #e74c3c; text-align: center; margin: 20px 0;">
+            Error loading forecast data. Please try again.
+        </div>
+        
+        <div id="forecast-content">
+            <!-- Content will be loaded here -->
+        </div>
+        
+        <div id="last-updated" class="last-updated"></div>
+    </div>
+
+    <script>
+        let forecastData = null;
+
+        async function fetchForecast(refresh = false) {
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            const content = document.getElementById('forecast-content');
+            
+            loading.style.display = 'block';
+            error.style.display = 'none';
+            
+            try {
+                let response;
+                if (refresh) {
+                    // Call refresh API to get fresh data
+                    response = await fetch('/api/refresh');
+                    if (!response.ok) throw new Error('Failed to refresh data');
+                    const result = await response.json();
+                    forecastData = result.data;
+                } else {
+                    // Just load existing data
+                    response = await fetch('/val_thorens_forecast.json');
+                    if (!response.ok) throw new Error('Failed to fetch data');
+                    forecastData = await response.json();
+                }
+                
+                displayForecast(forecastData);
+                loading.style.display = 'none';
+            } catch (err) {
+                console.error('Error fetching forecast:', err);
+                loading.style.display = 'none';
+                error.style.display = 'block';
+            }
+        }
+
+        function displayForecast(data) {
+            const content = document.getElementById('forecast-content');
+            const lastUpdated = document.getElementById('last-updated');
+            
+            let html = '';
+            
+            // Snow conditions
+            if (data.snow_conditions) {
+                html += '<div class="conditions-grid">';
+                for (const [key, value] of Object.entries(data.snow_conditions)) {
+                    if (key !== 'Snow Alerts') {
+                        html += `
+                            <div class="condition-card">
+                                <h3>${key}</h3>
+                                <div class="value">${value}</div>
+                            </div>
+                        `;
+                    }
+                }
+                html += '</div>';
+            }
+            
+            // Forecast table
+            if (data.forecast_days && data.forecast_days.length > 0) {
+                html += `
+                    <div class="forecast-table-container">
+                        <table class="forecast-table">
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Weather</th>
+                                    <th>Temp (°C)</th>
+                                    <th>Snow (cm)</th>
+                                    <th>Freezing Level (m)</th>
+                                    <th>Humidity (%)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+                
+                // Group forecast data by days
+                const groupedForecast = groupForecastByDays(data.forecast_days);
+                
+                for (const [day, periods] of Object.entries(groupedForecast)) {
+                    for (const period of periods) {
+                        const weather = period.weather || {};
+                        const weatherIcon = weather.icon ? `<img src="https://www.snow-forecast.com${weather.icon}" class="weather-icon" alt="${weather.condition}">` : '';
+                        
+                        html += `
+                            <tr>
+                                <td>${period.time}</td>
+                                <td>
+                                    ${weatherIcon}
+                                    <br>
+                                    <small>${weather.condition || 'N/A'}</small>
+                                </td>
+                                <td>${period.temperature !== null ? period.temperature : 'N/A'}</td>
+                                <td>${period.snow_depth !== null ? period.snow_depth : '—'}</td>
+                                <td>${period.freezing_level !== null ? period.freezing_level : 'N/A'}</td>
+                                <td>${period.humidity !== null ? period.humidity + '%' : 'N/A'}</td>
+                            </tr>
+                        `;
+                    }
+                }
+                
+                html += '</tbody></table></div>';
+            }
+            
+            content.innerHTML = html;
+            
+            // Update last updated time
+            if (data.last_updated) {
+                const date = new Date(data.last_updated);
+                lastUpdated.innerHTML = `Last updated: ${date.toLocaleString()}`;
+            }
+        }
+        
+        function groupForecastByDays(forecastDays) {
+            const grouped = {};
+            let currentDay = 1;
+            let dayLabel = `Day ${currentDay}`;
+            
+            for (let i = 0; i < forecastDays.length; i++) {
+                const period = forecastDays[i];
+                
+                // Start a new day every 3 periods (AM, PM, night)
+                if (i > 0 && i % 3 === 0) {
+                    currentDay++;
+                    dayLabel = `Day ${currentDay}`;
+                }
+                
+                if (!grouped[dayLabel]) {
+                    grouped[dayLabel] = [];
+                }
+                
+                grouped[dayLabel].push(period);
+            }
+            
+            return grouped;
+        }
+
+        // Load forecast on page load
+        document.addEventListener('DOMContentLoaded', fetchForecast);
+    </script>
+</body>
+</html>

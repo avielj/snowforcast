@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Val Thorens Comprehensive Snow Forecast</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #4a90e2;
+            padding-bottom: 20px;
+        }
+        
+        .header h1 {
+            color: #2c3e50;
+            margin: 0;
+            font-size: 2.5em;
+        }
+        
+        .header .subtitle {
+            color: #7f8c8d;
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .button {
+            background: #4a90e2;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .button:hover {
+            background: #357abd;
+        }
+        
+        .button.secondary {
+            background: #95a5a6;
+        }
+        
+        .button.secondary:hover {
+            background: #7f8c8d;
+        }
+        
+        .conditions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .condition-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            border-left: 4px solid #4a90e2;
+        }
+        
+        .condition-card h3 {
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+            font-size: 1.1em;
+        }
+        
+        .condition-card .value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #e74c3c;
+        }
+        
+        .elevation-tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .elevation-tab {
+            padding: 10px 20px;
+            background: #ecf0f1;
+            border: none;
+            border-radius: 10px 10px 0 0;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .elevation-tab.active {
+            background: #4a90e2;
+            color: white;
+        }
+        
+        .elevation-tab:hover:not(.active) {
+            background: #bdc3c7;
+        }
+        
+        .elevation-content {
+            display: none;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .elevation-content.active {
+            display: block;
+        }
+        
+        .forecast-table-container {
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+        
+        .forecast-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            font-size: 0.9em;
+        }
+        
+        .forecast-table thead {
+            background: #4a90e2;
+            color: white;
+        }
+        
+        .forecast-table th,
+        .forecast-table td {
+            padding: 8px 6px;
+            text-align: center;
+            border-bottom: 1px solid #ecf0f1;
+            font-size: 0.85em;
+        }
+        
+        .forecast-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .forecast-table tbody tr:nth-child(even) {
+            background: #fdfdfd;
+        }
+        
+        .weather-icon {
+            width: 25px;
+            height: 25px;
+            vertical-align: middle;
+        }
+        
+        .loading {
+            text-align: center;
+            font-style: italic;
+            color: #7f8c8d;
+            padding: 20px;
+        }
+        
+        .error {
+            color: #e74c3c;
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: #fdf2f2;
+            border-radius: 5px;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .summary-section {
+            background: #e8f4fd;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .summary-section h3 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        
+        .last-updated {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 0.9em;
+            margin-top: 20px;
+        }
+        
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 3px solid #4a90e2;
+        }
+        
+        .stat-value {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .stat-label {
+            font-size: 0.8em;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>❄️ Val Thorens Comprehensive Forecast</h1>
+            <div class="subtitle">Multi-Elevation • Complete Weather Data • Real-time Updates</div>
+        </div>
+        
+        <div class="controls">
+            <button class="button" onclick="fetchComprehensiveForecast(true)">🔄 Refresh Comprehensive</button>
+            <a href="index.html" class="button secondary">📊 Basic Forecast</a>
+            <button class="button secondary" onclick="exportToJSON()">💾 Export JSON</button>
+        </div>
+        
+        <div id="loading" class="loading" style="display: none;">
+            Loading comprehensive forecast data from all elevations...
+        </div>
+        
+        <div id="error" class="error" style="display: none;">
+            Error loading forecast data. Please try again.
+        </div>
+        
+        <div id="forecast-content">
+            <!-- Content will be loaded here -->
+        </div>
+        
+        <div id="last-updated" class="last-updated"></div>
+    </div>
+
+    <script>
+        let comprehensiveData = null;
+        let currentElevation = 'bot';
+
+        async function fetchComprehensiveForecast(refresh = false) {
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            const content = document.getElementById('forecast-content');
+            
+            loading.style.display = 'block';
+            error.style.display = 'none';
+            
+            try {
+                let response;
+                if (refresh) {
+                    // Call refresh API to get fresh data
+                    response = await fetch('/api/refresh-comprehensive');
+                    if (!response.ok) throw new Error('Failed to refresh comprehensive data');
+                    const result = await response.json();
+                    comprehensiveData = result.data;
+                } else {
+                    // Just load existing data
+                    response = await fetch('/comprehensive_val_thorens_forecast.json');
+                    if (!response.ok) throw new Error('Failed to fetch comprehensive data');
+                    comprehensiveData = await response.json();
+                }
+                
+                displayComprehensiveForecast(comprehensiveData);
+                loading.style.display = 'none';
+            } catch (err) {
+                console.error('Error fetching comprehensive forecast:', err);
+                loading.style.display = 'none';
+                error.style.display = 'block';
+                error.textContent = `Error: ${err.message}`;
+            }
+        }
+
+        function displayComprehensiveForecast(data) {
+            const content = document.getElementById('forecast-content');
+            const lastUpdated = document.getElementById('last-updated');
+            
+            let html = '';
+            
+            // Snow conditions
+            if (data.snow_conditions) {
+                html += '<div class="conditions-grid">';
+                for (const [key, value] of Object.entries(data.snow_conditions)) {
+                    if (key !== 'Snow Alerts') {
+                        html += `
+                            <div class="condition-card">
+                                <h3>${key}</h3>
+                                <div class="value">${value}</div>
+                            </div>
+                        `;
+                    }
+                }
+                html += '</div>';
+            }
+            
+            // Weather summaries
+            if (data.summary && data.summary.length > 0) {
+                html += `
+                    <div class="summary-section">
+                        <h3>Weather Summary</h3>
+                `;
+                for (const summary of data.summary) {
+                    html += `<p>${summary}</p>`;
+                }
+                html += '</div>';
+            }
+            
+            // Elevation data
+            if (data.elevations && Object.keys(data.elevations).length > 0) {
+                // Create elevation tabs
+                html += '<div class="elevation-tabs">';
+                for (const [elevation, elevData] of Object.entries(data.elevations)) {
+                    const isActive = elevation === currentElevation ? 'active' : '';
+                    html += `
+                        <button class="elevation-tab ${isActive}" onclick="switchElevation('${elevation}')">
+                            ${elevData.elevation_name}
+                        </button>
+                    `;
+                }
+                html += '</div>';
+                
+                // Create elevation content
+                for (const [elevation, elevData] of Object.entries(data.elevations)) {
+                    const isActive = elevation === currentElevation ? 'active' : '';
+                    html += `
+                        <div class="elevation-content ${isActive}" id="elevation-${elevation}">
+                            <div class="stats-overview">
+                                <div class="stat-item">
+                                    <div class="stat-value">${elevData.elevation_meters}m</div>
+                                    <div class="stat-label">Elevation</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">${elevData.forecast_periods ? elevData.forecast_periods.length : 0}</div>
+                                    <div class="stat-label">Forecast Periods</div>
+                                </div>
+                            </div>
+                    `;
+                    
+                    if (elevData.forecast_periods && elevData.forecast_periods.length > 0) {
+                        html += `
+                            <div class="forecast-table-container">
+                                <table class="forecast-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Day</th>
+                                            <th>Time</th>
+                                            <th>Max°C</th>
+                                            <th>Min°C</th>
+                                            <th>Chill°C</th>
+                                            <th>Snow cm</th>
+                                            <th>Rain mm</th>
+                                            <th>Wind</th>
+                                            <th>Weather</th>
+                                            <th>Freeze m</th>
+                                            <th>Humid%</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                        `;
+                        
+                        for (const period of elevData.forecast_periods.slice(0, 21)) { // Show first 21 periods
+                            const weatherIcon = period.weather_icon ? 
+                                `<img src="https://www.snow-forecast.com${period.weather_icon}" class="weather-icon" alt="${period.weather_condition}">` : '';
+                            
+                            const windStr = period.wind_speed && period.wind_direction ? 
+                                `${period.wind_speed}${period.wind_direction}` : 
+                                (period.wind_speed || 'N/A');
+                            
+                            html += `
+                                <tr>
+                                    <td>${period.date || 'N/A'}</td>
+                                    <td>${period.day_name || 'N/A'}</td>
+                                    <td>${period.time_period || 'N/A'}</td>
+                                    <td>${period.temperature_max !== null ? period.temperature_max : '—'}</td>
+                                    <td>${period.temperature_min !== null ? period.temperature_min : '—'}</td>
+                                    <td>${period.temperature_chill !== null ? period.temperature_chill : '—'}</td>
+                                    <td>${period.snow_depth_cm !== null ? period.snow_depth_cm : '—'}</td>
+                                    <td>${period.rain_mm !== null ? period.rain_mm : '—'}</td>
+                                    <td>${windStr}</td>
+                                    <td>
+                                        ${weatherIcon}
+                                        <br>
+                                        <small>${period.weather_condition || 'N/A'}</small>
+                                    </td>
+                                    <td>${period.freezing_level !== null ? period.freezing_level : '—'}</td>
+                                    <td>${period.humidity !== null ? period.humidity : '—'}</td>
+                                </tr>
+                            `;
+                        }
+                        
+                        html += '</tbody></table></div>';
+                    } else {
+                        html += '<p>No forecast data available for this elevation.</p>';
+                    }
+                    
+                    html += '</div>';
+                }
+            }
+            
+            content.innerHTML = html;
+            
+            // Update last updated time
+            if (data.last_updated) {
+                const date = new Date(data.last_updated);
+                lastUpdated.innerHTML = `Last updated: ${date.toLocaleString()}`;
+            }
+        }
+        
+        function switchElevation(elevation) {
+            currentElevation = elevation;
+            
+            // Update active tab
+            document.querySelectorAll('.elevation-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector(`[onclick="switchElevation('${elevation}')"]`).classList.add('active');
+            
+            // Update active content
+            document.querySelectorAll('.elevation-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(`elevation-${elevation}`).classList.add('active');
+        }
+        
+        function exportToJSON() {
+            if (comprehensiveData) {
+                const dataStr = JSON.stringify(comprehensiveData, null, 2);
+                const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+                
+                const exportFileDefaultName = `val_thorens_comprehensive_forecast_${new Date().toISOString().split('T')[0]}.json`;
+                
+                const linkElement = document.createElement('a');
+                linkElement.setAttribute('href', dataUri);
+                linkElement.setAttribute('download', exportFileDefaultName);
+                linkElement.click();
+            }
+        }
+
+        // Load forecast on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchComprehensiveForecast(false);
+        });
+    </script>
+</body>
+</html>

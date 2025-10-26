@@ -1,0 +1,38 @@
+# Sample Cron Job Configuration for Val Thorens Snow Forecast
+#
+# This file shows example cron job entries to automatically update
+# the snow forecast data at regular intervals.
+#
+# To install these cron jobs:
+# 1. Edit your crontab: crontab -e
+# 2. Add one or more of the lines below (uncommented)
+# 3. Save and exit
+#
+# Note: Update the path to match your installation directory
+
+# Update forecast every 3 hours (at :00 minutes)
+# 0 */3 * * * cd "/Users/avielj/Library/Mobile Documents/com~apple~CloudDocs/Snowforcast" && python3 update_forecast.py
+
+# Update forecast twice daily (6 AM and 6 PM)
+# 0 6,18 * * * cd "/Users/avielj/Library/Mobile Documents/com~apple~CloudDocs/Snowforcast" && python3 update_forecast.py
+
+# Update forecast every morning at 8 AM
+# 0 8 * * * cd "/Users/avielj/Library/Mobile Documents/com~apple~CloudDocs/Snowforcast" && python3 update_forecast.py
+
+# Update forecast every 6 hours
+# 0 */6 * * * cd "/Users/avielj/Library/Mobile Documents/com~apple~CloudDocs/Snowforcast" && python3 update_forecast.py
+
+# Explanation of cron format:
+# * * * * *
+# | | | | |
+# | | | | +-- Day of the Week   (range: 0-7, 0 and 7 = Sunday)
+# | | | +---- Month             (range: 1-12)
+# | | +------ Day of the Month  (range: 1-31)
+# | +-------- Hour              (range: 0-23)
+# +---------- Minute            (range: 0-59)
+
+# Examples:
+# 0 8 * * *     - Every day at 8:00 AM
+# 0 */4 * * *   - Every 4 hours
+# 30 6,18 * * * - At 6:30 AM and 6:30 PM every day
+# 0 9 * * 1-5   - At 9:00 AM on weekdays only

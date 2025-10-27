@@ -794,9 +794,23 @@
             // Display detailed forecast for current elevation
             displayDetailedForecast(data);
             
-            // Update last updated time
-            if (data.last_updated) {
-                lastUpdated.innerHTML = `📅 Last updated: ${new Date(data.last_updated).toLocaleString()}`;
+            // Update last updated time - use the most recent update from any elevation
+            let mostRecentUpdate = data.last_updated;
+            if (allData) {
+                for (const elev of ['bot', 'mid', 'top']) {
+                    if (allData[elev] && allData[elev].last_updated) {
+                        const elevTime = new Date(allData[elev].last_updated);
+                        const currentTime = new Date(mostRecentUpdate);
+                        if (elevTime > currentTime) {
+                            mostRecentUpdate = allData[elev].last_updated;
+                        }
+                    }
+                }
+            }
+            
+            if (mostRecentUpdate) {
+                const updateDate = new Date(mostRecentUpdate);
+                lastUpdated.innerHTML = `📅 Last updated: ${updateDate.toLocaleString()}`;
             } else {
                 lastUpdated.innerHTML = `📅 Last updated: ${new Date().toLocaleString()}`;
             }

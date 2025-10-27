@@ -345,6 +345,61 @@
             border-top: 2px solid #ecf0f1;
         }
         
+        .data-sources {
+            background: linear-gradient(135deg, #f8f9fa, #ffffff);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .data-sources h3 {
+            color: #2c3e50;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .source-indicators {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .source-indicator {
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            font-size: 0.95em;
+        }
+        
+        .source-status {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 10px;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .source-status.active {
+            background: #27ae60;
+            box-shadow: 0 0 12px rgba(39, 174, 96, 0.6);
+        }
+        
+        .source-status.inactive {
+            background: #e74c3c;
+            box-shadow: 0 0 12px rgba(231, 76, 60, 0.6);
+        }
+        
+        .source-name {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
         @media (max-width: 1400px) {
             .forecast-grid {
                 grid-template-columns: repeat(4, 1fr);
@@ -417,6 +472,20 @@
         </div>
         
         <div id="last-updated" class="last-updated"></div>
+        
+        <div class="data-sources">
+            <h3>📊 Data Sources</h3>
+            <div class="source-indicators" id="source-indicators">
+                <div class="source-indicator">
+                    <span class="source-status inactive" id="source-snow-forecast"></span>
+                    <span class="source-name">Snow-Forecast.com</span>
+                </div>
+                <div class="source-indicator">
+                    <span class="source-status inactive" id="source-openweather"></span>
+                    <span class="source-name">OpenWeatherMap</span>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -767,9 +836,37 @@
                 lastUpdated.innerHTML = `📅 Last updated: ${new Date().toLocaleString()}`;
             }
             
-            // Show data sources
+            // Update data source indicators
+            const snowForecastIndicator = document.getElementById('source-snow-forecast');
+            const openWeatherIndicator = document.getElementById('source-openweather');
+            
             if (data.sources && data.sources.length > 0) {
-                lastUpdated.innerHTML += `<br><small style="color: #95a5a6;">Data sources: ${data.sources.join(' + ')}</small>`;
+                const hasSnowForecast = data.sources.some(s => s.toLowerCase().includes('snow-forecast'));
+                const hasOpenWeather = data.sources.some(s => s.toLowerCase().includes('openweather'));
+                
+                // Update Snow-Forecast indicator
+                if (hasSnowForecast) {
+                    snowForecastIndicator.classList.remove('inactive');
+                    snowForecastIndicator.classList.add('active');
+                } else {
+                    snowForecastIndicator.classList.remove('active');
+                    snowForecastIndicator.classList.add('inactive');
+                }
+                
+                // Update OpenWeather indicator
+                if (hasOpenWeather) {
+                    openWeatherIndicator.classList.remove('inactive');
+                    openWeatherIndicator.classList.add('active');
+                } else {
+                    openWeatherIndicator.classList.remove('active');
+                    openWeatherIndicator.classList.add('inactive');
+                }
+            } else {
+                // No sources specified, assume only snow-forecast
+                snowForecastIndicator.classList.remove('inactive');
+                snowForecastIndicator.classList.add('active');
+                openWeatherIndicator.classList.remove('active');
+                openWeatherIndicator.classList.add('inactive');
             }
         }
         

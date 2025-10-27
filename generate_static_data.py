@@ -76,15 +76,20 @@ def fetch_forecast(resort='Val-Thorens', elevation='bot'):
     time_periods = [cell.text.strip() for cell in time_cells]
     
     # Parse weather conditions
-    weather_cells = weather_row.find_all('td')[1:]
+    weather_cells = weather_row.find_all('td', class_='forecast-table__cell')
     weather_data = []
     for cell in weather_cells:
-        condition_elem = cell.find('div', class_='weather-icon')
-        condition = condition_elem.get('title', '') if condition_elem else ''
-        weather_data.append(condition)
+        # Try multiple methods to get weather condition
+        img = cell.find('img')
+        if img and img.has_attr('alt'):
+            weather_data.append(img['alt'])
+        else:
+            condition_elem = cell.find('div', class_='weather-icon')
+            condition = condition_elem.get('title', '') if condition_elem else ''
+            weather_data.append(condition)
     
     # Parse temperatures
-    temp_cells = temp_row.find_all('td')[1:]
+    temp_cells = temp_row.find_all('td', class_='forecast-table__cell')
     temp_data = []
     for cell in temp_cells:
         temp_elem = cell.find('div', class_='temp-value')
@@ -94,7 +99,7 @@ def fetch_forecast(resort='Val-Thorens', elevation='bot'):
             temp_data.append(None)
     
     # Parse snow
-    snow_cells = snow_row.find_all('td')[1:]
+    snow_cells = snow_row.find_all('td', class_='forecast-table__cell')
     snow_data = []
     for cell in snow_cells:
         snow_val = cell.find('span', class_='snow-amount__value')
@@ -104,7 +109,7 @@ def fetch_forecast(resort='Val-Thorens', elevation='bot'):
             snow_data.append('0')
     
     # Parse rain
-    rain_cells = rain_row.find_all('td')[1:]
+    rain_cells = rain_row.find_all('td', class_='forecast-table__cell')
     rain_data = []
     for cell in rain_cells:
         rain_val = cell.find('span', class_='rain-amount__value')
@@ -114,15 +119,29 @@ def fetch_forecast(resort='Val-Thorens', elevation='bot'):
             rain_data.append('0')
     
     # Parse wind
-    wind_cells = wind_row.find_all('td')[1:]
+    wind_cells = wind_row.find_all('td', class_='forecast-table__cell')
     wind_data = []
     for cell in wind_cells:
-        wind_speed = cell.find('span', class_='wind-icon__val')
-        wind_dir = cell.find('span', class_='wind-icon__tooltip')
-        if wind_speed:
-            wind_str = wind_speed.text.strip()
-            if wind_dir:
-                wind_str += f" {wind_dir.text.strip()}"
+        wind_icon = cell.find('div', class_='wind-icon')
+        if wind_icon and wind_icon.has_attr('data-speed'):
+            speed = wind_icon['data-speed']
+            # Get wind direction from rotation
+            arrow = wind_icon.find('g', class_='wind-icon__arrow')
+            direction = ''
+            if arrow and arrow.has_attr('transform'):
+                transform = arrow['transform']
+                # Extract rotation angle and convert to direction
+                import re
+                match = re.search(r'rotate\((\d+)\)', transform)
+                if match:
+                    angle = int(match.group(1))
+                    # Convert angle to compass direction
+                    directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW']
+                    idx = round(angle / 45) % 8
+                    direction = directions[idx]
+            wind_str = f"{speed} km/h"
+            if direction:
+                wind_str += f" {direction}"
             wind_data.append(wind_str)
         else:
             wind_data.append('')

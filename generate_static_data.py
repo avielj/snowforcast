@@ -31,6 +31,20 @@ def fetch_forecast(resort='Val-Thorens', elevation='bot'):
     response = requests.get(url, headers=headers, timeout=30)
     soup = BeautifulSoup(response.content, 'html.parser')
     
+    # Extract current snow conditions
+    snow_conditions = {}
+    snow_table = soup.find('table', class_='snow-depths-table__table')
+    if snow_table:
+        rows = snow_table.find_all('tr')
+        for row in rows:
+            header_cell = row.find('th')
+            value_cell = row.find('td')
+            if header_cell and value_cell:
+                key = header_cell.get_text(strip=True).replace(':', '')
+                value = value_cell.get_text(strip=True)
+                if key:
+                    snow_conditions[key] = value
+    
     # Find forecast table
     forecast_table = soup.find('table', class_='forecast-table__table')
     if not forecast_table:
@@ -139,12 +153,18 @@ def fetch_forecast(resort='Val-Thorens', elevation='bot'):
         
         days.append(day_data)
     
-    return {
+    result = {
         'days': days,
         'last_updated': datetime.now().isoformat(),
         'resort': resort,
         'elevation': elevation
     }
+    
+    # Add snow conditions if available
+    if snow_conditions:
+        result['snow_conditions'] = snow_conditions
+    
+    return result
 
 def main():
     """Generate forecast data for all resorts and elevations."""

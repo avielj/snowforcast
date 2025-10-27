@@ -22,7 +22,7 @@ OpenWeatherMap One Call API 3.0 provides:
    - Select FREE tier (1,000 calls/day)
 4. Get your API key from https://home.openweathermap.org/api_keys
 
-### 2. Add API Key to GitHub Secrets
+### 2. Add API Key to GitHub Secrets (for GitHub Actions)
 
 1. Go to your GitHub repository: https://github.com/avielj/snowforcast
 2. Click **Settings** → **Secrets and variables** → **Actions**
@@ -31,9 +31,17 @@ OpenWeatherMap One Call API 3.0 provides:
 5. Value: Paste your API key
 6. Click **Add secret**
 
-### 3. Update GitHub Actions Workflow
+### 3. Add API Key to Vercel (for live site)
 
-The workflow will automatically use the OpenWeather API key from secrets!
+1. Go to your Vercel dashboard: https://vercel.com/dashboard
+2. Select your **snowforcast** project
+3. Click **Settings** → **Environment Variables**
+4. Click **Add New**
+5. Name: `OPENWEATHER_API_KEY`
+6. Value: Paste your API key
+7. Environment: Select **Production**, **Preview**, and **Development**
+8. Click **Save**
+9. Click **Redeploy** on your latest deployment to apply the changes
 
 ### 4. Test Locally (Optional)
 
@@ -95,10 +103,16 @@ With OpenWeather integration, each day includes:
 
 ## API Usage
 
-With GitHub Actions running every 3 hours:
+**GitHub Actions** (static data generation every 3 hours):
 - **6 resorts × 3 elevations = 18 calls** per run
 - **18 calls × 8 runs/day = 144 calls/day**
-- Well under the 1,000 free calls/day limit! ✅
+
+**Vercel** (live API calls on each page load):
+- Depends on traffic
+- Example: 100 visitors/day × 3 elevation switches = 300 calls/day
+- Total: ~450 calls/day (well under 1,000 limit!) ✅
+
+**Combined: ~450-600 calls/day** - safe within free tier!
 
 ## Troubleshooting
 

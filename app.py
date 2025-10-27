@@ -11,10 +11,28 @@ from bs4 import BeautifulSoup
 from snow_forecast_parser import SnowForecastParser
 from enhanced_snow_forecast_parser import EnhancedSnowForecastParser
 
+# Try to import OpenWeather integration
+try:
+    from openweather_integration import OpenWeatherAPI, compare_forecasts
+    OPENWEATHER_AVAILABLE = True
+except ImportError:
+    OPENWEATHER_AVAILABLE = False
+    print("⚠ OpenWeather integration not available")
+
 app = Flask(__name__)
 
 # Get the directory where this script is located
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Initialize OpenWeather API if available
+openweather_api = None
+if OPENWEATHER_AVAILABLE:
+    api_key = os.environ.get('OPENWEATHER_API_KEY')
+    if api_key:
+        openweather_api = OpenWeatherAPI(api_key)
+        print("✓ OpenWeather API initialized for Vercel")
+    else:
+        print("⚠ OPENWEATHER_API_KEY not set, using snow-forecast.com only")
 
 @app.route('/')
 def index():
@@ -246,10 +264,27 @@ def get_formatted_forecast():
             
             forecast_days.append(day_data)
         
-        return jsonify({
+        # Build the response with snow-forecast.com data
+        response_data = {
             'days': forecast_days,
-            'last_updated': None
-        })
+            'last_updated': None,
+            'sources': ['snow-forecast.com']
+        }
+        
+        # Try to fetch and combine OpenWeather data if available
+        if openweather_api:
+            try:
+                print(f"Fetching OpenWeather data for {resort} {elevation}...")
+                ow_data = openweather_api.get_forecast(resort=resort, elevation=elevation)
+                if ow_data:
+                    response_data = compare_forecasts(response_data, ow_data)
+                    response_data['sources'].append('OpenWeatherMap')
+                    print(f"✓ Combined data from both sources")
+            except Exception as e:
+                print(f"⚠ OpenWeather fetch failed: {e}")
+                # Continue with snow-forecast.com data only
+        
+        return jsonify(response_data)
         
     except Exception as e:
         import traceback

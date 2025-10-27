@@ -766,6 +766,11 @@
             } else {
                 lastUpdated.innerHTML = `📅 Last updated: ${new Date().toLocaleString()}`;
             }
+            
+            // Show data sources
+            if (data.sources && data.sources.length > 0) {
+                lastUpdated.innerHTML += `<br><small style="color: #95a5a6;">Data sources: ${data.sources.join(' + ')}</small>`;
+            }
         }
         
         function createPeriodSection(period, data) {

@@ -737,7 +737,7 @@
                 conditionsHtml += '<div class="conditions-grid">';
                 conditionFields.forEach(field => {
                     const value = snowConditions[field.key];
-                    if (value) {
+                    if (value !== undefined && value !== null) {
                         const highlightClass = field.highlight ? 'highlight' : '';
                         conditionsHtml += `
                             <div class="condition-card">

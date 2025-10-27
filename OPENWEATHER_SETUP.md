@@ -2,25 +2,23 @@
 
 ## Why Add OpenWeatherMap?
 
-OpenWeatherMap One Call API 3.0 provides:
+OpenWeatherMap Free 5-Day Forecast API provides:
+- ✅ **100% FREE** - No payment info required, ever!
 - ✅ **More accurate snow data** - actual snow accumulation in mm/cm
-- ✅ **8-day forecast** instead of 6 days  
-- ✅ **Hourly forecasts** for next 48 hours
-- ✅ **Updates every 10 minutes** - fresher than web scraping
-- ✅ **1,000 free API calls/day** - plenty for auto-updates every 3 hours
+- ✅ **5-day forecast** with 3-hour intervals
+- ✅ **Up to 1,000 free API calls/day**
+- ✅ **Updates frequently** - fresher than web scraping
+- ✅ **Rich weather data** - temperature, wind, humidity, precipitation probability
 
 ## Setup Instructions
 
 ### 1. Get Your Free API Key
 
 1. Go to https://openweathermap.org/home/sign_up
-2. Create a free account
-3. Subscribe to **"One Call by Call"** subscription:
-   - Go to https://openweathermap.org/price
-   - Find "One Call API 3.0"
-   - Click "Subscribe" → "One Call by Call"
-   - Select FREE tier (1,000 calls/day)
-4. Get your API key from https://home.openweathermap.org/api_keys
+2. Create a free account (NO payment info required)
+3. Get your API key from https://home.openweathermap.org/api_keys
+4. Wait 10 minutes to 2 hours for activation
+5. That's it! We use the **FREE 5-Day Forecast API** - no subscription needed!
 
 ### 2. Add API Key to GitHub Secrets (for GitHub Actions)
 
@@ -89,7 +87,7 @@ With OpenWeather integration, each day includes:
     "temp": { "min": -5, "max": 2 },
     "snow_cm": 18,
     "pop": 85,                   // 85% chance of precipitation
-    "summary": "Expect a day of..."
+    "condition": "Light Snow"
   }
 }
 ```
@@ -119,7 +117,12 @@ With OpenWeather integration, each day includes:
 **"No OpenWeather data" in output?**
 - Check that OPENWEATHER_API_KEY is set in GitHub Secrets
 - Verify your API key is active at https://home.openweathermap.org/api_keys
-- Make sure you subscribed to "One Call by Call"
+- Wait up to 2 hours after creating your account for activation
+
+**Getting 401 Unauthorized error?**
+- Your API key may not be activated yet (wait 1-2 hours)
+- Double-check you copied the entire API key correctly
+- Make sure you're using the FREE account (no subscription needed!)
 
 **Want to disable OpenWeather?**
 - Just don't set the OPENWEATHER_API_KEY secret

@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
-OpenWeatherMap One Call API 3.0 Integration
+OpenWeatherMap Free 5-Day Forecast API Integration
 Provides snow forecast data with more accuracy and detail
+Uses the FREE forecast API (no payment required)
 """
 
 import requests
@@ -9,11 +10,11 @@ import os
 from datetime import datetime
 
 class OpenWeatherAPI:
-    """Integration with OpenWeatherMap One Call API 3.0"""
+    """Integration with OpenWeatherMap Free 5-Day Forecast API"""
     
     def __init__(self, api_key=None):
         self.api_key = api_key or os.environ.get('OPENWEATHER_API_KEY')
-        self.base_url = 'https://api.openweathermap.org/data/3.0/onecall'
+        self.base_url = 'https://api.openweathermap.org/data/2.5/forecast'
         
         # Resort coordinates
         self.resort_coords = {
@@ -31,7 +32,7 @@ class OpenWeatherAPI:
     
     def get_forecast(self, resort='Val-Thorens', elevation='mid'):
         """
-        Fetch 8-day forecast with snow data
+        Fetch 5-day forecast with snow data (FREE API)
         
         Returns:
             dict: Forecast data with daily snow accumulation, temps, conditions
@@ -48,7 +49,7 @@ class OpenWeatherAPI:
             'lon': coords['lon'],
             'appid': self.api_key,
             'units': 'metric',  # Celsius, m/s
-            'exclude': 'minutely,alerts'  # We only need current, hourly, daily
+            'cnt': 40  # 40 * 3-hour periods = 5 days
         }
         
         try:
@@ -63,75 +64,88 @@ class OpenWeatherAPI:
             return None
     
     def _format_forecast(self, data, resort, elevation):
-        """Format OpenWeather data to match our app structure"""
+        """Format OpenWeather 5-day forecast data to match our app structure"""
         
+        # Group 3-hour forecasts by day
+        daily_data = {}
+        
+        for item in data.get('list', []):
+            dt = datetime.fromtimestamp(item['dt'])
+            date_key = dt.strftime('%Y-%m-%d')
+            
+            if date_key not in daily_data:
+                daily_data[date_key] = {
+                    'datetime': dt,
+                    'day_name': dt.strftime('%A'),
+                    'day_short': dt.strftime('%a'),
+                    'temps': [],
+                    'feels_like': [],
+                    'snow': 0,
+                    'rain': 0,
+                    'conditions': [],
+                    'clouds': [],
+                    'humidity': [],
+                    'wind_speed': [],
+                    'wind_deg': [],
+                    'pressure': [],
+                    'pop': []
+                }
+            
+            # Aggregate data for the day
+            daily_data[date_key]['temps'].append(item['main']['temp'])
+            daily_data[date_key]['feels_like'].append(item['main']['feels_like'])
+            
+            # Snow in 3h period (mm), convert to cm
+            if 'snow' in item and '3h' in item['snow']:
+                daily_data[date_key]['snow'] += item['snow']['3h'] / 10  # mm to cm
+            
+            # Rain in 3h period (mm)
+            if 'rain' in item and '3h' in item['rain']:
+                daily_data[date_key]['rain'] += item['rain']['3h']
+            
+            # Weather conditions
+            if item.get('weather'):
+                daily_data[date_key]['conditions'].append(item['weather'][0]['description'])
+            
+            # Other metrics
+            daily_data[date_key]['clouds'].append(item.get('clouds', {}).get('all', 0))
+            daily_data[date_key]['humidity'].append(item['main'].get('humidity', 0))
+            daily_data[date_key]['wind_speed'].append(item['wind'].get('speed', 0))
+            daily_data[date_key]['wind_deg'].append(item['wind'].get('deg', 0))
+            daily_data[date_key]['pressure'].append(item['main'].get('pressure', 0))
+            daily_data[date_key]['pop'].append(item.get('pop', 0))
+        
+        # Format daily forecasts
         daily_forecasts = []
-        
-        for day in data.get('daily', [])[:8]:  # 8 days
-            dt = datetime.fromtimestamp(day['dt'])
+        for date_key in sorted(daily_data.keys())[:7]:  # Max 7 days to match snow-forecast
+            day = daily_data[date_key]
             
-            # Extract snow data (in mm, convert to cm)
-            snow_mm = day.get('snow', 0)
-            snow_cm = round(snow_mm / 10, 1) if snow_mm else 0
-            
-            # Extract rain data
-            rain_mm = day.get('rain', 0)
-            
-            # Weather condition
-            weather = day.get('weather', [{}])[0]
-            condition = weather.get('description', 'N/A')
+            # Most common condition
+            condition = max(set(day['conditions']), key=day['conditions'].count) if day['conditions'] else 'N/A'
             
             daily_forecasts.append({
-                'date': dt.strftime('%Y-%m-%d'),
-                'day_name': dt.strftime('%A'),
-                'day_short': dt.strftime('%a'),
+                'date': date_key,
+                'day_name': day['day_name'],
+                'day_short': day['day_short'],
                 'temp': {
-                    'min': round(day['temp']['min'], 1),
-                    'max': round(day['temp']['max'], 1),
-                    'morning': round(day['temp']['morn'], 1),
-                    'day': round(day['temp']['day'], 1),
-                    'evening': round(day['temp']['eve'], 1),
-                    'night': round(day['temp']['night'], 1)
+                    'min': round(min(day['temps']), 1),
+                    'max': round(max(day['temps']), 1),
+                    'avg': round(sum(day['temps']) / len(day['temps']), 1)
                 },
                 'feels_like': {
-                    'morning': round(day['feels_like']['morn'], 1),
-                    'day': round(day['feels_like']['day'], 1),
-                    'evening': round(day['feels_like']['eve'], 1),
-                    'night': round(day['feels_like']['night'], 1)
+                    'min': round(min(day['feels_like']), 1),
+                    'max': round(max(day['feels_like']), 1),
+                    'avg': round(sum(day['feels_like']) / len(day['feels_like']), 1)
                 },
-                'snow_cm': snow_cm,
-                'rain_mm': rain_mm,
+                'snow_cm': round(day['snow'], 1),
+                'rain_mm': round(day['rain'], 1),
                 'condition': condition.title(),
-                'clouds': day.get('clouds', 0),
-                'humidity': day.get('humidity', 0),
-                'wind_speed': round(day.get('wind_speed', 0), 1),
-                'wind_deg': day.get('wind_deg', 0),
-                'pressure': day.get('pressure', 0),
-                'uvi': day.get('uvi', 0),
-                'pop': int(day.get('pop', 0) * 100),  # Probability of precipitation as %
-                'summary': day.get('summary', '')
-            })
-        
-        # Also include hourly forecast for next 48 hours
-        hourly_forecasts = []
-        for hour in data.get('hourly', [])[:48]:
-            dt = datetime.fromtimestamp(hour['dt'])
-            
-            snow_mm = hour.get('snow', {}).get('1h', 0)
-            snow_cm = round(snow_mm / 10, 1) if snow_mm else 0
-            
-            weather = hour.get('weather', [{}])[0]
-            
-            hourly_forecasts.append({
-                'datetime': dt.isoformat(),
-                'hour': dt.strftime('%H:%M'),
-                'temp': round(hour['temp'], 1),
-                'feels_like': round(hour['feels_like'], 1),
-                'snow_cm': snow_cm,
-                'rain_mm': hour.get('rain', {}).get('1h', 0),
-                'condition': weather.get('description', 'N/A').title(),
-                'wind_speed': round(hour.get('wind_speed', 0), 1),
-                'pop': int(hour.get('pop', 0) * 100)
+                'clouds': round(sum(day['clouds']) / len(day['clouds'])) if day['clouds'] else 0,
+                'humidity': round(sum(day['humidity']) / len(day['humidity'])) if day['humidity'] else 0,
+                'wind_speed': round(sum(day['wind_speed']) / len(day['wind_speed']), 1) if day['wind_speed'] else 0,
+                'wind_deg': round(sum(day['wind_deg']) / len(day['wind_deg'])) if day['wind_deg'] else 0,
+                'pressure': round(sum(day['pressure']) / len(day['pressure'])) if day['pressure'] else 0,
+                'pop': round(max(day['pop']) * 100) if day['pop'] else 0  # Max probability of precipitation as %
             })
         
         return {
@@ -139,9 +153,8 @@ class OpenWeatherAPI:
             'elevation': elevation,
             'coordinates': self.resort_coords[resort][elevation],
             'daily': daily_forecasts,
-            'hourly': hourly_forecasts,
             'last_updated': datetime.now().isoformat(),
-            'source': 'OpenWeatherMap One Call API 3.0'
+            'source': 'OpenWeatherMap Free 5-Day Forecast API'
         }
 
 

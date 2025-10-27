@@ -2,6 +2,7 @@
 """
 Generate static forecast data for all resorts and elevations.
 This script is run by GitHub Actions every 3 hours.
+Combines data from snow-forecast.com and OpenWeatherMap for better accuracy.
 """
 
 import json
@@ -9,6 +10,14 @@ import os
 from datetime import datetime
 import requests
 from bs4 import BeautifulSoup
+
+# Try to import OpenWeather integration
+try:
+    from openweather_integration import OpenWeatherAPI, compare_forecasts
+    OPENWEATHER_AVAILABLE = True
+except ImportError:
+    OPENWEATHER_AVAILABLE = False
+    print("OpenWeather integration not available, using snow-forecast.com only")
 
 def fetch_forecast(resort='Val-Thorens', elevation='bot'):
     """Fetch forecast data for a specific resort and elevation"""
@@ -148,15 +157,37 @@ def main():
         'Cervinia': ['bot', 'mid', 'top']
     }
     
+    # Initialize OpenWeather API if available
+    openweather_api = None
+    if OPENWEATHER_AVAILABLE:
+        api_key = os.environ.get('OPENWEATHER_API_KEY')
+        if api_key:
+            openweather_api = OpenWeatherAPI(api_key)
+            print("✓ OpenWeather API initialized")
+        else:
+            print("⚠ OPENWEATHER_API_KEY not set, using snow-forecast.com only")
+    
     all_data = {}
     
     for resort, elevations in resorts.items():
         all_data[resort] = {}
         
         for elevation in elevations:
-            print(f"Fetching {resort} - {elevation}...")
+            print(f"\nFetching {resort} - {elevation}...")
             try:
+                # Fetch from snow-forecast.com
                 forecast_data = fetch_forecast(resort=resort, elevation=elevation)
+                
+                # Try to fetch from OpenWeather and combine
+                if openweather_api and forecast_data:
+                    try:
+                        print(f"  → Fetching OpenWeather data...")
+                        ow_data = openweather_api.get_forecast(resort=resort, elevation=elevation)
+                        if ow_data:
+                            forecast_data = compare_forecasts(forecast_data, ow_data)
+                            print(f"  ✓ Combined data from both sources")
+                    except Exception as e:
+                        print(f"  ⚠ OpenWeather fetch failed: {e}, using snow-forecast.com only")
                 
                 if forecast_data and 'days' in forecast_data:
                     all_data[resort][elevation] = forecast_data

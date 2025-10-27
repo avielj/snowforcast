@@ -811,7 +811,19 @@
             
             if (mostRecentUpdate) {
                 const updateDate = new Date(mostRecentUpdate);
-                lastUpdated.innerHTML = `📅 Last updated: ${updateDate.toLocaleString()}`;
+                // Format as GMT+2 (or user's timezone with GMT+2 preference)
+                const options = { 
+                    year: 'numeric', 
+                    month: 'numeric', 
+                    day: 'numeric', 
+                    hour: 'numeric', 
+                    minute: 'numeric', 
+                    second: 'numeric',
+                    timeZone: 'Europe/Paris', // GMT+2 (CET/CEST)
+                    timeZoneName: 'short'
+                };
+                const formattedDate = updateDate.toLocaleString('en-US', options);
+                lastUpdated.innerHTML = `📅 Last updated: ${formattedDate}`;
             } else {
                 lastUpdated.innerHTML = `📅 Last updated: ${new Date().toLocaleString()}`;
             }

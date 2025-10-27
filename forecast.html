@@ -47,13 +47,6 @@
             font-size: 1.3em;
         }
         
-        .header .elevation {
-            color: #e74c3c;
-            font-weight: bold;
-            font-size: 1.1em;
-            margin-top: 10px;
-        }
-        
         .elevation-links {
             text-align: center;
             margin: 20px 0;
@@ -94,35 +87,81 @@
         
         .current-conditions h2 {
             color: #2c3e50;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             font-size: 1.6em;
         }
         
-        .conditions-header {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 30px;
-            margin-bottom: 20px;
+        .conditions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .condition-card {
+            background: #ffffff;
+            border-radius: 12px;
             padding: 15px;
-            background: #f0f8ff;
-            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid #4a90e2;
         }
         
-        .conditions-header > div {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .condition-label {
+            display: block;
+            font-size: 0.85em;
+            color: #7f8c8d;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
         
-        .conditions-header strong {
+        .condition-value {
+            font-size: 1.5em;
+            font-weight: 700;
             color: #2c3e50;
         }
         
-        .conditions-header span {
+        .condition-value.highlight {
+            color: #3498db;
+        }
+        
+        .no-conditions {
+            color: #7f8c8d;
+            font-style: italic;
+            margin-bottom: 25px;
+        }
+        
+        .section-subtitle {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .summary-metrics {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+        
+        .summary-metric {
+            background: #f0f8ff;
+            border-radius: 10px;
+            padding: 12px 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .summary-metric span {
             color: #3498db;
             font-size: 1.2em;
-            font-weight: bold;
+            font-weight: 700;
         }
         
         .elevation-boxes {
@@ -174,33 +213,6 @@
             font-size: 0.85em;
             color: #95a5a6;
             margin-top: 5px;
-        }
-        
-        .controls {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        
-        .refresh-button {
-            background: linear-gradient(135deg, #4a90e2, #357abd);
-            color: white;
-            border: none;
-            padding: 15px 35px;
-            border-radius: 30px;
-            cursor: pointer;
-            font-size: 1.1em;
-            font-weight: bold;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.4);
-        }
-        
-        .refresh-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(74, 144, 226, 0.6);
-        }
-        
-        .refresh-button:active {
-            transform: translateY(0);
         }
         
         .loading {
@@ -478,25 +490,14 @@
         <div class="header">
             <h1>❄️ <span id="resort-name">Val Thorens</span> Snow Forecast</h1>
             <div class="subtitle">6-Day Weather Forecast</div>
-            <div class="elevation">📍 Bottom Elevation (2300m)</div>
         </div>
         
         <div class="elevation-links">
-            <div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 2px solid #ecf0f1;">
+            <div style="text-align: center;">
                 <strong style="color: #2c3e50; margin-right: 10px;">Resort:</strong>
                 <a href="#" class="active" data-resort="Val-Thorens" onclick="switchResort('Val-Thorens'); return false;">⛷️ Val Thorens</a>
                 <a href="#" data-resort="Cervinia" onclick="switchResort('Cervinia'); return false;">🏔️ Cervinia</a>
             </div>
-            <div id="elevation-buttons">
-                <strong style="color: #2c3e50; margin-right: 10px;">Elevation:</strong>
-                <a href="#" class="active" data-elevation="bot" onclick="loadElevation('bot'); return false;">🏔️ Bottom (2300m)</a>
-                <a href="#" data-elevation="mid" onclick="loadElevation('mid'); return false;">⛰️ Mid (2800m)</a>
-                <a href="#" data-elevation="top" onclick="loadElevation('top'); return false;">🗻 Top (3230m)</a>
-            </div>
-        </div>
-        
-        <div class="controls">
-            <button class="refresh-button" onclick="loadForecast()">🔄 Refresh Forecast</button>
         </div>
         
         <div id="current-conditions" class="current-conditions">
@@ -537,17 +538,12 @@
         let currentResort = 'Val-Thorens';
         let allElevationData = {}; // Store data for all elevations
         let forecastVisible = false; // Track if forecast table is visible
+        let allForecastsData = null; // Cache for all forecasts from GitHub
         
-        // Support both dynamic (API) and static (pre-generated JSON) modes
-        // Static mode: if ?static=true in URL, or if /api/forecast endpoint doesn't exist (GitHub Pages)
-        // Dynamic mode: if on Vercel or running Flask locally
-        const USE_STATIC_DATA = window.location.search.includes('static=true') || 
-                                window.location.pathname.includes('index.html') ||
-                                window.location.hostname.includes('github.io');
-        const API_URL = USE_STATIC_DATA ? './data/' : '/api/forecast';
+        // Always use GitHub as the data source (public URL)
+        const GITHUB_DATA_URL = 'https://raw.githubusercontent.com/avielj/snowforcast/refs/heads/main/data/all-forecasts.json';
         
-        console.log('Mode:', USE_STATIC_DATA ? 'STATIC (using pre-generated JSON)' : 'DYNAMIC (live API calls)');
-        console.log('API URL:', API_URL);
+        console.log('Fetching data from GitHub:', GITHUB_DATA_URL);
         
         const resortInfo = {
             'Val-Thorens': {
@@ -597,42 +593,7 @@
             // Update header
             document.getElementById('resort-name').textContent = resortInfo[resort].name;
             
-            // Update elevation display
-            const info = resortInfo[currentResort].elevations[currentElevation];
-            document.querySelector('.elevation').textContent = `${info.emoji} ${info.name} Elevation (${info.height})`;
-            
-            // Update elevation button labels with correct heights for this resort
-            updateElevationButtons();
-            
-            loadForecast();
-        }
-        
-        function updateElevationButtons() {
-            const elevations = ['bot', 'mid', 'top'];
-            elevations.forEach(elev => {
-                const info = resortInfo[currentResort].elevations[elev];
-                const link = document.querySelector(`a[data-elevation="${elev}"]`);
-                if (link) {
-                    link.innerHTML = `${info.emoji} ${info.name} (${info.height})`;
-                }
-            });
-        }
-        
-        function loadElevation(elevation) {
-            currentElevation = elevation;
-            
-            // Update active link (only for elevation links, not resort links)
-            document.querySelectorAll('a[data-elevation]').forEach(link => {
-                link.classList.remove('active');
-                if (link.getAttribute('data-elevation') === elevation) {
-                    link.classList.add('active');
-                }
-            });
-            
-            // Update header
-            const info = resortInfo[currentResort].elevations[elevation];
-            document.querySelector('.elevation').textContent = `${info.emoji} ${info.name} Elevation (${info.height})`;
-            
+            // Reload forecast for new resort (will use cached data)
             loadForecast();
         }
         
@@ -656,54 +617,36 @@
             content.innerHTML = '';
             
             try {
-                let data, allData = {};
-                const allElevations = ['bot', 'mid', 'top'];
-                
-                if (USE_STATIC_DATA) {
-                    // Load from static JSON files
-                    const filename = `${currentResort.toLowerCase()}-${currentElevation}.json`;
-                    const response = await fetch(`${API_URL}${filename}`);
+                // Fetch all forecasts from GitHub (only once, then cache)
+                if (!allForecastsData) {
+                    const response = await fetch(GITHUB_DATA_URL);
                     
                     if (!response.ok) {
-                        throw new Error('Failed to fetch forecast data');
+                        throw new Error('Failed to fetch forecast data from GitHub');
                     }
                     
-                    data = await response.json();
-                    
-                    // Fetch all elevations for weekly summary
-                    for (const elev of allElevations) {
-                        try {
-                            const elevFilename = `${currentResort.toLowerCase()}-${elev}.json`;
-                            const resp = await fetch(`${API_URL}${elevFilename}`);
-                            if (resp.ok) {
-                                allData[elev] = await resp.json();
-                            }
-                        } catch (e) {
-                            console.error(`Error fetching ${elev}:`, e);
-                        }
-                    }
-                } else {
-                    // Fetch from API (dynamic mode)
-                    const response = await fetch(`${API_URL}?elevation=${currentElevation}&resort=${currentResort}`);
-                    
-                    if (!response.ok) {
-                        throw new Error('Failed to fetch forecast');
-                    }
-                    
-                    data = await response.json();
-                    
-                    // Fetch all elevations for weekly summary
-                    for (const elev of allElevations) {
-                        try {
-                            const resp = await fetch(`${API_URL}?elevation=${elev}&resort=${currentResort}`);
-                            if (resp.ok) {
-                                allData[elev] = await resp.json();
-                            }
-                        } catch (e) {
-                            console.error(`Error fetching ${elev}:`, e);
-                        }
-                    }
+                    allForecastsData = await response.json();
+                    console.log('✓ Loaded all forecasts from GitHub');
                 }
+                
+                // Extract data for current resort
+                const resortData = allForecastsData[currentResort];
+                if (!resortData) {
+                    throw new Error(`No data available for ${currentResort}`);
+                }
+                
+                // Get current elevation data
+                const data = resortData[currentElevation];
+                if (!data) {
+                    throw new Error(`No data available for elevation ${currentElevation}`);
+                }
+                
+                // Get all elevations for this resort
+                const allData = {
+                    'bot': resortData['bot'],
+                    'mid': resortData['mid'],
+                    'top': resortData['top']
+                };
                 
                 displayForecast(data, allData);
                 
@@ -776,17 +719,55 @@
             }
             
             // Display current snow conditions with clickable elevation boxes
+            const snowConditions = data.snow_conditions || null;
+            const bestDayLabel = midBestDay || 'N/A';
+            const snowDaysLabel = typeof midSnowDays === 'number' ? midSnowDays : '0';
             let conditionsHtml = `
-                <h2>❄️ 7-Day Snow Forecast Summary - ${resortInfo[currentResort].name}</h2>
-                <div class="conditions-header">
-                    <div>
-                        <strong>Snow Days:</strong> 
-                        <span>${midSnowDays}</span>
-                    </div>
-                    <div>
-                        <strong>Best Day:</strong> 
-                        <span>${midBestDay}</span>
-                    </div>
+                <h2>❄️ Current Snow Conditions - ${resortInfo[currentResort].name}</h2>
+            `;
+            
+            if (snowConditions) {
+                const conditionFields = [
+                    { key: 'Fresh snowfall depth', label: 'Fresh Snow', highlight: true },
+                    { key: 'Top snow depth', label: 'Top Snow Depth' },
+                    { key: 'Bottom snow depth', label: 'Bottom Snow Depth' },
+                    { key: 'Last snowfall', label: 'Last Snowfall' }
+                ];
+                
+                conditionsHtml += '<div class="conditions-grid">';
+                conditionFields.forEach(field => {
+                    const value = snowConditions[field.key];
+                    if (value) {
+                        const highlightClass = field.highlight ? 'highlight' : '';
+                        conditionsHtml += `
+                            <div class="condition-card">
+                                <span class="condition-label">${field.label}</span>
+                                <span class="condition-value ${highlightClass}">${value}</span>
+                            </div>
+                        `;
+                    }
+                });
+
+                // Include snow alert info if it contains meaningful text
+                const alertInfo = snowConditions['Snow Alerts'];
+                if (alertInfo && alertInfo !== 'Create Alert') {
+                    conditionsHtml += `
+                        <div class="condition-card">
+                            <span class="condition-label">Snow Alerts</span>
+                            <span class="condition-value">${alertInfo}</span>
+                        </div>
+                    `;
+                }
+                conditionsHtml += '</div>';
+            } else {
+                conditionsHtml += '<p class="no-conditions">Live snow conditions are not available right now.</p>';
+            }
+
+            conditionsHtml += `
+                <div class="section-subtitle">7-Day Snow Outlook</div>
+                <div class="summary-metrics">
+                    <div class="summary-metric">Snow Days: <span>${snowDaysLabel}</span></div>
+                    <div class="summary-metric">Best Day: <span>${bestDayLabel}</span></div>
                 </div>
                 <div class="elevation-boxes">
             `;
@@ -798,7 +779,7 @@
                 const isActive = elev === currentElevation ? 'active' : '';
                 
                 conditionsHtml += `
-                    <div class="elevation-box ${isActive}" onclick="toggleElevationForecast('${elev}')">
+                    <div class="elevation-box ${isActive}" onclick="toggleElevationForecast(event, '${elev}')">
                         <h3>${info.emoji} ${info.name}</h3>
                         <div class="height">${info.height}</div>
                         <div class="snow-amount">${stats.totalSnow} cm</div>
@@ -854,7 +835,7 @@
             }
         }
         
-        function toggleElevationForecast(elevation) {
+        function toggleElevationForecast(event, elevation) {
             const content = document.getElementById('forecast-content');
             const forecastGrid = content.querySelector('.forecast-grid');
             
@@ -881,10 +862,6 @@
                     displayDetailedForecast(elevData);
                 }
             }
-            
-            // Update header
-            const info = resortInfo[currentResort].elevations[elevation];
-            document.querySelector('.elevation').textContent = `${info.emoji} ${info.name} Elevation (${info.height})`;
         }
         
         function displayDetailedForecast(data) {

@@ -76,6 +76,101 @@
             background: linear-gradient(135deg, #4a90e2, #357abd);
         }
         
+        .webcam-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 25px;
+            text-decoration: none;
+            margin: 10px;
+            font-size: 1em;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .webcam-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+        }
+        
+        .resort-links {
+            text-align: center;
+            margin: 15px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .resort-links a {
+            display: inline-block;
+            background: linear-gradient(135deg, #16a085, #138d75);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 15px;
+            text-decoration: none;
+            margin: 5px;
+            font-size: 0.85em;
+            transition: all 0.3s;
+        }
+        
+        .resort-links a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(22, 160, 133, 0.3);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+        
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            max-width: 90%;
+            max-height: 90vh;
+            position: relative;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 2em;
+            color: #333;
+            cursor: pointer;
+            background: none;
+            border: none;
+            z-index: 1001;
+        }
+        
+        .modal-close:hover {
+            color: #e74c3c;
+        }
+        
+        .modal-content iframe {
+            width: 100%;
+            height: 70vh;
+            border: none;
+            border-radius: 10px;
+        }
+        
         .current-conditions {
             background: linear-gradient(135deg, #e8f4fd, #ffffff);
             border: 3px solid #4a90e2;
@@ -501,6 +596,14 @@
             </div>
         </div>
         
+        <div style="text-align: center; margin: 15px 0;">
+            <button class="webcam-button" onclick="openWebcam()">📹 View Live Webcam</button>
+        </div>
+        
+        <div class="resort-links" id="resort-links">
+            <!-- Resort-specific links will be loaded here -->
+        </div>
+        
         <div id="current-conditions" class="current-conditions">
             <!-- Current snow conditions will be loaded here -->
         </div>
@@ -518,6 +621,14 @@
         </div>
         
         <div id="last-updated" class="last-updated"></div>
+        
+        <!-- Webcam Modal -->
+        <div id="webcam-modal" class="modal">
+            <div class="modal-content">
+                <button class="modal-close" onclick="closeWebcam()">&times;</button>
+                <iframe id="webcam-frame" src=""></iframe>
+            </div>
+        </div>
         
         <div class="data-sources">
             <h3>📊 Data Sources</h3>
@@ -549,6 +660,10 @@
         const resortInfo = {
             'Val-Thorens': {
                 name: 'Val Thorens',
+                webcam: 'https://www.valthorens.com/en/live/webcams/',
+                pisteMap: 'https://www.valthorens.com/en/winter/area/piste-map/',
+                website: 'https://www.valthorens.com/en/',
+                liftStatus: 'https://www.valthorens.com/en/live/slopes-lifts-opening/',
                 elevations: {
                     'bot': { name: 'Bottom', height: '2300m', emoji: '🏔️' },
                     'mid': { name: 'Mid', height: '2800m', emoji: '⛰️' },
@@ -557,6 +672,10 @@
             },
             'Cervinia': {
                 name: 'Cervinia',
+                webcam: 'https://www.cervinia.it/en/webcam',
+                pisteMap: 'https://www.cervinia.it/en/ski-area/ski-map',
+                website: 'https://www.cervinia.it/en',
+                liftStatus: 'https://www.cervinia.it/en/ski-area/slopes-and-lifts',
                 elevations: {
                     'bot': { name: 'Bottom', height: '2050m', emoji: '🏔️' },
                     'mid': { name: 'Mid', height: '2700m', emoji: '⛰️' },
@@ -594,9 +713,55 @@
             // Update header
             document.getElementById('resort-name').textContent = resortInfo[resort].name;
             
+            // Update resort links
+            updateResortLinks();
+            
             // Reload forecast for new resort (will use cached data)
             loadForecast();
         }
+        
+        function updateResortLinks() {
+            const info = resortInfo[currentResort];
+            const linksContainer = document.getElementById('resort-links');
+            
+            linksContainer.innerHTML = `
+                <a href="${info.pisteMap}" target="_blank">🗺️ Piste Map</a>
+                <a href="${info.website}" target="_blank">🏔️ Resort Website</a>
+                <a href="${info.liftStatus}" target="_blank">🚡 Lift Status</a>
+            `;
+        }
+        
+        function openWebcam() {
+            const info = resortInfo[currentResort];
+            const modal = document.getElementById('webcam-modal');
+            const frame = document.getElementById('webcam-frame');
+            
+            frame.src = info.webcam;
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeWebcam() {
+            const modal = document.getElementById('webcam-modal');
+            const frame = document.getElementById('webcam-frame');
+            
+            modal.classList.remove('active');
+            frame.src = '';
+            document.body.style.overflow = 'auto';
+        }
+        
+        // Close modal on escape key or click outside
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeWebcam();
+            }
+        });
+        
+        document.getElementById('webcam-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeWebcam();
+            }
+        });
         
         function getWeatherEmoji(condition) {
             const lower = condition.toLowerCase();
@@ -1000,7 +1165,10 @@
         }
         
         // Load forecast when page loads
-        window.addEventListener('DOMContentLoaded', loadForecast);
+        window.addEventListener('DOMContentLoaded', function() {
+            updateResortLinks();
+            loadForecast();
+        });
     </script>
 </body>
 </html>

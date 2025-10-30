@@ -40,14 +40,14 @@
         "temperature": "5.0",
         "snow": "0",
         "rain": "0",
-        "wind": "5.0 km/h N"
+        "wind": "10.0 km/h N"
       },
       "night": {
         "condition": "part cloud",
         "temperature": "5.0",
         "snow": "0",
         "rain": "0",
-        "wind": "10.0 km/h NW"
+        "wind": "15.0 km/h N"
       }
     },
     {
@@ -55,7 +55,7 @@
       "date": "1",
       "am": {
         "condition": "part cloud",
-        "temperature": "4.0",
+        "temperature": "5.0",
         "snow": "0",
         "rain": "0",
         "wind": "10.0 km/h N"
@@ -65,10 +65,10 @@
         "temperature": "4.0",
         "snow": "0",
         "rain": "0",
-        "wind": "5.0 km/h N"
+        "wind": "5.0 km/h NE"
       },
       "night": {
-        "condition": "part cloud",
+        "condition": "snow showers",
         "temperature": "3.0",
         "snow": "0",
         "rain": "0",
@@ -80,21 +80,21 @@
       "date": "2",
       "am": {
         "condition": "light snow",
-        "temperature": "0.0",
-        "snow": "0",
+        "temperature": "-2.0",
+        "snow": "2",
         "rain": "0",
         "wind": "10.0 km/h N"
       },
       "pm": {
-        "condition": "mod snow",
-        "temperature": "-4.0",
-        "snow": "7",
+        "condition": "light snow",
+        "temperature": "-3.0",
+        "snow": "4",
         "rain": "0",
-        "wind": "15.0 km/h SE"
+        "wind": "15.0 km/h E"
       },
       "night": {
         "condition": "light snow",
-        "temperature": "-2.0",
+        "temperature": "-4.0",
         "snow": "1",
         "rain": "0",
         "wind": "15.0 km/h SE"
@@ -104,25 +104,25 @@
       "name": "Monday",
       "date": "3",
       "am": {
-        "condition": "clear",
-        "temperature": "1.0",
+        "condition": "part cloud",
+        "temperature": "0.0",
         "snow": "0",
         "rain": "0",
-        "wind": "10.0 km/h S"
+        "wind": "5.0 km/h S"
       },
       "pm": {
         "condition": "clear",
         "temperature": "1.0",
         "snow": "0",
         "rain": "0",
-        "wind": "5.0 km/h SE"
+        "wind": "5.0 km/h S"
       },
       "night": {
         "condition": "clear",
         "temperature": "3.0",
         "snow": "0",
         "rain": "0",
-        "wind": "5.0 km/h E"
+        "wind": "0.0 km/h W"
       }
     },
     {
@@ -130,35 +130,10 @@
       "date": "4",
       "am": {
         "condition": "clear",
-        "temperature": "4.0",
-        "snow": "0",
-        "rain": "0",
-        "wind": "0.0 km/h SE"
-      },
-      "pm": {
-        "condition": "clear",
-        "temperature": "4.0",
-        "snow": "0",
-        "rain": "0",
-        "wind": "5.0 km/h SE"
-      },
-      "night": {
-        "condition": "clear",
-        "temperature": "4.0",
-        "snow": "0",
-        "rain": "0",
-        "wind": "0.0 km/h N"
-      }
-    },
-    {
-      "name": "Wednesday",
-      "date": "5",
-      "am": {
-        "condition": "clear",
         "temperature": "5.0",
         "snow": "0",
         "rain": "0",
-        "wind": "0.0 km/h NW"
+        "wind": "5.0 km/h NW"
       },
       "pm": {
         "condition": "clear",
@@ -167,16 +142,41 @@
         "rain": "0",
         "wind": "5.0 km/h N"
       },
+      "night": {
+        "condition": "clear",
+        "temperature": "5.0",
+        "snow": "0",
+        "rain": "0",
+        "wind": "5.0 km/h NW"
+      }
+    },
+    {
+      "name": "Wednesday",
+      "date": "5",
+      "am": {
+        "condition": "clear",
+        "temperature": "6.0",
+        "snow": "0",
+        "rain": "0",
+        "wind": "5.0 km/h NW"
+      },
+      "pm": {
+        "condition": "clear",
+        "temperature": "6.0",
+        "snow": "0",
+        "rain": "0",
+        "wind": "10.0 km/h NW"
+      },
       "night": null
     }
   ],
-  "last_updated": "2025-10-30T12:19:18.940727",
+  "last_updated": "2025-10-30T15:14:25.415950",
   "resort": "Val-Thorens",
   "elevation": "mid",
   "snow_conditions": {
     "Top snow depth": "\u2014",
     "Bottom snow depth": "\u2014",
-    "Fresh snowfall depth": "1cm",
+    "Fresh snowfall depth": "15cm",
     "Last snowfall": "29 Oct 2025",
     "Snow Alerts": "Create Alert"
   }

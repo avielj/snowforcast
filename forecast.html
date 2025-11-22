@@ -1072,7 +1072,11 @@
         function displayDetailedForecast(data) {
             const content = document.getElementById('forecast-content');
             
+            console.log('displayDetailedForecast called, forecastVisible:', forecastVisible);
+            
             let html = `<div class="forecast-grid ${forecastVisible ? 'visible' : ''}">`;
+            
+            console.log('Creating forecast grid with class:', forecastVisible ? 'visible' : 'hidden');
             
             for (const day of data.days) {
                 // Calculate total snow for the day
@@ -1137,6 +1141,11 @@
             
             html += '</div>';
             content.innerHTML = html;
+            
+            // Verify the grid was created and has the right class
+            const grid = content.querySelector('.forecast-grid');
+            console.log('After setting innerHTML, grid element:', grid);
+            console.log('Grid has visible class:', grid ? grid.classList.contains('visible') : 'grid not found');
         }
         
         function createPeriodSection(period, data) {

@@ -631,15 +631,11 @@
         </div>
         
         <div class="data-sources">
-            <h3>📊 Data Sources</h3>
+            <h3>📊 Data Source</h3>
             <div class="source-indicators" id="source-indicators">
                 <div class="source-indicator">
                     <span class="source-status inactive" id="source-snow-forecast"></span>
                     <span class="source-name">Snow-Forecast.com</span>
-                </div>
-                <div class="source-indicator">
-                    <span class="source-status inactive" id="source-openweather"></span>
-                    <span class="source-name">OpenWeatherMap</span>
                 </div>
             </div>
         </div>
@@ -842,9 +838,11 @@
             const elevationStats = {};
             const elevations = ['bot', 'mid', 'top'];
             
-            // Get mid elevation stats for best day and snow days
+            // Get mid elevation stats for best day, snow days, and lowest temp
             let midBestDay = '';
             let midSnowDays = 0;
+            let midLowestTemp = null;
+            let midLowestFeels = null;
             
             for (const elev of elevations) {
                 const elevData = allData && allData[elev] ? allData[elev] : (elev === currentElevation ? data : null);
@@ -853,6 +851,8 @@
                 let totalSnow = 0;
                 let snowDays = 0;
                 let maxSnowDay = { name: '', amount: 0 };
+                let lowestTemp = null;
+                let lowestFeels = null;
                 
                 for (const day of elevData.days) {
                     let daySnow = 0;
@@ -862,6 +862,22 @@
                             const snow = parseFloat(day[period].snow) || 0;
                             daySnow += snow;
                             totalSnow += snow;
+                            
+                            // Track lowest temperature
+                            const temp = parseFloat(day[period].temperature);
+                            if (!isNaN(temp)) {
+                                if (lowestTemp === null || temp < lowestTemp) {
+                                    lowestTemp = temp;
+                                }
+                            }
+                            
+                            // Track lowest feels like temperature
+                            const feels = parseFloat(day[period].feels_like);
+                            if (!isNaN(feels)) {
+                                if (lowestFeels === null || feels < lowestFeels) {
+                                    lowestFeels = feels;
+                                }
+                            }
                         }
                     });
                     
@@ -871,16 +887,20 @@
                     }
                 }
                 
-                // Store mid elevation data for best day
+                // Store mid elevation data for best day and lowest temp
                 if (elev === 'mid') {
                     midBestDay = maxSnowDay.name || 'N/A';
                     midSnowDays = snowDays;
+                    midLowestTemp = lowestTemp;
+                    midLowestFeels = lowestFeels;
                 }
                 
                 elevationStats[elev] = {
                     totalSnow: totalSnow.toFixed(0),
                     snowDays,
-                    maxSnowDay
+                    maxSnowDay,
+                    lowestTemp,
+                    lowestFeels
                 };
             }
             
@@ -888,6 +908,10 @@
             const snowConditions = data.snow_conditions || null;
             const bestDayLabel = midBestDay || 'N/A';
             const snowDaysLabel = typeof midSnowDays === 'number' ? midSnowDays : '0';
+            // Show feels like if it's different from actual temp, otherwise show actual
+            const lowestTempLabel = midLowestFeels !== null && midLowestTemp !== null && midLowestFeels < midLowestTemp 
+                ? `${midLowestFeels}°C (feels like)` 
+                : midLowestTemp !== null ? `${midLowestTemp}°C` : 'N/A';
             let conditionsHtml = `
                 <h2>❄️ Current Snow Conditions - ${resortInfo[currentResort].name}</h2>
             `;
@@ -934,6 +958,7 @@
                 <div class="summary-metrics">
                     <div class="summary-metric">Snow Days: <span>${snowDaysLabel}</span></div>
                     <div class="summary-metric">Best Day: <span>${bestDayLabel}</span></div>
+                    <div class="summary-metric">Lowest Temp: <span>${lowestTempLabel}</span></div>
                 </div>
                 <div class="elevation-boxes">
             `;
@@ -993,38 +1018,12 @@
                 lastUpdated.innerHTML = `📅 Last updated: ${new Date().toLocaleString()}`;
             }
             
-            // Update data source indicators
+            // Update data source indicator
             const snowForecastIndicator = document.getElementById('source-snow-forecast');
-            const openWeatherIndicator = document.getElementById('source-openweather');
             
-            if (data.sources && data.sources.length > 0) {
-                const hasSnowForecast = data.sources.some(s => s.toLowerCase().includes('snow-forecast'));
-                const hasOpenWeather = data.sources.some(s => s.toLowerCase().includes('openweather'));
-                
-                // Update Snow-Forecast indicator
-                if (hasSnowForecast) {
-                    snowForecastIndicator.classList.remove('inactive');
-                    snowForecastIndicator.classList.add('active');
-                } else {
-                    snowForecastIndicator.classList.remove('active');
-                    snowForecastIndicator.classList.add('inactive');
-                }
-                
-                // Update OpenWeather indicator
-                if (hasOpenWeather) {
-                    openWeatherIndicator.classList.remove('inactive');
-                    openWeatherIndicator.classList.add('active');
-                } else {
-                    openWeatherIndicator.classList.remove('active');
-                    openWeatherIndicator.classList.add('inactive');
-                }
-            } else {
-                // No sources specified, assume only snow-forecast
-                snowForecastIndicator.classList.remove('inactive');
-                snowForecastIndicator.classList.add('active');
-                openWeatherIndicator.classList.remove('active');
-                openWeatherIndicator.classList.add('inactive');
-            }
+            // Always show snow-forecast as active since that's our only source
+            snowForecastIndicator.classList.remove('inactive');
+            snowForecastIndicator.classList.add('active');
         }
         
         function toggleElevationForecast(event, elevation) {
@@ -1130,6 +1129,15 @@
             const periodClass = period.toLowerCase();
             const emoji = getWeatherEmoji(data.condition || '');
             
+            // Format temperature display with feels like
+            let tempDisplay = 'N/A';
+            if (data.temperature !== null && data.temperature !== 'N/A') {
+                tempDisplay = `${data.temperature}°C`;
+                if (data.feels_like !== null && data.feels_like !== 'N/A' && data.feels_like !== data.temperature) {
+                    tempDisplay += ` (${data.feels_like}°)`;
+                }
+            }
+            
             return `
                 <div class="period-section ${periodClass}">
                     <div class="period-header">${period.toUpperCase()}</div>
@@ -1142,7 +1150,7 @@
                     <div class="weather-details">
                         <div class="detail-item">
                             <div class="detail-label">🌡️ Temperature</div>
-                            <div class="detail-value temp">${data.temperature !== null && data.temperature !== 'N/A' ? data.temperature + '°C' : 'N/A'}</div>
+                            <div class="detail-value temp">${tempDisplay}</div>
                         </div>
                         
                         <div class="detail-item">

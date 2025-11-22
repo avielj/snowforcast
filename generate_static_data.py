@@ -55,6 +55,7 @@ def fetch_forecast(resort='Val-Thorens', elevation='bot'):
     time_row = forecast_table.find('tr', {'data-row': 'time'})
     weather_row = forecast_table.find('tr', {'data-row': 'weather'})
     temp_row = forecast_table.find('tr', {'data-row': 'temperature-max'})
+    chill_row = forecast_table.find('tr', {'data-row': 'temperature-chill'})
     snow_row = forecast_table.find('tr', {'data-row': 'snow'})
     rain_row = forecast_table.find('tr', {'data-row': 'rain'})
     wind_row = forecast_table.find('tr', {'data-row': 'wind'})
@@ -97,6 +98,20 @@ def fetch_forecast(resort='Val-Thorens', elevation='bot'):
             temp_data.append(temp_elem['data-value'])
         else:
             temp_data.append(None)
+    
+    # Parse feels like (chill) temperatures
+    chill_data = []
+    if chill_row:
+        chill_cells = chill_row.find_all('td', class_='forecast-table__cell')
+        for cell in chill_cells:
+            chill_elem = cell.find('div', class_='temp-value')
+            if chill_elem and chill_elem.has_attr('data-value'):
+                chill_data.append(chill_elem['data-value'])
+            else:
+                chill_data.append(None)
+    else:
+        # If no chill data, use regular temp as fallback
+        chill_data = temp_data.copy()
     
     # Parse snow
     snow_cells = snow_row.find_all('td', class_='forecast-table__cell')
@@ -164,6 +179,7 @@ def fetch_forecast(resort='Val-Thorens', elevation='bot'):
                 day_data[period] = {
                     'condition': weather_data[cell_idx] if cell_idx < len(weather_data) else '',
                     'temperature': temp_data[cell_idx] if cell_idx < len(temp_data) else None,
+                    'feels_like': chill_data[cell_idx] if cell_idx < len(chill_data) else None,
                     'snow': snow_data[cell_idx] if cell_idx < len(snow_data) else '0',
                     'rain': rain_data[cell_idx] if cell_idx < len(rain_data) else '0',
                     'wind': wind_data[cell_idx] if cell_idx < len(wind_data) else ''

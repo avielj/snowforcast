@@ -352,7 +352,7 @@
         }
         
         .forecast-grid.visible {
-            display: grid !important;
+            display: grid;
         }
         
         .day-card {
@@ -660,7 +660,7 @@
         let currentElevation = 'bot';
         let currentResort = 'Val-Thorens';
         let allElevationData = {}; // Store data for all elevations
-        let forecastVisible = true; // Track if forecast table is visible
+        let forecastVisible = false; // Track if forecast table is visible
         let allForecastsData = null; // Cache for all forecasts from GitHub
         
         // Always use GitHub as the data source (public URL)
@@ -1042,6 +1042,9 @@
         }
         
         function toggleElevationForecast(event, elevation) {
+            const content = document.getElementById('forecast-content');
+            const forecastGrid = content.querySelector('.forecast-grid');
+            
             // Update active elevation box
             document.querySelectorAll('.elevation-box').forEach(box => {
                 box.classList.remove('active');
@@ -1051,8 +1054,6 @@
             // If clicking the same elevation, toggle visibility
             if (currentElevation === elevation) {
                 forecastVisible = !forecastVisible;
-                const content = document.getElementById('forecast-content');
-                const forecastGrid = content.querySelector('.forecast-grid');
                 if (forecastGrid) {
                     forecastGrid.classList.toggle('visible', forecastVisible);
                 }

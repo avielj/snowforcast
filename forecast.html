@@ -194,20 +194,27 @@
         }
         
         .condition-card {
-            background: #ffffff;
-            border-radius: 8px;
-            padding: 10px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            border-left: 3px solid #4a90e2;
+            background: linear-gradient(135deg, #ffffff, #f8f9fa);
+            border-radius: 10px;
+            padding: 12px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #4a90e2;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .condition-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
         }
         
         .condition-label {
             display: block;
-            font-size: 0.7em;
+            font-size: 0.75em;
             color: #7f8c8d;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
             text-transform: uppercase;
             letter-spacing: 0.05em;
+            font-weight: 600;
         }
         
         .condition-value {
@@ -227,34 +234,42 @@
         }
         
         .section-subtitle {
-            font-size: 0.95em;
-            font-weight: 600;
+            font-size: 1.1em;
+            font-weight: 700;
             color: #2c3e50;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            text-align: center;
         }
         
         .summary-metrics {
             display: flex;
             justify-content: center;
-            gap: 15px;
+            gap: 20px;
             flex-wrap: wrap;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
         
         .summary-metric {
-            background: #f0f8ff;
-            border-radius: 8px;
-            padding: 8px 14px;
+            background: linear-gradient(135deg, #e3f2fd, #ffffff);
+            border-radius: 12px;
+            padding: 12px 18px;
             display: flex;
             align-items: center;
             gap: 8px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
             font-weight: 600;
-            font-size: 0.85em;
+            font-size: 0.95em;
             color: #2c3e50;
+            border: 2px solid #bbdefb;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
         
-        .summary-metric span {
+        .summary-metric:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        }
+        
+        .summary-metric span {        .summary-metric span {
             color: #3498db;
             font-size: 1.1em;
             font-weight: 700;
@@ -918,16 +933,16 @@
             
             if (snowConditions) {
                 const conditionFields = [
-                    { key: 'Fresh snowfall depth', label: 'Fresh Snow', highlight: true },
-                    { key: 'Top snow depth', label: 'Top Snow Depth' },
-                    { key: 'Bottom snow depth', label: 'Bottom Snow Depth' },
-                    { key: 'Last snowfall', label: 'Last Snowfall' }
+                    { key: 'Fresh snowfall depth', label: '❄️ Fresh Snow', highlight: true },
+                    { key: 'Top snow depth', label: '⛰️ Top Depth' },
+                    { key: 'Bottom snow depth', label: '🏔️ Bottom Depth' },
+                    { key: 'Last snowfall', label: '📅 Last Snowfall' }
                 ];
                 
                 conditionsHtml += '<div class="conditions-grid">';
                 conditionFields.forEach(field => {
                     const value = snowConditions[field.key];
-                    if (value !== undefined && value !== null) {
+                    if (value !== undefined && value !== null && value !== '—') {
                         const highlightClass = field.highlight ? 'highlight' : '';
                         conditionsHtml += `
                             <div class="condition-card">
@@ -954,11 +969,11 @@
             }
 
             conditionsHtml += `
-                <div class="section-subtitle">7-Day Snow Outlook</div>
+                <div class="section-subtitle">📊 7-Day Snow Outlook</div>
                 <div class="summary-metrics">
-                    <div class="summary-metric">Snow Days: <span>${snowDaysLabel}</span></div>
-                    <div class="summary-metric">Best Day: <span>${bestDayLabel}</span></div>
-                    <div class="summary-metric">Lowest Temp: <span>${lowestTempLabel}</span></div>
+                    <div class="summary-metric">❄️ Snow Days: <span>${snowDaysLabel}</span></div>
+                    <div class="summary-metric">⭐ Best Day: <span>${bestDayLabel}</span></div>
+                    <div class="summary-metric">🌡️ Lowest Temp: <span>${lowestTempLabel}</span></div>
                 </div>
                 <div class="elevation-boxes">
             `;

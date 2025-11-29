@@ -1217,11 +1217,17 @@
         function displayExtendedForecast() {
             // Get extended forecast from current resort data
             const resortData = allForecastsData[currentResort];
+            console.log('displayExtendedForecast called, currentResort:', currentResort);
+            console.log('resortData:', resortData);
+            
             if (!resortData || !resortData.extended || !resortData.extended.extended_forecast) {
+                console.log('No extended forecast data available');
                 return;
             }
             
             const forecasts = resortData.extended.extended_forecast;
+            console.log('Total forecast days:', forecasts.length);
+            
             const today = new Date();
             const weekFromNow = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
             
@@ -1231,7 +1237,12 @@
                 return dayDate > weekFromNow;
             });
             
-            if (longRange.length === 0) return;
+            console.log('Long range forecast days (8-16):', longRange.length);
+            
+            if (longRange.length === 0) {
+                console.log('No long range days to display');
+                return;
+            }
             
             const content = document.getElementById('forecast-content');
             

@@ -1217,20 +1217,12 @@
         function displayExtendedForecast() {
             // Get extended forecast from current resort data
             const resortData = allForecastsData[currentResort];
-            console.log('displayExtendedForecast called, currentResort:', currentResort);
-            console.log('allForecastsData keys:', allForecastsData ? Object.keys(allForecastsData) : 'null');
-            console.log('resortData keys:', resortData ? Object.keys(resortData) : 'null');
-            console.log('Has extended?', resortData ? ('extended' in resortData) : 'no resortData');
-            console.log('resortData.extended:', resortData ? resortData.extended : 'no resortData');
             
             if (!resortData || !resortData.extended || !resortData.extended.extended_forecast) {
-                console.log('No extended forecast data available');
                 return;
             }
             
             const forecasts = resortData.extended.extended_forecast;
-            console.log('Total forecast days:', forecasts.length);
-            
             const today = new Date();
             const weekFromNow = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
             
@@ -1240,12 +1232,7 @@
                 return dayDate > weekFromNow;
             });
             
-            console.log('Long range forecast days (8-16):', longRange.length);
-            
-            if (longRange.length === 0) {
-                console.log('No long range days to display');
-                return;
-            }
+            if (longRange.length === 0) return;
             
             const content = document.getElementById('forecast-content');
             
@@ -1283,7 +1270,7 @@
                         <div class="extended-date">${new Date(day.date).toLocaleDateString('en-GB', {day: 'numeric', month: 'short'})}</div>
                         <div class="extended-weather">${weatherEmoji}</div>
                         <div class="extended-temp">${Math.round(day.temp_min)}° to ${Math.round(day.temp_max)}°</div>
-                        ${day.snowfall > 0 ? `<div class="extended-snow">${snowIcon} ${Math.round(day.snowfall)}cm</div>` : '<div class="extended-snow">-</div>'}
+                        ${day.snowfall > 0 ? `<div class="extended-snow">${snowIcon} ${day.snowfall.toFixed(1)}cm</div>` : '<div class="extended-snow">-</div>'}
                         ${snowLineMsg ? `<div class="extended-snow-line">${snowLineMsg}</div>` : ''}
                     </div>
                 `;

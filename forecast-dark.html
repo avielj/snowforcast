@@ -598,6 +598,14 @@
         padding: 10px 6px;
         font-size: 0.95em;
     }
+    .condition-label {
+        font-size: 0.95em;
+        font-weight: 500;
+    }
+    .condition-value {
+        font-size: 1em;
+        font-weight: 400;
+    }
     .altitude-section {
         margin-top: 10px;
         padding: 10px;
@@ -616,6 +624,17 @@
     .day-card {
         min-width: 180px;
         font-size: 0.95em;
+    }
+    .forecast-table-scroll {
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+        overflow-x: auto;
+        padding-bottom: 10px;
+        scroll-snap-type: x mandatory;
+    }
+    .forecast-table-scroll > .day-card {
+        scroll-snap-align: start;
     }
 }
 
@@ -1376,9 +1395,9 @@
                             <h2>${day.name}</h2>
                             <div class="date">${day.date}</div>
                         </div>
-                        <div class="day-summary">
+                        <div class="day-summary" style="margin-bottom:8px;">
                             <div class="snow-total ${snowClass}">${snowIcon} ${totalSnow.toFixed(0)} cm</div>
-                            <div class="day-info">${minTemp !== null && maxTemp !== null ? `${minTemp}° to ${maxTemp}°C` : ''}${hasRain ? ' • Rain' : ''}</div>
+                            <div class="day-info" style="margin-top:6px;">${minTemp !== null && maxTemp !== null ? `${minTemp}° to ${maxTemp}°C` : ''}${hasRain ? ' • Rain' : ''}</div>
                         </div>
                         <div class="details-matrix">
                             <div class="details-row">

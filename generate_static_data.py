@@ -19,6 +19,158 @@ except ImportError:
     OPENWEATHER_AVAILABLE = False
     print("OpenWeather integration not available, using snow-forecast.com only")
 
+def fetch_valthorens_conditions():
+    """Fetch current snow conditions from Val Thorens official website"""
+    url = 'https://www.valthorens.com/infos-neige/'
+    headers = {
+        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+        'accept-language': 'en-US,en;q=0.9',
+        'cache-control': 'no-cache',
+        'dnt': '1',
+        'pragma': 'no-cache',
+        'sec-ch-ua': '"Chromium";v="142", "Google Chrome";v="142"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"macOS"',
+        'sec-fetch-dest': 'document',
+        'sec-fetch-mode': 'navigate',
+        'sec-fetch-site': 'none',
+        'sec-fetch-user': '?1',
+        'upgrade-insecure-requests': '1',
+        'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36'
+    }
+    
+    cookies = {
+        'pll_language': 'en',  # Use English version
+        'iris_eco_config': '{"isEcoModeActive":false,"isEcoBarHidden":true}'
+    }
+    
+    try:
+        response = requests.get(url, headers=headers, cookies=cookies, timeout=30)
+        soup = BeautifulSoup(response.content, 'html.parser')
+        
+        conditions = {}
+        
+        # Look for the snow info table
+        # The data might be in a specific structure - let's search for it
+        table_rows = soup.find_all('tr')
+        
+        for row in table_rows:
+            th = row.find('th')
+            td = row.find('td')
+            if th and td:
+                field_name = th.get_text(strip=True)
+                field_value = td.get_text(strip=True)
+                
+                # Map the fields based on the text content
+                if 'Last snowfall' in field_name or 'snowfall' in field_name.lower():
+                    if 'Last' in field_name:
+                        conditions['Last snowfall (VT)'] = field_value
+                elif 'Snow cover' in field_name or ('Bottom' in field_value and 'Top' in field_value):
+                    conditions['Snow cover (VT)'] = field_value
+                elif 'Total snow depth' in field_name:
+                    conditions['Total snow depth (VT)'] = field_value
+                elif 'Snow quality' in field_name:
+                    conditions['Snow quality'] = field_value
+                elif 'Avalanche risk' in field_name:
+                    conditions['Avalanche risk'] = field_value
+                elif 'state of the sky' in field_name.lower() or 'weather' in field_name.lower():
+                    conditions['Current weather'] = field_value
+                elif 'Temperature' in field_name and 'Isothermal' not in field_name:
+                    conditions['Current temp'] = field_value
+                elif 'Isothermal' in field_name:
+                    conditions['Freezing level'] = field_value
+                elif 'Wind' in field_name:
+                    conditions['Current wind'] = field_value
+        
+        if conditions:
+            print(f"  ✓ Fetched {len(conditions)} official conditions from Val Thorens")
+        
+        return conditions if conditions else None
+    except Exception as e:
+        print(f"  ⚠ Could not fetch Val Thorens official conditions: {e}")
+        import traceback
+        traceback.print_exc()
+        return None
+
+def fetch_openmeteo_extended(latitude, longitude, resort_name, elevation_m=2800):
+    """
+    Fetch 16-day extended forecast from OpenMeteo with elevation and freezing level
+    """
+    url = "https://api.open-meteo.com/v1/forecast"
+    
+    params = {
+        "latitude": latitude,
+        "longitude": longitude,
+        "elevation": elevation_m,  # Specify elevation for more accurate forecast
+        "hourly": [
+            "freezing_level_height"
+        ],
+        "daily": [
+            "temperature_2m_max",
+            "temperature_2m_min",
+            "precipitation_sum",
+            "rain_sum",
+            "snowfall_sum",
+            "weathercode"
+        ],
+        "timezone": "Europe/Paris",
+        "forecast_days": 16
+    }
+    
+    try:
+        response = requests.get(url, params=params, timeout=30)
+        response.raise_for_status()
+        data = response.json()
+        
+        extended_forecast = []
+        daily = data.get("daily", {})
+        hourly = data.get("hourly", {})
+        
+        for i in range(len(daily.get("time", []))):
+            date = datetime.fromisoformat(daily["time"][i])
+            
+            # Calculate freezing level range for this day (min/max from hourly data)
+            day_start = i * 24
+            day_end = min((i + 1) * 24, len(hourly.get("freezing_level_height", [])))
+            
+            freeze_levels = []
+            if "freezing_level_height" in hourly:
+                for h in range(day_start, day_end):
+                    if h < len(hourly["freezing_level_height"]):
+                        fl = hourly["freezing_level_height"][h]
+                        if fl is not None:
+                            freeze_levels.append(fl)
+            
+            freeze_min = min(freeze_levels) if freeze_levels else None
+            freeze_max = max(freeze_levels) if freeze_levels else None
+            
+            extended_forecast.append({
+                "date": date.strftime("%Y-%m-%d"),
+                "day_name": date.strftime("%A"),
+                "temp_max": daily["temperature_2m_max"][i],
+                "temp_min": daily["temperature_2m_min"][i],
+                "precipitation": daily["precipitation_sum"][i],
+                "rain": daily.get("rain_sum", [0])[i],
+                "snowfall": daily["snowfall_sum"][i],
+                "weather_code": daily["weathercode"][i],
+                "freezing_level_min": freeze_min,
+                "freezing_level_max": freeze_max
+            })
+        
+        print(f"  ✓ Fetched {len(extended_forecast)}-day extended forecast for {resort_name} @ {elevation_m}m")
+        
+        return {
+            "extended_forecast": extended_forecast,
+            "last_updated": datetime.now().isoformat(),
+            "source": "OpenMeteo",
+            "elevation": data.get("elevation"),
+            "elevation_used": elevation_m
+        }
+        
+    except Exception as e:
+        print(f"  ⚠ Could not fetch OpenMeteo extended forecast for {resort_name}: {e}")
+        return None
+
 def fetch_forecast(resort='Val-Thorens', elevation='bot'):
     """Fetch forecast data for a specific resort and elevation"""
     url = f'https://www.snow-forecast.com/resorts/{resort}/6day/{elevation}'
@@ -207,6 +359,12 @@ def main():
     # Create data directory if it doesn't exist
     os.makedirs('data', exist_ok=True)
     
+    # Resort coordinates for extended forecast
+    resort_coords = {
+        'Val-Thorens': {'lat': 45.2973, 'lon': 6.5801},
+        'Cervinia': {'lat': 45.9333, 'lon': 7.6294}
+    }
+    
     resorts = {
         'Val-Thorens': ['bot', 'mid', 'top'],
         'Cervinia': ['bot', 'mid', 'top']
@@ -259,6 +417,15 @@ def main():
                 print(f"  ✗ Error fetching {resort} - {elevation}: {e}")
                 import traceback
                 traceback.print_exc()
+        
+        # Fetch 16-day extended forecast for this resort (once per resort)
+        # Use mid-elevation (2800m) as reference point
+        print(f"\nFetching extended forecast for {resort}...")
+        coords = resort_coords.get(resort)
+        if coords:
+            extended = fetch_openmeteo_extended(coords['lat'], coords['lon'], resort, elevation_m=2800)
+            if extended:
+                all_data[resort]['extended'] = extended
     
     # Save combined file
     with open('data/all-forecasts.json', 'w') as f:

@@ -552,6 +552,83 @@
             color: #2c3e50;
         }
         
+        /* Extended Forecast Styles */
+        .extended-forecast {
+            margin-top: 40px;
+            padding: 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .extended-forecast h3 {
+            color: white;
+            margin: 0 0 10px 0;
+            font-size: 1.4em;
+        }
+
+        .extended-note {
+            color: rgba(255,255,255,0.8);
+            font-size: 0.9em;
+            margin-bottom: 20px;
+        }
+
+        .extended-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+        }
+
+        .extended-day {
+            background: rgba(255,255,255,0.95);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .extended-day:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .extended-day-name {
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .extended-date {
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .extended-weather {
+            font-size: 2em;
+            margin: 10px 0;
+        }
+
+        .extended-temp {
+            font-weight: 500;
+            color: #333;
+            margin: 5px 0;
+        }
+
+        .extended-snow {
+            color: #2196F3;
+            font-weight: 600;
+            margin-top: 5px;
+            font-size: 0.9em;
+        }
+        
+        .extended-snow-line {
+            color: #9C27B0;
+            font-size: 0.75em;
+            margin-top: 3px;
+            font-style: italic;
+        }
+        
         @media (max-width: 1400px) {
             .forecast-grid {
                 grid-template-columns: repeat(4, 1fr);
@@ -571,6 +648,15 @@
             
             .header h1 {
                 font-size: 2em;
+            }
+            
+            .extended-grid {
+                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+                gap: 10px;
+            }
+            
+            .extended-day {
+                padding: 10px;
             }
         }
         
@@ -985,6 +1071,9 @@
             // Display detailed forecast for current elevation
             displayDetailedForecast(data);
             
+            // Display extended 16-day forecast
+            displayExtendedForecast();
+            
             // Update last updated time - use the most recent update from any elevation
             let mostRecentUpdate = data.last_updated;
             if (allData) {
@@ -1123,6 +1212,107 @@
             
             html += '</div>';
             content.innerHTML = html;
+        }
+        
+        function displayExtendedForecast() {
+            // Get extended forecast from current resort data
+            const resortData = allForecastsData[currentResort];
+            if (!resortData || !resortData.extended || !resortData.extended.extended_forecast) {
+                return;
+            }
+            
+            const forecasts = resortData.extended.extended_forecast;
+            const today = new Date();
+            const weekFromNow = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+            
+            // Filter to show days 8-16
+            const longRange = forecasts.filter(day => {
+                const dayDate = new Date(day.date);
+                return dayDate > weekFromNow;
+            });
+            
+            if (longRange.length === 0) return;
+            
+            const content = document.getElementById('forecast-content');
+            
+            let html = `
+                <div class="extended-forecast">
+                    <h3>📅 Extended Outlook (Days 8-16)</h3>
+                    <div class="extended-note">
+                        <em>Long-range forecast from OpenMeteo - trends only, subject to change</em>
+                    </div>
+                    <div class="extended-grid">
+            `;
+            
+            longRange.forEach(day => {
+                const snowIcon = day.snowfall > 0 ? '❄️' : '';
+                const weatherEmoji = getWeatherCodeEmoji(day.weather_code);
+                const resortElevation = 2300; // Val Thorens bottom elevation
+                
+                // Determine snow line message
+                let snowLineMsg = '';
+                if (day.snowfall > 0 && day.freezing_level_min && day.freezing_level_max) {
+                    if (day.freezing_level_min < resortElevation - 200) {
+                        snowLineMsg = 'Snow to resort level';
+                    } else if (day.freezing_level_max > resortElevation + 500) {
+                        snowLineMsg = `Rain below ${Math.round(day.freezing_level_min)}m`;
+                    } else {
+                        snowLineMsg = `Snow line ${Math.round(day.freezing_level_min)}-${Math.round(day.freezing_level_max)}m`;
+                    }
+                } else if (day.rain > 0 && day.snowfall === 0) {
+                    snowLineMsg = 'Rain';
+                }
+                
+                html += `
+                    <div class="extended-day">
+                        <div class="extended-day-name">${day.day_name}</div>
+                        <div class="extended-date">${new Date(day.date).toLocaleDateString('en-GB', {day: 'numeric', month: 'short'})}</div>
+                        <div class="extended-weather">${weatherEmoji}</div>
+                        <div class="extended-temp">${Math.round(day.temp_min)}° to ${Math.round(day.temp_max)}°</div>
+                        ${day.snowfall > 0 ? `<div class="extended-snow">${snowIcon} ${Math.round(day.snowfall)}cm</div>` : '<div class="extended-snow">-</div>'}
+                        ${snowLineMsg ? `<div class="extended-snow-line">${snowLineMsg}</div>` : ''}
+                    </div>
+                `;
+            });
+            
+            html += `
+                    </div>
+                </div>
+            `;
+            
+            content.insertAdjacentHTML('beforeend', html);
+        }
+        
+        function getWeatherCodeEmoji(code) {
+            // WMO Weather codes to emojis
+            const weatherCodes = {
+                0: '☀️',      // Clear sky
+                1: '🌤️',     // Mainly clear
+                2: '⛅',     // Partly cloudy
+                3: '☁️',     // Overcast
+                45: '🌫️',    // Fog
+                48: '🌫️',    // Depositing rime fog
+                51: '🌧️',    // Light drizzle
+                53: '🌧️',    // Moderate drizzle
+                55: '🌧️',    // Dense drizzle
+                61: '🌧️',    // Slight rain
+                63: '🌧️',    // Moderate rain
+                65: '🌧️',    // Heavy rain
+                71: '🌨️',    // Slight snow
+                73: '🌨️',    // Moderate snow
+                75: '❄️',    // Heavy snow
+                77: '❄️',    // Snow grains
+                80: '🌦️',    // Slight rain showers
+                81: '🌧️',    // Moderate rain showers
+                82: '🌧️',    // Violent rain showers
+                85: '🌨️',    // Slight snow showers
+                86: '❄️',    // Heavy snow showers
+                95: '⛈️',    // Thunderstorm
+                96: '⛈️',    // Thunderstorm with hail
+                99: '⛈️'     // Thunderstorm with heavy hail
+            };
+            
+            return weatherCodes[code] || '🌤️';
         }
         
         function createPeriodSection(period, data) {

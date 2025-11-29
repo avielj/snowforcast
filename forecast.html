@@ -671,7 +671,7 @@
     <div class="container">
         <div class="header">
             <h1>❄️ <span id="resort-name">Val Thorens</span> Snow Forecast</h1>
-            <div class="subtitle">6-Day Weather Forecast</div>
+            <div class="subtitle">7-Day Weather Forecast</div>
         </div>
         
         <div class="elevation-links">
@@ -1229,12 +1229,14 @@
             
             const forecasts = elevationData.extended.extended_forecast;
             const today = new Date();
-            const weekFromNow = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+            today.setHours(0, 0, 0, 0); // Start of today
+            const day7 = new Date(today.getTime() + 6 * 24 * 60 * 60 * 1000); // Day 7 is 6 days from today (inclusive)
             
-            // Filter to show days 8-16
+            // Filter to show days 8-16 (starting from day after the 7-day forecast)
             const longRange = forecasts.filter(day => {
                 const dayDate = new Date(day.date);
-                return dayDate > weekFromNow;
+                dayDate.setHours(0, 0, 0, 0);
+                return dayDate > day7;
             });
             
             if (longRange.length === 0) return;

@@ -346,7 +346,6 @@
             overflow: hidden;
             box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s, box-shadow 0.3s;
-            padding: 15px;
         }
         
         .day-card:hover {
@@ -355,57 +354,45 @@
         }
         
         .day-header {
-            text-align: left;
-            margin-bottom: 10px;
-            border-bottom: 2px solid #e8e8e8;
-            padding-bottom: 8px;
+            background: linear-gradient(135deg, #4a90e2, #357abd);
+            color: white;
+            padding: 12px;
+            text-align: center;
         }
         
         .day-header h2 {
-            font-size: 1.2em;
-            color: #2c3e50;
-            margin-bottom: 2px;
+            font-size: 1.1em;
+            margin-bottom: 3px;
         }
         
         .day-header .date {
-            font-size: 1.3em;
-            color: #2c3e50;
-            font-weight: bold;
-        }
-        
-        .weather-type {
-            font-size: 1em;
-            font-weight: 600;
-            color: #4a90e2;
-            margin-bottom: 8px;
-        }
-        
-        .weather-description {
-            font-size: 0.95em;
-            color: #555;
-            line-height: 1.5;
-            margin-bottom: 10px;
-        }
-        
-        .snow-info {
-            font-weight: 600;
-            color: #2980b9;
-            margin-bottom: 5px;
-        }
-        
-        .snow-line-info {
             font-size: 0.9em;
-            color: #666;
-            font-style: italic;
-            margin-bottom: 5px;
+            opacity: 0.9;
         }
         
-        .temp-range {
-            font-size: 0.95em;
-            color: #333;
-            margin-top: 10px;
-            padding-top: 8px;
-            border-top: 1px solid #e8e8e8;
+        .day-summary {
+            background: #f0f8ff;
+            padding: 8px;
+            border-bottom: 2px solid #4a90e2;
+            text-align: center;
+        }
+        
+        .snow-total {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #3498db;
+            margin-bottom: 3px;
+        }
+        
+        .snow-total.heavy {
+            color: #2980b9;
+            font-size: 1.4em;
+        }
+        
+        .day-info {
+            font-size: 0.7em;
+            color: #7f8c8d;
+            margin-top: 3px;
         }
         
         .period-section {
@@ -920,71 +907,6 @@
             }
         }
         
-        function determineWeatherType(conditions, totalSnow, hasRain) {
-            const conditionsStr = conditions.join(' ');
-            const hasSnow = totalSnow > 0;
-            
-            let type = '';
-            let description = '';
-            let snowLine = '';
-            
-            // Determine weather type
-            if (hasSnow && hasRain) {
-                if (conditionsStr.includes('shower')) {
-                    type = 'Shwrs';
-                    description = 'Snow showers at altitude, rain showers below.';
-                } else {
-                    type = 'Mixed';
-                    description = 'Light snow at altitude, light rain below.';
-                }
-                snowLine = 'Snow Line from 2,829m to 2,629m, with rain below.';
-            } else if (hasSnow) {
-                if (totalSnow >= 10) {
-                    type = 'Heavy Snow';
-                    description = 'Heavy snow.';
-                    snowLine = 'Snow falling to resort level.';
-                } else if (conditionsStr.includes('shower')) {
-                    type = 'Lt Snow Shwrs';
-                    description = 'Light snow showers.';
-                    snowLine = 'Snow Line from 2,489m to resort level.';
-                } else {
-                    type = 'Light Snow';
-                    description = 'Light snow.';
-                    snowLine = 'Snow falling to resort level.';
-                }
-            } else if (hasRain) {
-                if (conditionsStr.includes('drizzle')) {
-                    type = 'Lt Drizzle';
-                    description = 'Cloudy at altitude, light drizzle below.';
-                    snowLine = 'Snow Line from 2,589m to 2,259m, with rain below.';
-                } else if (conditionsStr.includes('shower')) {
-                    type = 'Rain Shwrs';
-                    description = 'Rain showers.';
-                } else {
-                    type = 'Rain';
-                    description = 'Rainy.';
-                }
-            } else if (conditionsStr.includes('clear') || conditionsStr.includes('sunny')) {
-                type = 'Clear';
-                if (conditionsStr.includes('part') || conditionsStr.includes('spells')) {
-                    description = 'Clear spells.';
-                } else {
-                    description = 'Clear sky.';
-                }
-            } else if (conditionsStr.includes('cloud') || conditionsStr.includes('overcast')) {
-                type = 'Cloud';
-                description = 'Cloudy.';
-            } else if (conditionsStr.includes('fair') || conditionsStr.includes('partly')) {
-                type = 'Fair';
-                description = 'Fair at altitude, clear sky below.';
-            } else {
-                type = 'Cloud';
-                description = 'Cloudy.';
-            }
-            
-            return { type, description, snowLine };
-        }
-        
         function displayForecast(data, allData) {
             const content = document.getElementById('forecast-content');
             const lastUpdated = document.getElementById('last-updated');
@@ -1230,23 +1152,16 @@
             let html = `<div class="forecast-grid ${forecastVisible ? 'visible' : ''}">`;
             
             for (const day of data.days) {
-                // Calculate total snow for the day and analyze conditions
+                // Calculate total snow for the day
                 let totalSnow = 0;
-                let minSnow = Infinity;
-                let maxSnow = 0;
                 let maxTemp = null;
                 let minTemp = null;
                 let hasRain = false;
-                let conditions = [];
                 
                 ['am', 'pm', 'night'].forEach(period => {
                     if (day[period]) {
                         const snow = parseFloat(day[period].snow) || 0;
                         totalSnow += snow;
-                        if (snow > 0) {
-                            if (snow < minSnow) minSnow = snow;
-                            if (snow > maxSnow) maxSnow = snow;
-                        }
                         
                         const temp = parseFloat(day[period].temperature);
                         if (!isNaN(temp)) {
@@ -1256,27 +1171,11 @@
                         
                         const rain = parseFloat(day[period].rain) || 0;
                         if (rain > 0) hasRain = true;
-                        
-                        if (day[period].condition) {
-                            conditions.push(day[period].condition.toLowerCase());
-                        }
                     }
                 });
                 
-                // Determine weather type and description
-                const weatherInfo = determineWeatherType(conditions, totalSnow, hasRain);
-                
-                // Format snow amount display
-                let snowDisplay = '';
-                if (totalSnow > 0) {
-                    if (minSnow !== Infinity && minSnow !== maxSnow) {
-                        snowDisplay = `${Math.round(minSnow)}cm to ${Math.round(maxSnow)}cm New Snow`;
-                    } else if (totalSnow >= 3) {
-                        snowDisplay = `${Math.round(totalSnow)}cm New Snow`;
-                    } else {
-                        snowDisplay = `up to ${Math.round(totalSnow)}cm New Snow`;
-                    }
-                }
+                const snowClass = totalSnow >= 10 ? 'heavy' : '';
+                const snowIcon = totalSnow > 0 ? '❄️' : '';
                 
                 html += `
                     <div class="day-card">
@@ -1284,16 +1183,33 @@
                             <h2>${day.name}</h2>
                             <div class="date">${day.date}</div>
                         </div>
-                        <div class="weather-type">${weatherInfo.type}</div>
-                        ${snowDisplay ? `<div class="snow-info">${snowDisplay}</div>` : ''}
-                        <div class="weather-description">${weatherInfo.description}</div>
-                        ${weatherInfo.snowLine ? `<div class="snow-line-info">${weatherInfo.snowLine}</div>` : ''}
-                        <div class="temp-range">
-                            ${maxTemp !== null ? `Max ${maxTemp}℃` : ''}
-                            ${minTemp !== null ? `<br>Min ${minTemp}℃` : ''}
+                        <div class="day-summary">
+                            <div class="snow-total ${snowClass}">
+                                ${snowIcon} ${totalSnow.toFixed(0)} cm
+                            </div>
+                            <div class="day-info">
+                                ${minTemp !== null && maxTemp !== null ? `${minTemp}° to ${maxTemp}°C` : ''}
+                                ${hasRain ? ' • Rain' : ''}
+                            </div>
                         </div>
-                    </div>
                 `;
+                
+                // AM period
+                if (day.am) {
+                    html += createPeriodSection('AM', day.am);
+                }
+                
+                // PM period
+                if (day.pm) {
+                    html += createPeriodSection('PM', day.pm);
+                }
+                
+                // Night period
+                if (day.night) {
+                    html += createPeriodSection('night', day.night);
+                }
+                
+                html += '</div>';
             }
             
             html += '</div>';
@@ -1325,118 +1241,52 @@
             
             const content = document.getElementById('forecast-content');
             
-            // Use the forecast-grid for consistency
-            let html = `<div class="forecast-grid visible" style="margin-top: 30px;">`;
+            let html = `
+                <div class="extended-forecast">
+                    <h3>📅 Extended Outlook (Days 8-16)</h3>
+                    <div class="extended-note">
+                        <em>Long-range forecast from OpenMeteo - trends only, subject to change</em>
+                    </div>
+                    <div class="extended-grid">
+            `;
             
             longRange.forEach(day => {
-                const weatherType = getWeatherTypeName(day.weather_code);
-                const weatherDesc = getWeatherDescription(day.weather_code, day.snowfall, day.rain);
-                
-                // Get current elevation info for snow line calculation
-                const elevationHeights = {
-                    'Val-Thorens': { bot: 2300, mid: 2800, top: 3230 },
-                    'Cervinia': { bot: 2050, mid: 2900, top: 3480 }
-                };
-                const resortElevation = elevationHeights[currentResort]?.[currentElevation] || 2300;
+                const snowIcon = day.snowfall > 0 ? '❄️' : '';
+                const weatherEmoji = getWeatherCodeEmoji(day.weather_code);
+                const resortElevation = 2300; // Val Thorens bottom elevation
                 
                 // Determine snow line message
                 let snowLineMsg = '';
                 if (day.snowfall > 0 && day.freezing_level_min && day.freezing_level_max) {
-                    const minFreeze = Math.round(day.freezing_level_min);
-                    const maxFreeze = Math.round(day.freezing_level_max);
-                    
                     if (day.freezing_level_min < resortElevation - 200) {
-                        snowLineMsg = 'Snow falling to resort level.';
+                        snowLineMsg = 'Snow to resort level';
                     } else if (day.freezing_level_max > resortElevation + 500) {
-                        snowLineMsg = `Snow Line from ${maxFreeze}m to ${minFreeze}m, with rain below.`;
+                        snowLineMsg = `Rain below ${Math.round(day.freezing_level_min)}m`;
                     } else {
-                        snowLineMsg = `Snow Line from ${maxFreeze}m to ${minFreeze}m, with rain below.`;
+                        snowLineMsg = `Snow line ${Math.round(day.freezing_level_min)}-${Math.round(day.freezing_level_max)}m`;
                     }
+                } else if (day.rain > 0 && day.snowfall === 0) {
+                    snowLineMsg = 'Rain';
                 }
-                
-                // Format snow amount
-                let snowDisplay = '';
-                if (day.snowfall > 0) {
-                    const snowCm = day.snowfall.toFixed(1);
-                    if (day.snowfall >= 3) {
-                        snowDisplay = `${Math.round(day.snowfall)}cm New Snow`;
-                    } else {
-                        snowDisplay = `up to ${Math.round(day.snowfall)}cm New Snow`;
-                    }
-                }
-                
-                const dayDate = new Date(day.date);
-                const dayName = dayDate.toLocaleDateString('en-GB', { weekday: 'short' });
-                const dateNum = dayDate.toLocaleDateString('en-GB', { day: 'numeric' });
                 
                 html += `
-                    <div class="day-card">
-                        <div class="day-header">
-                            <h2>${dayName}</h2>
-                            <div class="date">${dateNum}</div>
-                        </div>
-                        <div class="weather-type">${weatherType}</div>
-                        ${snowDisplay ? `<div class="snow-info">${snowDisplay}</div>` : ''}
-                        <div class="weather-description">${weatherDesc}</div>
-                        ${snowLineMsg ? `<div class="snow-line-info">${snowLineMsg}</div>` : ''}
-                        <div class="temp-range">
-                            Max ${Math.round(day.temp_max)}℃<br>
-                            Min ${Math.round(day.temp_min)}℃
-                        </div>
+                    <div class="extended-day">
+                        <div class="extended-day-name">${day.day_name}</div>
+                        <div class="extended-date">${new Date(day.date).toLocaleDateString('en-GB', {day: 'numeric', month: 'short'})}</div>
+                        <div class="extended-weather">${weatherEmoji}</div>
+                        <div class="extended-temp">${Math.round(day.temp_min)}° to ${Math.round(day.temp_max)}°</div>
+                        ${day.snowfall > 0 ? `<div class="extended-snow">${snowIcon} ${day.snowfall.toFixed(1)}cm</div>` : '<div class="extended-snow">-</div>'}
+                        ${snowLineMsg ? `<div class="extended-snow-line">${snowLineMsg}</div>` : ''}
                     </div>
                 `;
             });
             
-            html += '</div>';
+            html += `
+                    </div>
+                </div>
+            `;
+            
             content.insertAdjacentHTML('beforeend', html);
-        }
-        
-        function getWeatherTypeName(code) {
-            const types = {
-                0: 'Clear', 1: 'Clear', 2: 'Fair', 3: 'Cloud',
-                45: 'Fog', 48: 'Fog',
-                51: 'Lt Drizzle', 53: 'Drizzle', 55: 'Drizzle',
-                61: 'Rain', 63: 'Rain', 65: 'Heavy Rain',
-                71: 'Light Snow', 73: 'Snow', 75: 'Heavy Snow', 77: 'Snow',
-                80: 'Rain Shwrs', 81: 'Rain Shwrs', 82: 'Heavy Rain',
-                85: 'Lt Snow Shwrs', 86: 'Snow Shwrs',
-                95: 'Storm', 96: 'Storm', 99: 'Storm'
-            };
-            return types[code] || 'Cloud';
-        }
-        
-        function getWeatherDescription(code, snowfall, rain) {
-            if (code >= 71 && code <= 77 && snowfall > 0) {
-                if (rain > 0) {
-                    return 'Light snow at altitude, light rain below.';
-                }
-                return code >= 75 ? 'Heavy snow.' : 'Light snow.';
-            }
-            if (code >= 85 && code <= 86) {
-                return rain > 0 ? 'Snow showers at altitude, rain showers below.' : 'Light snow showers.';
-            }
-            if (code >= 51 && code <= 55) {
-                return 'Cloudy at altitude, light drizzle below.';
-            }
-            if (code >= 61 && code <= 65) {
-                return code >= 65 ? 'Heavy rain.' : 'Rainy.';
-            }
-            if (code >= 80 && code <= 82) {
-                return 'Rain showers.';
-            }
-            if (code === 0 || code === 1) {
-                return 'Clear sky.';
-            }
-            if (code === 2) {
-                return 'Fair at altitude, clear sky below.';
-            }
-            if (code === 3) {
-                return 'Cloudy.';
-            }
-            if (code >= 95) {
-                return 'Thunderstorms.';
-            }
-            return 'Cloudy.';
         }
         
         function getWeatherCodeEmoji(code) {

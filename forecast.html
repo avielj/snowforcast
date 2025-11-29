@@ -1218,7 +1218,10 @@
             // Get extended forecast from current resort data
             const resortData = allForecastsData[currentResort];
             console.log('displayExtendedForecast called, currentResort:', currentResort);
-            console.log('resortData:', resortData);
+            console.log('allForecastsData keys:', allForecastsData ? Object.keys(allForecastsData) : 'null');
+            console.log('resortData keys:', resortData ? Object.keys(resortData) : 'null');
+            console.log('Has extended?', resortData ? ('extended' in resortData) : 'no resortData');
+            console.log('resortData.extended:', resortData ? resortData.extended : 'no resortData');
             
             if (!resortData || !resortData.extended || !resortData.extended.extended_forecast) {
                 console.log('No extended forecast data available');

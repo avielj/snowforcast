@@ -615,6 +615,13 @@
             margin-bottom: 8px;
             font-style: italic;
         }
+        
+        .extended-description {
+            font-size: 0.8em;
+            color: #666;
+            margin: 5px 0;
+            line-height: 1.3;
+        }
 
         .extended-temp {
             font-weight: 500;
@@ -1260,23 +1267,70 @@
             `;
             
             longRange.forEach(day => {
-                const snowIcon = day.snowfall > 0 ? '❄️' : '';
-                const weatherEmoji = getWeatherCodeEmoji(day.weather_code);
-                const weatherCondition = getWeatherConditionText(day.weather_code);
-                const resortElevation = 2300; // Val Thorens bottom elevation
+                const snowfall = day.snowfall || 0;
+                const rain = day.rain || 0;
+                const hasSnow = snowfall > 0;
+                const hasRain = rain > 0;
                 
-                // Determine snow line message
-                let snowLineMsg = '';
-                if (day.snowfall > 0 && day.freezing_level_min && day.freezing_level_max) {
-                    if (day.freezing_level_min < resortElevation - 200) {
-                        snowLineMsg = 'Snow to resort level';
-                    } else if (day.freezing_level_max > resortElevation + 500) {
-                        snowLineMsg = `Rain below ${Math.round(day.freezing_level_min)}m`;
+                const weatherEmoji = getWeatherCodeEmoji(day.weather_code);
+                let weatherCondition = getWeatherConditionText(day.weather_code);
+                
+                // Get current elevation info for snow line calculation
+                const elevationHeights = {
+                    'Val-Thorens': { bot: 2300, mid: 2800, top: 3230 },
+                    'Cervinia': { bot: 2050, mid: 2900, top: 3480 }
+                };
+                const resortElevation = elevationHeights[currentResort]?.[currentElevation] || 2300;
+                
+                // Better weather condition for mixed rain/snow
+                if (hasSnow && hasRain) {
+                    if (day.weather_code >= 85 && day.weather_code <= 86) {
+                        weatherCondition = 'Shwrs';
                     } else {
-                        snowLineMsg = `Snow line ${Math.round(day.freezing_level_min)}-${Math.round(day.freezing_level_max)}m`;
+                        weatherCondition = 'Lt Snow Shwrs';
                     }
-                } else if (day.rain > 0 && day.snowfall === 0) {
+                }
+                
+                // Determine snow line message and description
+                let snowLineMsg = '';
+                let weatherDesc = '';
+                
+                if (hasSnow && hasRain) {
+                    if (day.weather_code >= 85 && day.weather_code <= 86) {
+                        weatherDesc = 'Snow showers at altitude, rain showers below.';
+                    } else {
+                        weatherDesc = 'Light snow at altitude, light rain showers below.';
+                    }
+                    
+                    if (day.freezing_level_min && day.freezing_level_max) {
+                        const minFreeze = Math.round(day.freezing_level_min);
+                        const maxFreeze = Math.round(day.freezing_level_max);
+                        
+                        if (minFreeze < resortElevation) {
+                            snowLineMsg = `Snow Line from ${maxFreeze}m to resort level.`;
+                        } else {
+                            snowLineMsg = `Snow Line from ${maxFreeze}m to ${minFreeze}m, with rain below.`;
+                        }
+                    }
+                } else if (hasSnow) {
+                    if (day.freezing_level_min && day.freezing_level_min < resortElevation) {
+                        snowLineMsg = 'Snow falling to resort level.';
+                    }
+                } else if (hasRain) {
                     snowLineMsg = 'Rain';
+                }
+                
+                // Format snow amount like J2Ski
+                let snowDisplay = '';
+                if (hasSnow) {
+                    const snowCm = Math.round(snowfall);
+                    if (snowfall < 1) {
+                        snowDisplay = `up to 1cm New Snow`;
+                    } else if (snowfall < 2) {
+                        snowDisplay = `up to ${snowCm + 1}cm New Snow`;
+                    } else {
+                        snowDisplay = `${snowCm}cm New Snow`;
+                    }
                 }
                 
                 html += `
@@ -1285,9 +1339,10 @@
                         <div class="extended-date">${new Date(day.date).toLocaleDateString('en-GB', {day: 'numeric', month: 'short'})}</div>
                         <div class="extended-weather">${weatherEmoji}</div>
                         <div class="extended-condition">${weatherCondition}</div>
-                        <div class="extended-temp">${Math.round(day.temp_min)}° to ${Math.round(day.temp_max)}°</div>
-                        ${day.snowfall > 0 ? `<div class="extended-snow">${snowIcon} ${day.snowfall.toFixed(1)}cm</div>` : '<div class="extended-snow">-</div>'}
+                        ${snowDisplay ? `<div class="extended-snow">${snowDisplay}</div>` : ''}
+                        ${weatherDesc ? `<div class="extended-description">${weatherDesc}</div>` : ''}
                         ${snowLineMsg ? `<div class="extended-snow-line">${snowLineMsg}</div>` : ''}
+                        <div class="extended-temp">Max ${Math.round(day.temp_max)}℃<br>Min ${Math.round(day.temp_min)}℃</div>
                     </div>
                 `;
             });

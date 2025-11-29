@@ -1267,8 +1267,17 @@
             `;
             
             longRange.forEach(day => {
-                const snowfall = day.snowfall || 0;
-                const rain = day.rain || 0;
+                let snowfall = day.snowfall || 0;
+                let rain = day.rain || 0;
+                
+                // If temp is below 0°C and there's rain, convert it to snow
+                const avgTemp = (day.temp_min + day.temp_max) / 2;
+                if (avgTemp < 0 && rain > 0) {
+                    // Convert rain to snow (rough estimate: 10mm rain ≈ 1cm snow)
+                    snowfall += rain / 10;
+                    rain = 0;
+                }
+                
                 const hasSnow = snowfall > 0;
                 const hasRain = rain > 0;
                 

@@ -346,7 +346,7 @@
         
         .chart-wrapper {
             position: relative;
-            height: 300px;
+            height: 400px;
             margin-top: 20px;
         }
         
@@ -875,18 +875,48 @@
             // Prepare data for chart
             const labels = [];
             const snowfallData = [];
+            const temperatureData = [];
+            const weatherEmojis = [];
             const colors = [];
             
             // Add 7-day forecast data
             sevenDayData.forEach(day => {
                 let totalSnow = 0;
+                let maxTemp = null;
+                let conditions = [];
+                
                 ['am', 'pm', 'night'].forEach(period => {
                     if (day[period]) {
                         totalSnow += parseFloat(day[period].snow) || 0;
+                        const temp = parseFloat(day[period].temperature);
+                        if (!isNaN(temp) && (maxTemp === null || temp > maxTemp)) {
+                            maxTemp = temp;
+                        }
+                        if (day[period].condition) {
+                            conditions.push(day[period].condition.toLowerCase());
+                        }
                     }
                 });
+                
+                // Determine emoji from conditions
+                const conditionsStr = conditions.join(' ');
+                let emoji = '☁️'; // default cloudy
+                if (conditionsStr.includes('clear') || conditionsStr.includes('sunny')) {
+                    emoji = '☀️';
+                } else if (conditionsStr.includes('snow')) {
+                    emoji = '❄️';
+                } else if (conditionsStr.includes('rain')) {
+                    emoji = '🌧️';
+                } else if (conditionsStr.includes('fog')) {
+                    emoji = '🌫️';
+                } else if (conditionsStr.includes('part') || conditionsStr.includes('partly')) {
+                    emoji = '⛅';
+                }
+                
                 labels.push(day.name);
                 snowfallData.push(totalSnow);
+                temperatureData.push(maxTemp);
+                weatherEmojis.push(emoji);
                 colors.push('rgba(74, 144, 226, 0.8)'); // Blue for 7-day forecast
             });
             
@@ -903,8 +933,12 @@
                 
                 const date = new Date(day.date);
                 const shortLabel = date.toLocaleDateString('en-GB', {day: 'numeric', month: 'short'});
+                const emoji = getWeatherCodeEmoji(day.weather_code);
+                
                 labels.push(shortLabel);
                 snowfallData.push(snowfall);
+                temperatureData.push(day.temp_max);
+                weatherEmojis.push(emoji);
                 colors.push('rgba(147, 112, 219, 0.7)'); // Purple for extended forecast
             });
             
@@ -927,7 +961,24 @@
                         data: snowfallData,
                         backgroundColor: colors,
                         borderColor: colors.map(c => c.replace('0.8', '1').replace('0.7', '1')),
-                        borderWidth: 2
+                        borderWidth: 2,
+                        yAxisID: 'y',
+                        order: 2
+                    }, {
+                        label: 'Max Temp (°C)',
+                        data: temperatureData,
+                        type: 'line',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                        borderWidth: 3,
+                        pointRadius: 6,
+                        pointHoverRadius: 8,
+                        pointBackgroundColor: 'rgba(255, 99, 132, 1)',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        yAxisID: 'y1',
+                        order: 1,
+                        tension: 0.3
                     }]
                 },
                 options: {
@@ -935,12 +986,29 @@
                     maintainAspectRatio: false,
                     plugins: {
                         legend: {
-                            display: false
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                font: {
+                                    size: 12,
+                                    weight: 'bold'
+                                },
+                                usePointStyle: true,
+                                padding: 15
+                            }
                         },
                         tooltip: {
                             callbacks: {
                                 label: function(context) {
-                                    return context.parsed.y.toFixed(1) + ' cm';
+                                    if (context.dataset.label === 'Snowfall (cm)') {
+                                        return '❄️ ' + context.parsed.y.toFixed(1) + ' cm';
+                                    } else {
+                                        return '🌡️ ' + context.parsed.y.toFixed(1) + '°C';
+                                    }
+                                },
+                                title: function(context) {
+                                    const index = context[0].dataIndex;
+                                    return weatherEmojis[index] + ' ' + context[0].label;
                                 }
                             }
                         }
@@ -948,21 +1016,58 @@
                     scales: {
                         y: {
                             beginAtZero: true,
+                            position: 'left',
                             title: {
                                 display: true,
                                 text: 'Snowfall (cm)',
                                 font: {
                                     size: 14,
                                     weight: 'bold'
-                                }
+                                },
+                                color: 'rgba(74, 144, 226, 1)'
                             },
                             ticks: {
                                 callback: function(value) {
                                     return value + ' cm';
-                                }
+                                },
+                                color: 'rgba(74, 144, 226, 1)'
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        y1: {
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'Max Temperature (°C)',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                },
+                                color: 'rgba(255, 99, 132, 1)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '°C';
+                                },
+                                color: 'rgba(255, 99, 132, 1)'
+                            },
+                            grid: {
+                                drawOnChartArea: false
                             }
                         },
                         x: {
+                            ticks: {
+                                callback: function(value, index) {
+                                    return weatherEmojis[index] + '\n' + this.getLabelForValue(value);
+                                },
+                                font: {
+                                    size: 11
+                                },
+                                maxRotation: 0,
+                                minRotation: 0
+                            },
                             title: {
                                 display: true,
                                 text: 'Date',

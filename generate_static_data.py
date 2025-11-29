@@ -362,12 +362,36 @@ def main():
     # Resort coordinates for extended forecast
     resort_coords = {
         'Val-Thorens': {'lat': 45.2973, 'lon': 6.5801},
-        'Cervinia': {'lat': 45.9333, 'lon': 7.6294}
+        'Cervinia': {'lat': 45.9333, 'lon': 7.6294},
+        'Valtournenche': {'lat': 45.8833, 'lon': 7.6167},
+        'Via-Lattea': {'lat': 45.0, 'lon': 6.8833},  # Sestriere
+        'Monterosa-Ski': {'lat': 45.8333, 'lon': 7.7167}  # Champoluc
+    }
+    
+    # Elevation heights in meters for each resort
+    elevation_heights = {
+        'Val-Thorens': {'bot': 2300, 'mid': 2800, 'top': 3230},
+        'Cervinia': {'bot': 2050, 'mid': 2900, 'top': 3480},
+        'Valtournenche': {'bot': 1524, 'mid': 2200, 'top': 2900},
+        'Via-Lattea': {'bot': 1350, 'mid': 2100, 'top': 2823},
+        'Monterosa-Ski': {'bot': 1212, 'mid': 2200, 'top': 3275}
+    }
+    
+    # Map internal keys to snow-forecast.com resort names
+    snow_forecast_names = {
+        'Val-Thorens': 'Val-Thorens',
+        'Cervinia': 'Cervinia',
+        'Valtournenche': 'Valtournenche',
+        'Via-Lattea': 'Sestriere',
+        'Monterosa-Ski': 'Champoluc'
     }
     
     resorts = {
         'Val-Thorens': ['bot', 'mid', 'top'],
-        'Cervinia': ['bot', 'mid', 'top']
+        'Cervinia': ['bot', 'mid', 'top'],
+        'Valtournenche': ['bot', 'mid', 'top'],
+        'Via-Lattea': ['bot', 'mid', 'top'],
+        'Monterosa-Ski': ['bot', 'mid', 'top']
     }
     
     # Initialize OpenWeather API if available
@@ -388,8 +412,11 @@ def main():
         for elevation in elevations:
             print(f"\nFetching {resort} - {elevation}...")
             try:
+                # Get the snow-forecast.com name for this resort
+                snow_forecast_name = snow_forecast_names.get(resort, resort)
+                
                 # Fetch from snow-forecast.com
-                forecast_data = fetch_forecast(resort=resort, elevation=elevation)
+                forecast_data = fetch_forecast(resort=snow_forecast_name, elevation=elevation)
                 
                 # Try to fetch from OpenWeather and combine
                 if openweather_api and forecast_data:
@@ -417,15 +444,19 @@ def main():
                 print(f"  ✗ Error fetching {resort} - {elevation}: {e}")
                 import traceback
                 traceback.print_exc()
-        
-        # Fetch 16-day extended forecast for this resort (once per resort)
-        # Use mid-elevation (2800m) as reference point
-        print(f"\nFetching extended forecast for {resort}...")
-        coords = resort_coords.get(resort)
-        if coords:
-            extended = fetch_openmeteo_extended(coords['lat'], coords['lon'], resort, elevation_m=2800)
-            if extended:
-                all_data[resort]['extended'] = extended
+            
+            # Fetch 16-day extended forecast for this elevation
+            print(f"  → Fetching extended forecast for {elevation}...")
+            coords = resort_coords.get(resort)
+            elev_height = elevation_heights.get(resort, {}).get(elevation)
+            if coords and elev_height:
+                extended = fetch_openmeteo_extended(coords['lat'], coords['lon'], resort, elevation_m=elev_height)
+                if extended:
+                    # Store extended forecast within the elevation data
+                    if elevation in all_data[resort]:
+                        all_data[resort][elevation]['extended'] = extended
+                    else:
+                        all_data[resort][elevation] = {'extended': extended}
     
     # Save combined file
     with open('data/all-forecasts.json', 'w') as f:

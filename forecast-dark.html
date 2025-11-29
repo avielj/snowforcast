@@ -1,3 +1,30 @@
+        .snowfall-chart-container {
+            width: 100%;
+            max-width: 100vw;
+            overflow-x: auto;
+        }
+        .chart-wrapper {
+            width: 100%;
+            min-width: 0;
+            overflow-x: auto;
+        }
+        #snowfallChart {
+            width: 100% !important;
+            max-width: 600px;
+            height: 240px !important;
+            min-width: 320px;
+            display: block;
+            margin: 0 auto;
+        }
+        @media (max-width: 700px) {
+            #snowfallChart {
+                max-width: 98vw;
+                height: 180px !important;
+            }
+            .chart-wrapper {
+                padding: 0 2vw;
+            }
+        }
 <!DOCTYPE html>
 <html lang="en">
 <head>

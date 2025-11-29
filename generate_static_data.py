@@ -363,7 +363,6 @@ def main():
     resort_coords = {
         'Val-Thorens': {'lat': 45.2973, 'lon': 6.5801},
         'Cervinia': {'lat': 45.9333, 'lon': 7.6294},
-        'Valtournenche': {'lat': 45.8833, 'lon': 7.6167},
         'Via-Lattea': {'lat': 45.0, 'lon': 6.8833},  # Sestriere
         'Monterosa-Ski': {'lat': 45.8333, 'lon': 7.7167}  # Champoluc
     }
@@ -372,7 +371,6 @@ def main():
     elevation_heights = {
         'Val-Thorens': {'bot': 2300, 'mid': 2800, 'top': 3230},
         'Cervinia': {'bot': 2050, 'mid': 2900, 'top': 3480},
-        'Valtournenche': {'bot': 1524, 'mid': 2200, 'top': 2900},
         'Via-Lattea': {'bot': 1350, 'mid': 2100, 'top': 2823},
         'Monterosa-Ski': {'bot': 1212, 'mid': 2200, 'top': 3275}
     }
@@ -381,7 +379,6 @@ def main():
     snow_forecast_names = {
         'Val-Thorens': 'Val-Thorens',
         'Cervinia': 'Cervinia',
-        'Valtournenche': 'Valtournenche',
         'Via-Lattea': 'Sestriere',
         'Monterosa-Ski': 'Champoluc'
     }
@@ -389,7 +386,6 @@ def main():
     resorts = {
         'Val-Thorens': ['bot', 'mid', 'top'],
         'Cervinia': ['bot', 'mid', 'top'],
-        'Valtournenche': ['bot', 'mid', 'top'],
         'Via-Lattea': ['bot', 'mid', 'top'],
         'Monterosa-Ski': ['bot', 'mid', 'top']
     }

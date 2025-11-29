@@ -608,6 +608,13 @@
             font-size: 2em;
             margin: 10px 0;
         }
+        
+        .extended-condition {
+            font-size: 0.85em;
+            color: #555;
+            margin-bottom: 8px;
+            font-style: italic;
+        }
 
         .extended-temp {
             font-weight: 500;
@@ -1255,6 +1262,7 @@
             longRange.forEach(day => {
                 const snowIcon = day.snowfall > 0 ? '❄️' : '';
                 const weatherEmoji = getWeatherCodeEmoji(day.weather_code);
+                const weatherCondition = getWeatherConditionText(day.weather_code);
                 const resortElevation = 2300; // Val Thorens bottom elevation
                 
                 // Determine snow line message
@@ -1276,6 +1284,7 @@
                         <div class="extended-day-name">${day.day_name}</div>
                         <div class="extended-date">${new Date(day.date).toLocaleDateString('en-GB', {day: 'numeric', month: 'short'})}</div>
                         <div class="extended-weather">${weatherEmoji}</div>
+                        <div class="extended-condition">${weatherCondition}</div>
                         <div class="extended-temp">${Math.round(day.temp_min)}° to ${Math.round(day.temp_max)}°</div>
                         ${day.snowfall > 0 ? `<div class="extended-snow">${snowIcon} ${day.snowfall.toFixed(1)}cm</div>` : '<div class="extended-snow">-</div>'}
                         ${snowLineMsg ? `<div class="extended-snow-line">${snowLineMsg}</div>` : ''}
@@ -1321,6 +1330,38 @@
             };
             
             return weatherCodes[code] || '🌤️';
+        }
+        
+        function getWeatherConditionText(code) {
+            // WMO Weather codes to condition descriptions
+            const conditions = {
+                0: 'clear',
+                1: 'mostly clear',
+                2: 'part cloud',
+                3: 'cloud',
+                45: 'fog',
+                48: 'fog',
+                51: 'light drizzle',
+                53: 'drizzle',
+                55: 'drizzle',
+                61: 'light rain',
+                63: 'rain',
+                65: 'heavy rain',
+                71: 'light snow',
+                73: 'snow',
+                75: 'heavy snow',
+                77: 'snow',
+                80: 'light rain showers',
+                81: 'rain showers',
+                82: 'heavy rain',
+                85: 'light snow showers',
+                86: 'snow showers',
+                95: 'thunderstorm',
+                96: 'thunderstorm',
+                99: 'thunderstorm'
+            };
+            
+            return conditions[code] || 'cloudy';
         }
         
         function createPeriodSection(period, data) {

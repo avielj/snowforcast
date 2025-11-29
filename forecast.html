@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Val Thorens Snow Forecast</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -326,6 +327,27 @@
             border-radius: 10px;
             text-align: center;
             margin: 20px 0;
+        }
+        
+        .snowfall-chart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .snowfall-chart-container h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.5em;
+        }
+        
+        .chart-wrapper {
+            position: relative;
+            height: 300px;
+            margin-top: 20px;
         }
         
         .forecast-grid {
@@ -716,6 +738,14 @@
             ❌ Error loading forecast data. Please try again.
         </div>
         
+        <!-- Snowfall Chart -->
+        <div id="snowfall-chart-container" class="snowfall-chart-container" style="display: none;">
+            <h3>❄️ 16-Day Snowfall Forecast</h3>
+            <div class="chart-wrapper">
+                <canvas id="snowfallChart"></canvas>
+            </div>
+        </div>
+        
         <div id="forecast-content">
             <!-- Forecast will be loaded here -->
         </div>
@@ -825,6 +855,126 @@
                 <a href="${info.website}" target="_blank">🏔️ Resort Website</a>
                 <a href="${info.liftStatus}" target="_blank">🚡 Lift Status</a>
             `;
+        }
+        
+        let snowfallChart = null;
+        
+        function createSnowfallChart() {
+            const resortData = allForecastsData[currentResort];
+            if (!resortData) return;
+            
+            const elevationData = resortData[currentElevation];
+            if (!elevationData || !elevationData.extended || !elevationData.extended.extended_forecast) {
+                return;
+            }
+            
+            // Combine 7-day forecast and extended forecast
+            const sevenDayData = elevationData.days || [];
+            const extendedData = elevationData.extended.extended_forecast || [];
+            
+            // Prepare data for chart
+            const labels = [];
+            const snowfallData = [];
+            const colors = [];
+            
+            // Add 7-day forecast data
+            sevenDayData.forEach(day => {
+                let totalSnow = 0;
+                ['am', 'pm', 'night'].forEach(period => {
+                    if (day[period]) {
+                        totalSnow += parseFloat(day[period].snow) || 0;
+                    }
+                });
+                labels.push(day.name);
+                snowfallData.push(totalSnow);
+                colors.push('rgba(74, 144, 226, 0.8)'); // Blue for 7-day forecast
+            });
+            
+            // Add extended forecast data (with temperature-based rain-to-snow conversion)
+            extendedData.forEach(day => {
+                let snowfall = day.snowfall || 0;
+                let rain = day.rain || 0;
+                
+                // Convert rain to snow if temp is below 0°C
+                const avgTemp = (day.temp_min + day.temp_max) / 2;
+                if (avgTemp < 0 && rain > 0) {
+                    snowfall += rain / 10;
+                }
+                
+                const date = new Date(day.date);
+                const shortLabel = date.toLocaleDateString('en-GB', {day: 'numeric', month: 'short'});
+                labels.push(shortLabel);
+                snowfallData.push(snowfall);
+                colors.push('rgba(147, 112, 219, 0.7)'); // Purple for extended forecast
+            });
+            
+            // Show chart container
+            document.getElementById('snowfall-chart-container').style.display = 'block';
+            
+            // Destroy existing chart if it exists
+            if (snowfallChart) {
+                snowfallChart.destroy();
+            }
+            
+            // Create new chart
+            const ctx = document.getElementById('snowfallChart').getContext('2d');
+            snowfallChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Snowfall (cm)',
+                        data: snowfallData,
+                        backgroundColor: colors,
+                        borderColor: colors.map(c => c.replace('0.8', '1').replace('0.7', '1')),
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.parsed.y.toFixed(1) + ' cm';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Snowfall (cm)',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return value + ' cm';
+                                }
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Date',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            }
+                        }
+                    }
+                }
+            });
         }
         
         function openWebcam() {
@@ -1088,6 +1238,9 @@
             // Display extended 16-day forecast
             displayExtendedForecast();
             
+            // Create snowfall chart
+            createSnowfallChart();
+            
             // Update last updated time - use the most recent update from any elevation
             let mostRecentUpdate = data.last_updated;
             if (allData) {
@@ -1156,6 +1309,8 @@
                     displayDetailedForecast(elevData);
                     // Also update extended forecast for this elevation
                     displayExtendedForecast();
+                    // Update snowfall chart for this elevation
+                    createSnowfallChart();
                 }
             }
         }

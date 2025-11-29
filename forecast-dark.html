@@ -580,6 +580,17 @@
         margin: 0;
         padding: 10px 6px;
         font-size: 0.95em;
+        background: #232d4e;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .outlook-label, .outlook-value, .outlook-value.day, .outlook-value.temp, .outlook-value.feels-like {
+        font-size: 0.95em !important;
+        font-weight: 400 !important;
+    }
+    .snow-outlook h3 {
+        font-size: 1em;
+        margin-bottom: 10px;
     }
     .current-conditions {
         margin-bottom: 18px;
@@ -611,30 +622,38 @@
         padding: 10px;
     }
     .altitude-boxes {
-        grid-template-columns: 1fr;
-        gap: 10px;
-    }
-    .forecast-grid.visible {
-        flex-direction: row;
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        gap: 10px;
-        padding-bottom: 10px;
-    }
-    .day-card {
-        min-width: 180px;
-        font-size: 0.95em;
-    }
-    .forecast-table-scroll {
         display: flex;
         flex-direction: row;
-        gap: 10px;
-        overflow-x: auto;
-        padding-bottom: 10px;
-        scroll-snap-type: x mandatory;
+        gap: 8px;
+        grid-template-columns: none;
+        justify-content: space-between;
     }
-    .forecast-table-scroll > .day-card {
-        scroll-snap-align: start;
+    .altitude-box {
+        flex: 1 1 0;
+        min-width: 0;
+        padding: 8px 4px;
+        font-size: 0.95em;
+        border-radius: 8px;
+        min-height: 80px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .altitude-box h3 {
+        font-size: 1em;
+        margin-bottom: 2px;
+    }
+    .altitude-box .height {
+        font-size: 0.8em;
+        margin-bottom: 4px;
+    }
+    .altitude-box .snow-amount {
+        font-size: 1em;
+        margin-top: 4px;
+    }
+    .altitude-box .snow-label {
+        font-size: 0.8em;
+    }
+    .altitude-bar-wrapper {
+        height: 6px;
     }
 }
 

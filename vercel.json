@@ -4,6 +4,18 @@
     {
       "src": "app.py",
       "use": "@vercel/python"
+    },
+    {
+      "src": "forecast.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "forecast-dark.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "forecast-modern.html",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
@@ -14,6 +26,10 @@
     {
       "src": "/forecast-dark.html",
       "dest": "/forecast-dark.html"
+    },
+    {
+      "src": "/forecast-modern.html",
+      "dest": "/forecast-modern.html"
     },
     {
       "src": "/api/(.*)",

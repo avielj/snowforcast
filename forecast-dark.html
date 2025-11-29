@@ -562,6 +562,63 @@
             }
         }
         
+        /* --- MOBILE FRIENDLY LAYOUTS --- */
+        @media (max-width: 700px) {
+    .main-grid {
+        display: block;
+    }
+    .snow-outlook {
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+    .outlook-box {
+        flex: 1 1 0;
+        min-width: 0;
+        margin: 0;
+        padding: 10px 6px;
+        font-size: 0.95em;
+    }
+    .current-conditions {
+        margin-bottom: 18px;
+    }
+    .conditions-grid {
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+    .condition-card {
+        flex: 1 1 0;
+        min-width: 0;
+        margin: 0;
+        padding: 10px 6px;
+        font-size: 0.95em;
+    }
+    .altitude-section {
+        margin-top: 10px;
+        padding: 10px;
+    }
+    .altitude-boxes {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    .forecast-grid.visible {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        gap: 10px;
+        padding-bottom: 10px;
+    }
+    .day-card {
+        min-width: 180px;
+        font-size: 0.95em;
+    }
+}
+
         /* Add other styles from your original file here if they were not overwritten */
         /* ... (Keep all existing styles for loading, error, modal, chart, etc., ensuring color overrides are consistent) */
         /* Note: For brevity, only the major stylistic changes are shown above, but all your original functional CSS remains. */

@@ -99,14 +99,6 @@
             letter-spacing: 0.03em;
             text-align: left;
         }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cervinia Snow Forecast</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <style>
         /* --- GLOBAL & BODY STYLES (DARK MODE) --- */
         * {
             margin: 0;
@@ -183,6 +175,60 @@
             cursor: pointer;
             appearance: none;
             width: 250px;
+        }
+        
+        /* --- INFO MENU DROPDOWN --- */
+        .info-menu {
+            position: relative;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        .info-menu-btn {
+            background: #33406e;
+            color: #e0e0e0;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        .info-menu-btn:focus {
+            outline: 2px solid #58a4ff;
+        }
+        .info-menu-dropdown {
+            display: none;
+            position: absolute;
+            left: 0;
+            top: 110%;
+            min-width: 220px;
+            background: #232d4e;
+            border-radius: 10px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+            z-index: 100;
+            padding: 10px 0;
+        }
+        .info-menu-dropdown a {
+            display: block;
+            color: #e0e0e0;
+            text-decoration: none;
+            padding: 12px 24px;
+            font-size: 1em;
+            transition: background 0.2s;
+        }
+        .info-menu-dropdown a:hover {
+            background: #33406e;
+        }
+        @media (max-width: 600px) {
+            .info-menu-btn {
+                width: 100%;
+                font-size: 1.1em;
+            }
+            .info-menu-dropdown {
+                min-width: 100%;
+                left: 0;
+                right: 0;
+            }
         }
         
         .info-links {
@@ -592,11 +638,15 @@
                 <div id="region-tag">Valtournenche-Zermatt / Italy / Switzerland</div>
             </div>
             
-            <div class="info-links" id="info-links-container">
-                <a href="#" onclick="openWebcam(); return false;">📹 View Live Webcam</a>
-                <a href="#" id="piste-map-link" target="_blank">🗺️ Piste Map</a>
-                <a href="#" id="resort-website-link" target="_blank">🏔️ Resort Website</a>
-                <a href="#" id="lift-status-link" target="_blank">🚡 Lift Status</a>
+            <!-- Replace info links with dropdown menu -->
+            <div class="info-menu">
+                <button class="info-menu-btn" onclick="toggleInfoMenu()">More Info ▾</button>
+                <div class="info-menu-dropdown" id="info-menu-dropdown">
+                    <a href="#" onclick="openWebcam(); return false;">📹 View Live Webcam</a>
+                    <a href="#" id="piste-map-link" target="_blank">🗺️ Piste Map</a>
+                    <a href="#" id="resort-website-link" target="_blank">🏔️ Resort Website</a>
+                    <a href="#" id="lift-status-link" target="_blank">🚡 Lift Status</a>
+                </div>
             </div>
         </div>
         
@@ -763,26 +813,21 @@
         function createSnowfallChart() {
             const resortData = allForecastsData[currentResort];
             if (!resortData) return;
-            
             const elevationData = resortData[currentElevation];
             if (!elevationData || !elevationData.extended || !elevationData.extended.extended_forecast) {
                 return;
             }
-            
             const sevenDayData = elevationData.days || [];
             const extendedData = elevationData.extended.extended_forecast || [];
-            
             const labels = [];
             const snowfallData = [];
             const temperatureData = [];
             const weatherEmojis = [];
             const colors = [];
-            
             sevenDayData.forEach(day => {
                 let totalSnow = 0;
                 let maxTemp = null;
                 let conditions = [];
-                
                 ['am', 'pm', 'night'].forEach(period => {
                     if (day[period]) {
                         totalSnow += parseFloat(day[period].snow) || 0;
@@ -795,7 +840,6 @@
                         }
                     }
                 });
-                
                 const conditionsStr = conditions.join(' ');
                 let emoji = '☁️';
                 if (conditionsStr.includes('clear') || conditionsStr.includes('sunny')) {
@@ -809,69 +853,69 @@
                 } else if (conditionsStr.includes('part') || conditionsStr.includes('partly')) {
                     emoji = '⛅';
                 }
-                
                 labels.push(day.name);
                 snowfallData.push(totalSnow);
                 temperatureData.push(maxTemp);
                 weatherEmojis.push(emoji);
                 colors.push('rgba(74, 144, 226, 0.8)');
             });
-            
             extendedData.forEach(day => {
                 let snowfall = day.snowfall || 0;
                 let rain = day.rain || 0;
-                
                 const avgTemp = (day.temp_min + day.temp_max) / 2;
                 if (avgTemp < 0 && rain > 0) {
                     snowfall += rain / 10;
                 }
-                
                 const date = new Date(day.date);
                 const shortLabel = date.toLocaleDateString('en-GB', {day: 'numeric', month: 'short'});
                 const emoji = getWeatherCodeEmoji(day.weather_code);
-                
                 labels.push(shortLabel);
                 snowfallData.push(snowfall);
                 temperatureData.push(day.temp_max);
                 weatherEmojis.push(emoji);
                 colors.push('rgba(147, 112, 219, 0.7)');
             });
-            
             document.getElementById('snowfall-chart-container').style.display = 'block';
-            
             if (snowfallChart) {
                 snowfallChart.destroy();
             }
-            
             const ctx = document.getElementById('snowfallChart').getContext('2d');
+            // Hide max temp line on mobile
+            const isMobile = window.innerWidth <= 600;
+            const datasets = [
+                {
+                    label: 'Snowfall (cm)',
+                    data: snowfallData,
+                    backgroundColor: colors,
+                    borderColor: colors.map(c => c.replace('0.8', '1').replace('0.7', '1')),
+                    borderWidth: 2,
+                    yAxisID: 'y',
+                    order: 2
+                }
+            ];
+            if (!isMobile) {
+                datasets.push({
+                    label: 'Max Temp (°C)',
+                    data: temperatureData,
+                    type: 'line',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                    borderWidth: 3,
+                    pointRadius: 6,
+                    pointHoverRadius: 8,
+                    pointBackgroundColor: 'rgba(255, 99, 132, 1)',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    yAxisID: 'y1',
+                    order: 1,
+                    tension: 0.3
+                });
+            }
             snowfallChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: labels,
-                    datasets: [{
-                        label: 'Snowfall (cm)',
-                        data: snowfallData,
-                        backgroundColor: colors,
-                        borderColor: colors.map(c => c.replace('0.8', '1').replace('0.7', '1')),
-                        borderWidth: 2,
-                        yAxisID: 'y',
-                        order: 2
-                    }, {
-                        label: 'Max Temp (°C)',
-                        data: temperatureData,
-                        type: 'line',
-                        borderColor: 'rgba(255, 99, 132, 1)',
-                        backgroundColor: 'rgba(255, 99, 132, 0.1)',
-                        borderWidth: 3,
-                        pointRadius: 6,
-                        pointHoverRadius: 8,
-                        pointBackgroundColor: 'rgba(255, 99, 132, 1)',
-                        pointBorderColor: '#fff',
-                        pointBorderWidth: 2,
-                        yAxisID: 'y1',
-                        order: 1,
-                        tension: 0.3
-                    }]
+                    datasets: datasets
                 },
                 options: {
                     responsive: true,
@@ -922,7 +966,7 @@
                         y1: {
                             position: 'right',
                             title: {
-                                display: true,
+                                display: !isMobile,
                                 text: 'Max Temperature (°C)',
                                 font: { size: 14, weight: 'bold' },
                                 color: 'rgba(255, 99, 132, 1)'
@@ -931,7 +975,8 @@
                                 callback: function(value) { return value + '°C'; },
                                 color: 'rgba(255, 99, 132, 1)'
                             },
-                            grid: { drawOnChartArea: false }
+                            grid: { drawOnChartArea: false },
+                            display: !isMobile
                         },
                         x: {
                             ticks: {
@@ -1523,6 +1568,21 @@
             document.getElementById('resort-select').value = currentResort;
             switchResort(currentResort); 
         });
+        
+        // --- INFO MENU DROPDOWN LOGIC ---
+    function toggleInfoMenu() {
+        const menu = document.getElementById('info-menu-dropdown');
+        menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+    }
+    // Close menu if clicking outside
+    document.addEventListener('click', function(e) {
+        const menu = document.getElementById('info-menu-dropdown');
+        const btn = document.querySelector('.info-menu-btn');
+        if (!menu || !btn) return;
+        if (!btn.contains(e.target) && !menu.contains(e.target)) {
+            menu.style.display = 'none';
+        }
+    });
     </script>
 </body>
 </html>

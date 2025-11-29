@@ -1,33 +1,59 @@
-        /* Chart mobile styles */
-        .snowfall-chart-container {
-            width: 100%;
-            max-width: 100vw;
-            overflow-x: auto;
-        }
-        .chart-wrapper {
-            width: 100%;
-            min-width: 0;
-            overflow-x: auto;
-        }
-        #snowfallChart {
-            width: 100% !important;
-            max-width: 600px;
-            height: auto !important;
-            min-width: 220px;
-            aspect-ratio: 2.5 / 1;
-            display: block;
-            margin: 0 auto;
-        }
+        /* Mobile-friendly forecast grid and chart */
         @media (max-width: 700px) {
+            .forecast-grid.visible {
+                flex-direction: row;
+                gap: 12px;
+                padding-bottom: 12px;
+                overflow-x: auto;
+                scroll-snap-type: x mandatory;
+            }
+            .day-card {
+                min-width: 80vw;
+                max-width: 95vw;
+                font-size: 1em;
+                margin-right: 8px;
+                padding: 12px 6px;
+            }
+            .day-header h2 {
+                font-size: 1.1em;
+            }
+            .period-label {
+                font-size: 0.95em;
+                padding: 4px 8px;
+            }
+            .details-row span:not(.details-title) {
+                font-size: 1em;
+                padding: 4px 0;
+            }
+            .details-title {
+                font-size: 1em;
+            }
+            .snowfall-chart-container {
+                padding: 0 2vw;
+            }
             #snowfallChart {
                 max-width: 98vw;
+                min-width: 220px;
                 height: auto !important;
                 aspect-ratio: 1.7 / 1;
             }
-            .chart-wrapper {
-                padding: 0 2vw;
+        }
+        @media (max-width: 500px) {
+            .day-card {
+                min-width: 96vw;
+                max-width: 99vw;
+                font-size: 0.95em;
+                padding: 8px 2px;
+            }
+            .details-title, .details-row span:not(.details-title) {
+                font-size: 0.95em;
+            }
+            .period-label {
+                font-size: 0.9em;
+                padding: 3px 6px;
             }
         }
+        /* Chart mobile styles */
 <!DOCTYPE html>
 <html lang="en">
 <head>

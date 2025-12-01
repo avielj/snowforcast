@@ -817,6 +817,36 @@
         
         console.log('Fetching data from GitHub:', GITHUB_DATA_URL);
         
+        // Helper function to get correct weekday from date string or day number
+        function getWeekdayFromDate(dateStr) {
+            // If dateStr is just a number (like "1", "2"), assume it's a day in current month
+            if (dateStr && /^\d+$/.test(dateStr)) {
+                const today = new Date();
+                const year = today.getFullYear();
+                const month = today.getMonth(); // 0-indexed
+                const date = new Date(year, month, parseInt(dateStr));
+                return date.toLocaleString('en-US', { weekday: 'long' });
+            }
+            // Otherwise, parse as full date
+            const date = new Date(dateStr);
+            return date.toLocaleString('en-US', { weekday: 'long' });
+        }
+        
+        // Helper function to get short date format
+        function getShortDate(dateStr) {
+            // If dateStr is just a number (like "1", "2"), assume it's a day in current month
+            if (dateStr && /^\d+$/.test(dateStr)) {
+                const today = new Date();
+                const year = today.getFullYear();
+                const month = today.getMonth(); // 0-indexed
+                const date = new Date(year, month, parseInt(dateStr));
+                return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+            }
+            // Otherwise, parse as full date
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+        }
+        
         const resortInfo = {
             'Val-Thorens': {
                 name: 'Val Thorens',
@@ -930,6 +960,20 @@
             const sevenDayData = elevationData.days || [];
             const extendedData = elevationData.extended.extended_forecast || [];
             
+            // Get the last date from 7-day forecast to filter extended forecast
+            let lastSevenDayDate = null;
+            if (sevenDayData.length > 0) {
+                const lastDay = sevenDayData[sevenDayData.length - 1];
+                if (lastDay.date) {
+                    const today = new Date();
+                    const currentYear = today.getFullYear();
+                    const currentMonth = today.getMonth();
+                    const dayNum = parseInt(lastDay.date);
+                    lastSevenDayDate = new Date(currentYear, currentMonth, dayNum);
+                    lastSevenDayDate.setHours(23, 59, 59, 999); // End of day
+                }
+            }
+            
             // Prepare data for chart
             const labels = [];
             const snowfallData = [];
@@ -937,7 +981,7 @@
             const weatherEmojis = [];
             const colors = [];
             
-            // Add 7-day forecast data
+            // Add 7-day forecast data (BLUE)
             sevenDayData.forEach(day => {
                 let totalSnow = 0;
                 let maxTemp = null;
@@ -971,16 +1015,10 @@
                     emoji = '⛅';
                 }
                 
-                // Use date if available, otherwise use day name
-                let label = day.name;
-                if (day.date) {
-                    // Parse the date string (format is usually like "1 Dec" or "01/12/2025")
-                    const dateStr = day.date;
-                    // If date contains "/" or a number followed by month name, parse it
-                    if (dateStr.match(/\d+\s+\w+/) || dateStr.match(/\d+\/\d+/)) {
-                        label = dateStr;
-                    }
-                }
+                // Use computed weekday and date from actual date
+                const weekday = day.date ? getWeekdayFromDate(day.date) : day.name;
+                const shortDate = day.date ? getShortDate(day.date) : '';
+                const label = shortDate ? `${weekday} ${shortDate}` : weekday;
                 
                 labels.push(label);
                 snowfallData.push(totalSnow);
@@ -989,8 +1027,16 @@
                 colors.push('rgba(74, 144, 226, 0.8)'); // Blue for 7-day forecast
             });
             
-            // Add extended forecast data (with temperature-based rain-to-snow conversion)
+            // Add extended forecast data (PURPLE) - only days AFTER the 7-day forecast
             extendedData.forEach(day => {
+                // Filter: only include days after the last 7-day forecast date
+                if (lastSevenDayDate) {
+                    const extDate = new Date(day.date);
+                    if (extDate <= lastSevenDayDate) {
+                        return; // Skip this day - it's already in the 7-day forecast
+                    }
+                }
+                
                 let snowfall = day.snowfall || 0;
                 let rain = day.rain || 0;
                 
@@ -1000,11 +1046,12 @@
                     snowfall += rain / 10;
                 }
                 
-                const date = new Date(day.date);
-                const shortLabel = date.toLocaleDateString('en-GB', {day: 'numeric', month: 'short'});
+                const weekday = getWeekdayFromDate(day.date);
+                const shortDate = getShortDate(day.date);
+                const label = `${weekday} ${shortDate}`;
                 const emoji = getWeatherCodeEmoji(day.weather_code);
                 
-                labels.push(shortLabel);
+                labels.push(label);
                 snowfallData.push(snowfall);
                 temperatureData.push(day.temp_max);
                 weatherEmojis.push(emoji);
@@ -1307,13 +1354,13 @@
                     
                     if (daySnow > 0) snowDays++;
                     if (daySnow > maxSnowDay.amount) {
-                        maxSnowDay = { name: day.name, amount: daySnow };
+                        maxSnowDay = { name: day.name, date: day.date, amount: daySnow };
                     }
                 }
                 
                 // Store mid elevation data for best day and lowest temp
                 if (elev === 'mid') {
-                    midBestDay = maxSnowDay.name || 'N/A';
+                    midBestDay = maxSnowDay.date ? getWeekdayFromDate(maxSnowDay.date) : (maxSnowDay.name || 'N/A');
                     midSnowDays = snowDays;
                     midLowestTemp = lowestTemp;
                     midLowestFeels = lowestFeels;
@@ -1519,12 +1566,14 @@
                 
                 const snowClass = totalSnow >= 10 ? 'heavy' : '';
                 const snowIcon = totalSnow > 0 ? '❄️' : '';
+                const weekday = day.date ? getWeekdayFromDate(day.date) : day.name;
+                const dateDisplay = day.date ? getShortDate(day.date) : day.date;
                 
                 html += `
                     <div class="day-card">
                         <div class="day-header">
-                            <h2>${day.name}</h2>
-                            <div class="date">${day.date}</div>
+                            <h2>${weekday}</h2>
+                            <div class="date">${dateDisplay}</div>
                         </div>
                         <div class="day-summary">
                             <div class="snow-total ${snowClass}">
@@ -1673,10 +1722,13 @@
                     }
                 }
                 
+                const weekday = getWeekdayFromDate(day.date);
+                const shortDate = getShortDate(day.date);
+                
                 html += `
                     <div class="extended-day">
-                        <div class="extended-day-name">${day.day_name}</div>
-                        <div class="extended-date">${new Date(day.date).toLocaleDateString('en-GB', {day: 'numeric', month: 'short'})}</div>
+                        <div class="extended-day-name">${weekday}</div>
+                        <div class="extended-date">${shortDate}</div>
                         <div class="extended-weather">${weatherEmoji}</div>
                         <div class="extended-condition">${weatherCondition}</div>
                         ${snowDisplay ? `<div class="extended-snow">${snowDisplay}</div>` : ''}

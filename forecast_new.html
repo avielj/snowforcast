@@ -385,6 +385,12 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .snowfall-chart-container:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 40px #0ea5e944, 0 2px 12px #000a;
     }
     .snowfall-chart-container h3 {
       color: #38bdf8;
@@ -397,6 +403,65 @@
       position: relative;
       width: 100%;
       height: 400px;
+    }
+    
+    /* --- CHART MODAL --- */
+    .chart-modal {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.95);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .chart-modal.active {
+      display: flex;
+    }
+    .chart-modal-content {
+      background: #1e293b;
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 95vw;
+      max-height: 95vh;
+      width: 100%;
+      height: 90vh;
+      position: relative;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+    .chart-modal-close {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      font-size: 2.5em;
+      color: #38bdf8;
+      cursor: pointer;
+      background: none;
+      border: none;
+      z-index: 10000;
+      font-weight: 300;
+      line-height: 1;
+      padding: 0;
+      transition: color 0.2s;
+    }
+    .chart-modal-close:hover {
+      color: #0ea5e9;
+    }
+    .chart-modal h3 {
+      color: #38bdf8;
+      margin-bottom: 20px;
+      font-size: 1.5em;
+      font-weight: 700;
+      text-align: center;
+    }
+    .chart-modal-wrapper {
+      position: relative;
+      width: 100%;
+      height: calc(100% - 60px);
     }
 
     /* --- FORECAST TABLE --- */
@@ -782,10 +847,21 @@
     <div id="error" class="error">❌ Error loading data. Please try again.</div>
 
     <!-- Chart -->
-    <div id="snowfall-chart-container" class="snowfall-chart-container" style="display:none;">
-      <h3>❄️ 16-Day Snowfall Forecast</h3>
+    <div id="snowfall-chart-container" class="snowfall-chart-container" style="display:none;" onclick="openChartModal()">
+      <h3>❄️ 16-Day Snowfall Forecast <span style="font-size: 0.7em; opacity: 0.7;">(Click to zoom)</span></h3>
       <div class="chart-wrapper">
         <canvas id="snowfallChart"></canvas>
+      </div>
+    </div>
+    
+    <!-- Chart Modal -->
+    <div id="chart-modal" class="chart-modal" onclick="closeChartModal(event)">
+      <div class="chart-modal-content" onclick="event.stopPropagation()">
+        <button class="chart-modal-close" onclick="closeChartModal()">&times;</button>
+        <h3>❄️ 16-Day Snowfall Forecast</h3>
+        <div class="chart-modal-wrapper">
+          <canvas id="snowfallChartModal"></canvas>
+        </div>
       </div>
     </div>
 
@@ -815,6 +891,36 @@
     let allForecastsData = null;
     let snowfallChart = null;
     const GITHUB_URL = 'https://raw.githubusercontent.com/avielj/snowforcast/refs/heads/main/data/all-forecasts.json';
+    
+    // Helper function to get correct weekday from date string or day number
+    function getWeekdayFromDate(dateStr) {
+      // If dateStr is just a number (like "1", "2"), assume it's a day in current month
+      if (dateStr && /^\d+$/.test(dateStr)) {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = today.getMonth(); // 0-indexed
+        const date = new Date(year, month, parseInt(dateStr));
+        return date.toLocaleString('en-US', { weekday: 'long' });
+      }
+      // Otherwise, parse as full date
+      const date = new Date(dateStr);
+      return date.toLocaleString('en-US', { weekday: 'long' });
+    }
+    
+    // Helper function to get short date format
+    function getShortDate(dateStr) {
+      // If dateStr is just a number (like "1", "2"), assume it's a day in current month
+      if (dateStr && /^\d+$/.test(dateStr)) {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = today.getMonth(); // 0-indexed
+        const date = new Date(year, month, parseInt(dateStr));
+        return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+      }
+      // Otherwise, parse as full date
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+    }
     
     const resortInfo = {
       'Val-Thorens': {
@@ -856,17 +962,21 @@
     };
 
     const weatherEmoji = {
-      'clear': '☀️', 'partly': '⛅', 'cloudy': '☁️', 'overcast': '☁️',
-      'light snow': '🌨️', 'snow': '❄️', 'heavy snow': '🌨️❄️', 'rain': '🌧️', 'sleet': '🌨️💧'
+      'clear': '☀️', 'partly': '⛅', 'cloudy': '☁️', 'overcast': '☁️', 'cloud': '☁️',
+      'light snow': '🌨️', 'snow': '❄️', 'heavy snow': '🌨️❄️', 'rain': '🌧️', 'sleet': '🌨️💧',
+      'part cloud': '⛅', 'fog': '🌫️'
     };
 
     function getWeatherEmoji(condition) {
       if (!condition) return '☁️';
-      const c = condition.toLowerCase();
+      const c = condition.toLowerCase().trim();
       for (const [key, emoji] of Object.entries(weatherEmoji)) {
         if (c.includes(key)) return emoji;
       }
-      return '❔';
+      // Default based on common patterns
+      if (c.includes('sun')) return '☀️';
+      if (c.includes('part')) return '⛅';
+      return '☁️'; // Default to cloudy instead of question mark
     }
 
     function getWeatherCodeEmoji(code) {
@@ -897,6 +1007,37 @@
       const btn = document.querySelector('.info-menu-btn');
       if (!menu || !btn) return;
       if (!btn.contains(e.target) && !menu.contains(e.target)) menu.style.display = 'none';
+    });
+    
+    let modalChart = null;
+    
+    function openChartModal() {
+      const modal = document.getElementById('chart-modal');
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+      
+      // Recreate chart in modal with larger size
+      setTimeout(() => {
+        createModalChart();
+      }, 100);
+    }
+    
+    function closeChartModal(event) {
+      if (event && event.target !== event.currentTarget) return;
+      const modal = document.getElementById('chart-modal');
+      modal.classList.remove('active');
+      document.body.style.overflow = 'auto';
+      if (modalChart) {
+        modalChart.destroy();
+        modalChart = null;
+      }
+    }
+    
+    // Close on Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeChartModal();
+      }
     });
 
     function switchResort(resort) {
@@ -1056,7 +1197,7 @@
         if (totalSnow > 0) snowDays++;
         if (totalSnow > bestSnow) {
           bestSnow = totalSnow;
-          bestDay = day.name;
+          bestDay = day.date ? getWeekdayFromDate(day.date) : day.name;
         }
       });
       document.getElementById('snow-days-value').textContent = snowDays;
@@ -1090,11 +1231,13 @@
         });
         const snowClass = totalSnow >= 10 ? 'heavy' : '';
         const snowIcon = totalSnow > 0 ? '❄️' : '';
+        const weekday = day.date ? getWeekdayFromDate(day.date) : day.name;
+        const dateDisplay = day.date ? getShortDate(day.date) : day.date;
         html += `
           <div class="day-card">
             <div class="day-header">
-              <h2>${day.name}</h2>
-              <div class="date">${day.date}</div>
+              <h2>${weekday}</h2>
+              <div class="date">${dateDisplay}</div>
             </div>
             <div class="day-summary">
               <div class="snow-total ${snowClass}">${snowIcon} ${totalSnow.toFixed(0)} cm</div>
@@ -1193,10 +1336,12 @@
             snowDisplay = `${snowCm}cm New Snow`;
           }
         }
+        const weekday = getWeekdayFromDate(day.date);
+        const shortDate = getShortDate(day.date);
         html += `
           <div class="extended-day">
-            <div class="extended-day-name">${day.day_name}</div>
-            <div class="extended-date">${new Date(day.date).toLocaleDateString('en-GB', {day: 'numeric', month: 'short'})}</div>
+            <div class="extended-day-name">${weekday}</div>
+            <div class="extended-date">${shortDate}</div>
             <div class="extended-weather">${weatherEmoji}</div>
             <div class="extended-condition">${weatherCondition}</div>
             ${snowDisplay ? `<div class="extended-snow">${snowDisplay}</div>` : ''}
@@ -1219,11 +1364,28 @@
       }
       const sevenDayData = elevData.days || [];
       const extendedData = elevData.extended.extended_forecast || [];
+      
+      // Get the last date from 7-day forecast to filter extended forecast
+      let lastSevenDayDate = null;
+      if (sevenDayData.length > 0) {
+        const lastDay = sevenDayData[sevenDayData.length - 1];
+        if (lastDay.date) {
+          const today = new Date();
+          const currentYear = today.getFullYear();
+          const currentMonth = today.getMonth();
+          const dayNum = parseInt(lastDay.date);
+          lastSevenDayDate = new Date(currentYear, currentMonth, dayNum);
+          lastSevenDayDate.setHours(23, 59, 59, 999); // End of day
+        }
+      }
+      
       const labels = [];
       const snowfallData = [];
       const temperatureData = [];
       const weatherEmojis = [];
       const colors = [];
+      
+      // Add 7-day forecast data (BLUE)
       sevenDayData.forEach(day => {
         let totalSnow = 0;
         let maxTemp = null;
@@ -1247,35 +1409,42 @@
         else if (conditionsStr.includes('rain')) emoji = '🌧️';
         else if (conditionsStr.includes('fog')) emoji = '🌫️';
         else if (conditionsStr.includes('part') || conditionsStr.includes('partly')) emoji = '⛅';
-        // Use date if available, otherwise use day name
-        let label = day.name;
-        if (day.date) {
-          const dateStr = day.date;
-          if (dateStr.match(/\d+\s+\w+/) || dateStr.match(/\d+\/\d+/)) {
-            label = dateStr;
-          }
-        }
+        // Use computed weekday and date from actual date
+        const weekday = day.date ? getWeekdayFromDate(day.date) : day.name;
+        const shortDate = day.date ? getShortDate(day.date) : '';
+        const label = shortDate ? `${weekday} ${shortDate}` : weekday;
         labels.push(label);
         snowfallData.push(totalSnow);
         temperatureData.push(maxTemp);
         weatherEmojis.push(emoji);
-        colors.push('rgba(56, 189, 248, 0.8)');
+        colors.push('rgba(56, 189, 248, 0.8)'); // BLUE for 7-day
       });
+      
+      // Add extended forecast data (PURPLE) - only days AFTER the 7-day forecast
       extendedData.forEach(day => {
+        // Filter: only include days after the last 7-day forecast date
+        if (lastSevenDayDate) {
+          const extDate = new Date(day.date);
+          if (extDate <= lastSevenDayDate) {
+            return; // Skip this day - it's already in the 7-day forecast
+          }
+        }
+        
         let snowfall = day.snowfall || 0;
         let rain = day.rain || 0;
         const avgTemp = (day.temp_min + day.temp_max) / 2;
         if (avgTemp < 0 && rain > 0) {
           snowfall += rain / 10;
         }
-        const date = new Date(day.date);
-        const shortLabel = date.toLocaleDateString('en-GB', {day: 'numeric', month: 'short'});
+        const weekday = getWeekdayFromDate(day.date);
+        const shortDate = getShortDate(day.date);
+        const label = `${weekday} ${shortDate}`;
         const emoji = getWeatherCodeEmoji(day.weather_code);
-        labels.push(shortLabel);
+        labels.push(label);
         snowfallData.push(snowfall);
         temperatureData.push(day.temp_max);
         weatherEmojis.push(emoji);
-        colors.push('rgba(147, 112, 219, 0.7)');
+        colors.push('rgba(147, 112, 219, 0.7)'); // PURPLE for extended
       });
       document.getElementById('snowfall-chart-container').style.display = 'block';
       if (snowfallChart) {
@@ -1385,6 +1554,207 @@
                 display: true,
                 text: 'Date',
                 font: { size: 14, weight: 'bold' },
+                color: '#38bdf8'
+              },
+              grid: { color: 'rgba(255, 255, 255, 0.05)' }
+            }
+          }
+        }
+      });
+    }
+    
+    function createModalChart() {
+      const elevData = getCurrentElevationData();
+      if (!elevData || !elevData.extended || !elevData.extended.extended_forecast) return;
+      
+      // Reuse the same data preparation logic from renderChart
+      const sevenDayData = elevData.days || [];
+      const extendedData = elevData.extended.extended_forecast || [];
+      
+      let lastSevenDayDate = null;
+      if (sevenDayData.length > 0) {
+        const lastDay = sevenDayData[sevenDayData.length - 1];
+        if (lastDay.date) {
+          const today = new Date();
+          const currentYear = today.getFullYear();
+          const currentMonth = today.getMonth();
+          const dayNum = parseInt(lastDay.date);
+          lastSevenDayDate = new Date(currentYear, currentMonth, dayNum);
+          lastSevenDayDate.setHours(23, 59, 59, 999);
+        }
+      }
+      
+      const labels = [];
+      const snowfallData = [];
+      const temperatureData = [];
+      const weatherEmojis = [];
+      const colors = [];
+      
+      sevenDayData.forEach(day => {
+        let totalSnow = 0;
+        let maxTemp = null;
+        let conditions = [];
+        ['am', 'pm', 'night'].forEach(period => {
+          if (day[period]) {
+            totalSnow += parseFloat(day[period].snow) || 0;
+            const temp = parseFloat(day[period].temperature);
+            if (!isNaN(temp) && (maxTemp === null || temp > maxTemp)) {
+              maxTemp = temp;
+            }
+            if (day[period].condition) {
+              conditions.push(day[period].condition.toLowerCase());
+            }
+          }
+        });
+        const conditionsStr = conditions.join(' ');
+        let emoji = '☁️';
+        if (conditionsStr.includes('clear') || conditionsStr.includes('sunny')) emoji = '☀️';
+        else if (conditionsStr.includes('snow')) emoji = '❄️';
+        else if (conditionsStr.includes('rain')) emoji = '🌧️';
+        else if (conditionsStr.includes('fog')) emoji = '🌫️';
+        else if (conditionsStr.includes('part') || conditionsStr.includes('partly')) emoji = '⛅';
+        const weekday = day.date ? getWeekdayFromDate(day.date) : day.name;
+        const shortDate = day.date ? getShortDate(day.date) : '';
+        const label = shortDate ? `${weekday} ${shortDate}` : weekday;
+        labels.push(label);
+        snowfallData.push(totalSnow);
+        temperatureData.push(maxTemp);
+        weatherEmojis.push(emoji);
+        colors.push('rgba(56, 189, 248, 0.8)');
+      });
+      
+      extendedData.forEach(day => {
+        if (lastSevenDayDate) {
+          const extDate = new Date(day.date);
+          if (extDate <= lastSevenDayDate) return;
+        }
+        let snowfall = day.snowfall || 0;
+        let rain = day.rain || 0;
+        const avgTemp = (day.temp_min + day.temp_max) / 2;
+        if (avgTemp < 0 && rain > 0) {
+          snowfall += rain / 10;
+        }
+        const weekday = getWeekdayFromDate(day.date);
+        const shortDate = getShortDate(day.date);
+        const label = `${weekday} ${shortDate}`;
+        const emoji = getWeatherCodeEmoji(day.weather_code);
+        labels.push(label);
+        snowfallData.push(snowfall);
+        temperatureData.push(day.temp_max);
+        weatherEmojis.push(emoji);
+        colors.push('rgba(147, 112, 219, 0.7)');
+      });
+      
+      if (modalChart) {
+        modalChart.destroy();
+      }
+      
+      const ctx = document.getElementById('snowfallChartModal').getContext('2d');
+      modalChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Snowfall (cm)',
+            data: snowfallData,
+            backgroundColor: colors,
+            borderColor: colors.map(c => c.replace('0.8', '1').replace('0.7', '1')),
+            borderWidth: 2,
+            yAxisID: 'y',
+            order: 2
+          }, {
+            label: 'Max Temp (°C)',
+            data: temperatureData,
+            type: 'line',
+            borderColor: 'rgba(255, 99, 132, 1)',
+            backgroundColor: 'rgba(255, 99, 132, 0.1)',
+            borderWidth: 3,
+            pointRadius: 6,
+            pointHoverRadius: 8,
+            pointBackgroundColor: 'rgba(255, 99, 132, 1)',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2,
+            yAxisID: 'y1',
+            order: 1,
+            tension: 0.3
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: true,
+              position: 'top',
+              labels: {
+                font: { size: 14, weight: 'bold' },
+                usePointStyle: true,
+                padding: 20,
+                color: '#e0e0e0'
+              }
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  if (context.dataset.label === 'Snowfall (cm)') {
+                    return '❄️ ' + context.parsed.y.toFixed(1) + ' cm';
+                  } else {
+                    return '🌡️ ' + context.parsed.y.toFixed(1) + '°C';
+                  }
+                },
+                title: function(context) {
+                  const index = context[0].dataIndex;
+                  return weatherEmojis[index] + ' ' + context[0].label;
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              position: 'left',
+              title: {
+                display: true,
+                text: 'Snowfall (cm)',
+                font: { size: 16, weight: 'bold' },
+                color: 'rgba(56, 189, 248, 1)'
+              },
+              ticks: {
+                callback: function(value) { return value + ' cm'; },
+                color: 'rgba(56, 189, 248, 1)',
+                font: { size: 13 }
+              },
+              grid: { color: 'rgba(255, 255, 255, 0.05)' }
+            },
+            y1: {
+              position: 'right',
+              title: {
+                display: true,
+                text: 'Max Temperature (°C)',
+                font: { size: 16, weight: 'bold' },
+                color: 'rgba(255, 99, 132, 1)'
+              },
+              ticks: {
+                callback: function(value) { return value + '°C'; },
+                color: 'rgba(255, 99, 132, 1)',
+                font: { size: 13 }
+              },
+              grid: { drawOnChartArea: false }
+            },
+            x: {
+              ticks: {
+                callback: function(value, index) {
+                  return weatherEmojis[index] + '\n' + this.getLabelForValue(value);
+                },
+                font: { size: 12 },
+                maxRotation: 0,
+                minRotation: 0,
+                color: '#94a3b8'
+              },
+              title: {
+                display: true,
+                text: 'Date',
+                font: { size: 16, weight: 'bold' },
                 color: '#38bdf8'
               },
               grid: { color: 'rgba(255, 255, 255, 0.05)' }

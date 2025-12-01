@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snow Forecast</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      height: 100%;
+      background: #0f172a;
+      color: #e0e0e0;
+      font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+      font-size: 16px;
+    }
+    body {
+      min-height: 100vh;
+      background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 0;
+    }
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 12px 32px 12px;
+      box-sizing: border-box;
+    }
+
+    /* --- HEADER --- */
+    .header {
+      padding: 32px 0 16px 0;
+      text-align: center;
+    }
+    .header h1 {
+      font-size: 2.2em;
+      font-weight: 900;
+      color: #38bdf8;
+      margin: 0 0 8px 0;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 16px #0ea5e955;
+    }
+    .subtitle {
+      font-size: 1.1em;
+      color: #94a3b8;
+      margin-bottom: 12px;
+    }
+    .resort-country {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      margin-bottom: 10px;
+    }
+    .resort-country > div {
+      font-size: 1em;
+      color: #38bdf8;
+      font-weight: 600;
+    }
+
+    /* --- RESORT SWITCHER --- */
+    .dropdown-resort {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 18px;
+      gap: 8px;
+    }
+    .dropdown-resort label {
+      font-size: 1em;
+      color: #38bdf8;
+      font-weight: 600;
+    }
+    #resort-select {
+      background: #232d4e;
+      color: #e0e0e0;
+      border: 2px solid #38bdf8;
+      border-radius: 12px;
+      padding: 8px 16px;
+      font-size: 1em;
+      font-weight: 500;
+      outline: none;
+      transition: border 0.2s;
+    }
+    #resort-select:focus {
+      border-color: #0ea5e9;
+    }
+
+    /* --- INFO MENU --- */
+    .info-menu {
+      position: relative;
+      display: inline-block;
+      margin: 0 auto 18px auto;
+      text-align: center;
+    }
+    .info-menu-btn {
+      background: #232d4e;
+      color: #38bdf8;
+      border: none;
+      padding: 10px 22px;
+      border-radius: 12px;
+      font-size: 1em;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 8px #0ea5e933;
+      transition: background 0.2s;
+    }
+    .info-menu-btn:focus {
+      outline: 2px solid #38bdf8;
+    }
+    .info-menu-dropdown {
+      display: none;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      top: 110%;
+      min-width: 220px;
+      background: #232d4e;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px #0ea5e933;
+      z-index: 100;
+      padding: 10px 0;
+    }
+    .info-menu-dropdown a {
+      display: block;
+      color: #e0e0e0;
+      text-decoration: none;
+      padding: 12px 24px;
+      font-size: 1em;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+    .info-menu-dropdown a:hover {
+      background: #33406e;
+      color: #38bdf8;
+    }
+
+    /* --- MAIN GRID --- */
+    .main-grid {
+      display: flex;
+      flex-direction: row;
+      gap: 32px;
+      margin-bottom: 24px;
+      justify-content: center;
+    }
+
+    /* --- CURRENT SNOW CONDITIONS --- */
+    .current-conditions {
+      background: rgba(30,41,59,0.95);
+      border-radius: 20px;
+      box-shadow: 0 4px 32px #0ea5e933, 0 1px 8px #000a;
+      padding: 24px 18px;
+      min-width: 260px;
+      flex: 0 1 420px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .current-conditions h2 {
+      font-size: 1.2em;
+      color: #38bdf8;
+      font-weight: 700;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+    .conditions-grid {
+      display: flex;
+      flex-direction: row;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
+    }
+    .condition-card {
+      background: #232d4e;
+      border-radius: 16px;
+      box-shadow: 0 2px 8px #0ea5e933;
+      padding: 14px 10px;
+      min-width: 85px;
+      text-align: center;
+      flex: 1 1 0;
+      max-width: 110px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .condition-label {
+      font-size: 0.8em;
+      color: #94a3b8;
+      font-weight: 500;
+      margin-bottom: 6px;
+      display: block;
+    }
+    .condition-value {
+      font-size: 0.95em;
+      font-weight: 700;
+      color: #e0e0e0;
+      display: block;
+    }
+    .condition-value.highlight {
+      color: #38bdf8;
+      text-shadow: 0 0 8px #0ea5e9;
+      font-size: 1.1em;
+      font-weight: 900;
+    }
+
+    /* --- SNOW OUTLOOK --- */
+    .snow-outlook {
+      background: rgba(30,41,59,0.95);
+      border-radius: 20px;
+      box-shadow: 0 4px 32px #0ea5e933, 0 1px 8px #000a;
+      padding: 24px 18px;
+      min-width: 260px;
+      flex: 0 1 420px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .snow-outlook h3 {
+      font-size: 1.2em;
+      color: #38bdf8;
+      font-weight: 700;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+    .outlook-row {
+      display: flex;
+      flex-direction: row;
+      gap: 12px;
+      width: 100%;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .outlook-box {
+      background: #232d4e;
+      border-radius: 16px;
+      box-shadow: 0 2px 8px #0ea5e933;
+      padding: 14px 10px;
+      min-width: 85px;
+      text-align: center;
+      flex: 1 1 0;
+      max-width: 110px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .outlook-label {
+      font-size: 0.8em;
+      color: #94a3b8;
+      font-weight: 500;
+      margin-bottom: 4px;
+      display: block;
+    }
+    .outlook-value {
+      font-size: 0.95em;
+      font-weight: 700;
+      color: #e0e0e0;
+      display: block;
+    }
+    .outlook-value.day {
+      color: #38bdf8;
+      font-weight: 900;
+      font-size: 1.05em;
+    }
+    .outlook-value.temp {
+      color: #0ea5e9;
+      font-weight: 900;
+      font-size: 1.05em;
+    }
+    .outlook-value.feels-like {
+      font-size: 0.8em;
+      font-weight: 400;
+      color: #a0aec0;
+      display: block;
+      margin-top: 4px;
+    }
+
+    /* --- ALTITUDE SECTION --- */
+    .altitude-section {
+      background: rgba(30,41,59,0.95);
+      border-radius: 20px;
+      box-shadow: 0 4px 32px #0ea5e933, 0 1px 8px #000a;
+      padding: 24px 18px;
+      margin-top: 18px;
+      margin-bottom: 18px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .altitude-section h2 {
+      color: #38bdf8;
+      font-size: 1.2em;
+      font-weight: 700;
+      margin-bottom: 18px;
+      text-align: center;
+    }
+    .altitude-boxes {
+      display: flex;
+      flex-direction: row;
+      gap: 18px;
+      width: 100%;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .altitude-box {
+      background: #232d4e;
+      border-radius: 16px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+      padding: 18px 12px;
+      min-width: 110px;
+      text-align: left;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s, border 0.3s;
+      border: 3px solid transparent;
+      position: relative;
+      overflow: hidden;
+      color: white;
+      flex: 0 1 auto;
+      max-width: 220px;
+    }
+    .altitude-box.bot { background: linear-gradient(135deg, #48bb78, #38a169); }
+    .altitude-box.mid { background: linear-gradient(135deg, #4299e1, #3182ce); }
+    .altitude-box.top { background: linear-gradient(135deg, #805ad5, #6b46c1); }
+    .altitude-box.active {
+      border-color: #f6ad55;
+      box-shadow: 0 0 24px #f6ad55cc, 0 4px 12px #0ea5e933;
+      transform: translateY(-5px) scale(1.04);
+    }
+    .altitude-box h3 {
+      font-size: 1em;
+      margin-bottom: 2px;
+      font-weight: 700;
+    }
+    .altitude-box .height {
+      font-size: 0.85em;
+      opacity: 0.8;
+      margin-bottom: 10px;
+    }
+    .altitude-box .snow-amount {
+      font-size: 1.4em;
+      font-weight: bold;
+      display: block;
+      margin-top: 10px;
+      color: #38bdf8;
+      text-shadow: 0 0 8px #0ea5e9;
+    }
+    .altitude-box .snow-label {
+      font-size: 0.7em;
+      opacity: 0.9;
+    }
+    .altitude-bar-wrapper {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 10px;
+      background: rgba(0, 0, 0, 0.2);
+    }
+    .altitude-bar {
+      height: 100%;
+      transition: width 0.5s;
+    }
+    .altitude-box.bot .altitude-bar { background: #68d391; }
+    .altitude-box.mid .altitude-bar { background: #63b3ed; }
+    .altitude-box.top .altitude-bar { background: #9f7aea; }
+
+    /* --- CHART CONTAINER --- */
+    .snowfall-chart-container {
+      background: rgba(30,41,59,0.95);
+      border-radius: 20px;
+      box-shadow: 0 4px 32px #0ea5e933, 0 1px 8px #000a;
+      padding: 24px 18px;
+      margin-top: 25px;
+      margin-bottom: 18px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .snowfall-chart-container h3 {
+      color: #38bdf8;
+      margin-bottom: 18px;
+      font-size: 1.2em;
+      font-weight: 700;
+      text-align: center;
+    }
+    .chart-wrapper {
+      position: relative;
+      width: 100%;
+      height: 400px;
+    }
+
+    /* --- FORECAST TABLE --- */
+    .forecast-table-scroll {
+      display: flex;
+      flex-direction: row;
+      gap: 18px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+      scroll-snap-type: x mandatory;
+      width: 100%;
+      margin-top: 25px;
+    }
+    .forecast-table-scroll > .day-card {
+      scroll-snap-align: start;
+    }
+    .day-card {
+      background: rgba(44, 61, 100, 0.55);
+      border-radius: 20px;
+      box-shadow: 0 8px 32px 0 #0ea5e933, 0 2px 12px #000a;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      min-width: 220px;
+      max-width: 260px;
+      flex: 0 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      overflow: hidden;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .day-card:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 6px 20px #0ea5e9cc;
+    }
+    .day-header {
+      background: #33406e;
+      color: #ffffff;
+      padding: 12px 10px 8px 10px;
+      text-align: left;
+    }
+    .day-header h2 {
+      font-size: 1.1em;
+      margin: 0 0 2px 0;
+      font-weight: 700;
+      color: #38bdf8;
+    }
+    .day-header .date {
+      font-size: 0.9em;
+      color: #94a3b8;
+      font-weight: 400;
+    }
+    .day-summary {
+      background: #1a233a;
+      border-bottom: 2px solid #4a5568;
+      padding: 10px;
+      text-align: left;
+    }
+    .snow-total {
+      color: #38bdf8;
+      font-size: 1.3em;
+      font-weight: 900;
+      margin-bottom: 2px;
+      text-shadow: 0 0 8px #0ea5e9;
+    }
+    .snow-total.heavy {
+      color: #0ea5e9;
+      text-shadow: 0 0 12px #38bdf8;
+      font-size: 1.5em;
+    }
+    .day-info {
+      color: #a0aec0;
+      font-size: 0.9em;
+      font-weight: 500;
+      margin-top: 6px;
+    }
+    .details-matrix {
+      padding: 8px 10px 12px 10px;
+      background: transparent;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .details-row {
+      display: flex;
+      flex-direction: row;
+      gap: 18px;
+      justify-content: center;
+      font-size: 1em;
+      color: #38bdf8;
+    }
+    .details-row span {
+      font-size: 0.85em;
+    }
+
+    /* --- EXTENDED FORECAST --- */
+    .extended-forecast {
+      background: #1a233a;
+      border-radius: 20px;
+      padding: 24px 18px;
+      margin-top: 25px;
+      box-shadow: 0 0 20px #0ea5e933, 0 2px 12px #000a;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .extended-forecast h3 {
+      color: #38bdf8;
+      margin-bottom: 10px;
+      font-size: 1.2em;
+      font-weight: 700;
+      text-align: center;
+    }
+    .extended-note {
+      color: #94a3b8;
+      font-size: 0.95em;
+      margin-bottom: 15px;
+      text-align: center;
+      font-style: italic;
+    }
+    .extended-grid {
+      display: flex;
+      gap: 18px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+      scroll-snap-type: x mandatory;
+      width: 100%;
+    }
+    .extended-grid::-webkit-scrollbar {
+      height: 8px;
+    }
+    .extended-grid::-webkit-scrollbar-thumb {
+      background: #4a5568;
+      border-radius: 4px;
+    }
+    .extended-day {
+      background: #33406e;
+      color: #e0e0e0;
+      min-width: 180px;
+      border-radius: 16px;
+      padding: 18px 12px;
+      box-shadow: 0 8px 20px #0ea5e933, 0 2px 12px #000a;
+      scroll-snap-align: start;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .extended-day-name {
+      color: #38bdf8;
+      font-weight: 700;
+      margin-bottom: 5px;
+      font-size: 1em;
+    }
+    .extended-date {
+      color: #a0aec0;
+      margin-bottom: 10px;
+      font-size: 0.9em;
+    }
+    .extended-weather {
+      font-size: 2.2em;
+      margin-bottom: 6px;
+      color: #38bdf8;
+      text-shadow: 0 0 8px #0ea5e9;
+    }
+    .extended-condition {
+      color: #cbd5f5;
+      font-size: 0.9em;
+      margin-bottom: 6px;
+    }
+    .extended-description {
+      color: #a0aec0;
+      font-size: 0.8em;
+      margin-bottom: 6px;
+      font-style: italic;
+    }
+    .extended-snow {
+      color: #38bdf8;
+      font-weight: 900;
+      margin-top: 6px;
+      font-size: 1em;
+      text-shadow: 0 0 8px #0ea5e9;
+    }
+    .extended-temp {
+      color: #0ea5e9;
+      font-weight: 700;
+      margin-top: 8px;
+      font-size: 0.9em;
+    }
+    .extended-snow-line {
+      color: #cbd5f5;
+      font-size: 0.8em;
+      margin-top: 6px;
+      font-style: italic;
+    }
+
+    /* --- LAST UPDATED --- */
+    .last-updated {
+      text-align: center;
+      color: #a0aec0;
+      font-size: 0.95em;
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 2px solid #4a5568;
+    }
+
+    /* --- DATA SOURCES --- */
+    .data-sources {
+      background: #33406e;
+      border-radius: 16px;
+      padding: 20px;
+      margin-top: 20px;
+      box-shadow: 0 2px 8px #0ea5e933;
+      width: 100%;
+      max-width: 420px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .data-sources h3 {
+      color: #38bdf8;
+      font-size: 1.1em;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .source-indicator {
+      background: #232d4e;
+      border-radius: 8px;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .source-name {
+      color: #e0e0e0;
+      font-size: 1em;
+      font-weight: 500;
+    }
+    .source-status.active {
+      background: #38bdf8;
+      box-shadow: 0 0 12px #38bdf8cc;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .source-status.inactive {
+      background: #33406e;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    /* --- LOADING/ERROR --- */
+    .loading, .error {
+      background: #232d4e;
+      color: #38bdf8;
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      font-size: 1.1em;
+      margin: 18px auto;
+      max-width: 420px;
+      box-shadow: 0 2px 8px #0ea5e933;
+      display: none;
+    }
+    .error {
+      color: #ff6b6b;
+      background: #1a233a;
+    }
+
+    /* --- MEDIA QUERIES --- */
+    @media (max-width: 900px) {
+      .main-grid {
+        flex-direction: column;
+        gap: 18px;
+        align-items: center;
+      }
+      .current-conditions, .snow-outlook {
+        flex: 1 1 auto;
+        max-width: 100%;
+      }
+    }
+    @media (max-width: 600px) {
+      .container {
+        padding: 0 8px 24px 8px;
+      }
+      .header h1 {
+        font-size: 1.5em;
+      }
+      .altitude-boxes {
+        gap: 10px;
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .altitude-box {
+        min-width: auto;
+        max-width: 100%;
+      }
+      .day-card {
+        min-width: 160px;
+        max-width: 190px;
+      }
+      .extended-day {
+        min-width: 140px;
+      }
+      .conditions-grid, .outlook-row {
+        gap: 8px;
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .condition-card, .outlook-box {
+        min-width: auto;
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Resort Switcher -->
+    <div class="dropdown-resort">
+      <label for="resort-select">Select Resort</label>
+      <select id="resort-select" onchange="switchResort(this.value)">
+        <option value="Val-Thorens">Val Thorens - France</option>
+        <option value="Cervinia">Cervinia - Italy</option>
+        <option value="Via-Lattea">Via Lattea - Italy</option>
+        <option value="Monterosa-Ski">Monterosa Ski - Italy</option>
+      </select>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+      <h1 id="main-resort-header">❄️ Snow Forecast</h1>
+      <div class="subtitle">7-Day + 16-Day Weather & Snow Forecast</div>
+      <div class="resort-country">
+        <div id="country-tag">—</div>
+        <div id="region-tag">—</div>
+      </div>
+      <div class="info-menu">
+        <button class="info-menu-btn" onclick="toggleInfoMenu()">More Info ▾</button>
+        <div class="info-menu-dropdown" id="info-menu-dropdown">
+          <a href="#" id="piste-map-link" target="_blank">🗺️ Piste Map</a>
+          <a href="#" id="resort-website-link" target="_blank">🏔️ Resort Website</a>
+          <a href="#" id="lift-status-link" target="_blank">🚡 Lift Status</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="main-grid">
+      <div id="current-conditions" class="current-conditions"></div>
+      <div class="snow-outlook">
+        <h3>📊 7-Day Snow Outlook</h3>
+        <div class="outlook-row">
+          <div class="outlook-box">
+            <span class="outlook-label">Snow Days</span>
+            <span class="outlook-value" id="snow-days-value">—</span>
+          </div>
+          <div class="outlook-box">
+            <span class="outlook-label">Best Day</span>
+            <span class="outlook-value day" id="best-day-value">—</span>
+          </div>
+          <div class="outlook-box">
+            <span class="outlook-label">Lowest Temp</span>
+            <span class="outlook-value temp" id="lowest-temp-value">—</span>
+            <span class="outlook-value feels-like" id="lowest-feels-like">—</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Altitude Section -->
+    <div class="altitude-section">
+      <h2>📍 Snowfall by Altitude – This Week</h2>
+      <div class="altitude-boxes" id="altitude-boxes"></div>
+    </div>
+
+    <!-- Loading/Error -->
+    <div id="loading" class="loading">⏳ Loading forecast data...</div>
+    <div id="error" class="error">❌ Error loading data. Please try again.</div>
+
+    <!-- Chart -->
+    <div id="snowfall-chart-container" class="snowfall-chart-container" style="display:none;">
+      <h3>❄️ 16-Day Snowfall Forecast</h3>
+      <div class="chart-wrapper">
+        <canvas id="snowfallChart"></canvas>
+      </div>
+    </div>
+
+    <!-- 7-Day Forecast -->
+    <div id="forecast-content"></div>
+
+    <!-- Extended Forecast -->
+    <div id="extended-forecast" class="extended-forecast" style="display:none;"></div>
+
+    <!-- Last Updated -->
+    <div id="last-updated" class="last-updated"></div>
+
+    <!-- Data Sources -->
+    <div class="data-sources">
+      <h3>📊 Data Source</h3>
+      <div class="source-indicator">
+        <span class="source-status inactive" id="source-snow-forecast"></span>
+        <span class="source-name">Snow-Forecast.com</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Updated: 2025-12-01 - Fixed altitude calculations and chart labels
+    let currentElevation = 'bot';
+    let currentResort = 'Val-Thorens';
+    let allForecastsData = null;
+    let snowfallChart = null;
+    const GITHUB_URL = 'https://raw.githubusercontent.com/avielj/snowforcast/refs/heads/main/data/all-forecasts.json';
+    
+    const resortInfo = {
+      'Val-Thorens': {
+        name: 'Val Thorens',
+        country: 'France',
+        region: 'Three Valleys / France',
+        pisteMap: 'https://www.valthorens.com/en/ski/plan/',
+        website: 'https://www.valthorens.com/en/',
+        liftStatus: 'https://www.valthorens.com/en/infos-neige/',
+        heights: { bot: 2300, mid: 2800, top: 3230 }
+      },
+      'Cervinia': {
+        name: 'Cervinia',
+        country: 'Italy',
+        region: 'Valtournenche-Zermatt / Italy / Switzerland',
+        pisteMap: 'https://www.cervinia.it/en',
+        website: 'https://www.cervinia.it/en',
+        liftStatus: 'https://www.cervinia.it/en/impianti',
+        heights: { bot: 2050, mid: 2700, top: 3480 }
+      },
+      'Via-Lattea': {
+        name: 'Via Lattea',
+        country: 'Italy',
+        region: 'Piedmont / Italy',
+        pisteMap: 'https://www.vialattea.it/en/piste-map/',
+        website: 'https://www.vialattea.it/en/',
+        liftStatus: 'https://www.vialattea.it/en/lifts/',
+        heights: { bot: 1350, mid: 2100, top: 2823 }
+      },
+      'Monterosa-Ski': {
+        name: 'Monterosa Ski',
+        country: 'Italy',
+        region: 'Aosta Valley / Italy',
+        pisteMap: 'https://www.monterosa-ski.com/en/ski-area/piste-map/',
+        website: 'https://www.monterosa-ski.com/en/',
+        liftStatus: 'https://www.monterosa-ski.com/en/lifts-slopes/',
+        heights: { bot: 1212, mid: 2200, top: 3275 }
+      }
+    };
+
+    const weatherEmoji = {
+      'clear': '☀️', 'partly': '⛅', 'cloudy': '☁️', 'overcast': '☁️',
+      'light snow': '🌨️', 'snow': '❄️', 'heavy snow': '🌨️❄️', 'rain': '🌧️', 'sleet': '🌨️💧'
+    };
+
+    function getWeatherEmoji(condition) {
+      if (!condition) return '☁️';
+      const c = condition.toLowerCase();
+      for (const [key, emoji] of Object.entries(weatherEmoji)) {
+        if (c.includes(key)) return emoji;
+      }
+      return '❔';
+    }
+
+    function getWeatherCodeEmoji(code) {
+      if (code <= 2) return '☀️';
+      if (code <= 48) return '☁️';
+      if (code <= 67) return '🌧️';
+      if (code <= 82) return '🌨️';
+      return '❔';
+    }
+
+    function getWeatherConditionText(code) {
+      const map = {
+        0: 'Clear', 1: 'Partly Cloudy', 2: 'Overcast', 3: 'Overcast', 45: 'Foggy', 48: 'Foggy',
+        51: 'Light Drizzle', 53: 'Drizzle', 55: 'Heavy Drizzle', 61: 'Light Rain', 63: 'Rain', 65: 'Heavy Rain',
+        71: 'Light Snow', 73: 'Snow', 75: 'Heavy Snow', 77: 'Snow Grains', 80: 'Light Showers', 81: 'Showers', 82: 'Heavy Showers',
+        85: 'Light Snow Showers', 86: 'Heavy Snow Showers', 95: 'Thunderstorm', 96: 'Thunderstorm+Hail', 99: 'Thunderstorm+Snow'
+      };
+      return map[code] || 'Variable';
+    }
+
+    function toggleInfoMenu() {
+      const menu = document.getElementById('info-menu-dropdown');
+      menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    }
+
+    document.addEventListener('click', function(e) {
+      const menu = document.getElementById('info-menu-dropdown');
+      const btn = document.querySelector('.info-menu-btn');
+      if (!menu || !btn) return;
+      if (!btn.contains(e.target) && !menu.contains(e.target)) menu.style.display = 'none';
+    });
+
+    function switchResort(resort) {
+      currentResort = resort;
+      currentElevation = 'bot';
+      loadForecast();
+    }
+
+    function toggleElevation(elev) {
+      currentElevation = elev;
+      renderAll();
+    }
+
+    async function loadForecast() {
+      document.getElementById('loading').style.display = 'block';
+      document.getElementById('error').style.display = 'none';
+      try {
+        if (!allForecastsData) {
+          const resp = await fetch(GITHUB_URL);
+          allForecastsData = await resp.json();
+        }
+        updateHeader();
+        renderAll();
+        document.getElementById('loading').style.display = 'none';
+      } catch (e) {
+        console.error(e);
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('error').style.display = 'block';
+      }
+    }
+
+    function updateHeader() {
+      const info = resortInfo[currentResort];
+      document.getElementById('main-resort-header').innerHTML = `❄️ ${info.name} Snow Forecast`;
+      document.getElementById('country-tag').textContent = `${info.name} / ${info.country}`;
+      document.getElementById('region-tag').textContent = info.region;
+      document.getElementById('piste-map-link').href = info.pisteMap;
+      document.getElementById('resort-website-link').href = info.website;
+      document.getElementById('lift-status-link').href = info.liftStatus;
+    }
+
+    function renderAll() {
+      renderCurrentConditions();
+      renderAltitudeBoxes();
+      renderSummaryMetrics();
+      renderForecast();
+      renderExtendedForecast();
+      renderChart();
+      renderLastUpdated();
+      renderDataSources();
+    }
+
+    function getCurrentElevationData() {
+      const resortData = allForecastsData[currentResort];
+      return resortData ? resortData[currentElevation] : null;
+    }
+
+    function renderCurrentConditions() {
+      const elevData = getCurrentElevationData();
+      if (!elevData || !elevData.snow_conditions) {
+        document.getElementById('current-conditions').innerHTML = '';
+        return;
+      }
+      const c = elevData.snow_conditions;
+      const info = resortInfo[currentResort];
+      document.getElementById('current-conditions').innerHTML = `
+        <h2>❄️ Current Snow Conditions - ${info.name}</h2>
+        <div class="conditions-grid">
+          <div class="condition-card">
+            <span class="condition-label">Fresh Snow</span>
+            <span class="condition-value ${(c['Fresh snowfall depth'] && c['Fresh snowfall depth'] !== '—') ? 'highlight' : ''}">${c['Fresh snowfall depth'] || '—'}</span>
+          </div>
+          <div class="condition-card">
+            <span class="condition-label">Top Snow Depth</span>
+            <span class="condition-value highlight">${c['Top snow depth'] || '—'}</span>
+          </div>
+          <div class="condition-card">
+            <span class="condition-label">Bottom Snow Depth</span>
+            <span class="condition-value highlight">${c['Bottom snow depth'] || '—'}</span>
+          </div>
+          <div class="condition-card">
+            <span class="condition-label">Last Snowfall</span>
+            <span class="condition-value">${c['Last snowfall'] || '—'}</span>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderAltitudeBoxes() {
+      const resortData = allForecastsData[currentResort];
+      const info = resortInfo[currentResort];
+      if (!resortData) return;
+      
+      // Calculate total snow for each elevation by summing daily snow from 7-day forecast
+      let maxSnow = 0;
+      const elevationSnow = {};
+      
+      ['bot', 'mid', 'top'].forEach(elev => {
+        let totalSnow = 0;
+        const elevData = resortData[elev];
+        
+        if (elevData && elevData.days) {
+          elevData.days.forEach(day => {
+            ['am', 'pm', 'night'].forEach(period => {
+              if (day[period]) {
+                const snow = parseFloat(day[period].snow) || 0;
+                totalSnow += snow;
+              }
+            });
+          });
+        }
+        
+        elevationSnow[elev] = Math.round(totalSnow);
+        maxSnow = Math.max(maxSnow, elevationSnow[elev]);
+      });
+      
+      let html = '';
+      ['bot', 'mid', 'top'].forEach(elev => {
+        const active = elev === currentElevation ? 'active' : '';
+        const elevName = elev === 'bot' ? 'Bottom' : elev === 'mid' ? 'Mid' : 'Top';
+        const elevEmoji = elev === 'bot' ? '🏔️' : elev === 'mid' ? '⛰️' : '🗻';
+        const height = info.heights[elev];
+        const snow = elevationSnow[elev] || 0;
+        const barWidth = maxSnow > 0 ? (snow / maxSnow) * 100 : 0;
+        html += `
+          <div class="altitude-box ${elev} ${active}" onclick="toggleElevation('${elev}')" role="button" tabindex="0">
+            <h3>${elevEmoji} ${elevName}</h3>
+            <div class="height">${height}m</div>
+            <span class="snow-amount">${snow} cm</span>
+            <span class="snow-label">total snowfall</span>
+            <div class="altitude-bar-wrapper">
+              <div class="altitude-bar" style="width:${barWidth}%"></div>
+            </div>
+          </div>
+        `;
+      });
+      document.getElementById('altitude-boxes').innerHTML = html;
+    }
+
+    function renderSummaryMetrics() {
+      const elevData = getCurrentElevationData();
+      if (!elevData || !elevData.days) return;
+      const days = elevData.days.slice(0, 7);
+      let snowDays = 0, bestDay = '—', bestSnow = 0, lowestTemp = 99, lowestFeels = 99;
+      days.forEach(day => {
+        let totalSnow = 0;
+        ['am', 'pm', 'night'].forEach(period => {
+          if (day[period]) {
+            const snow = parseFloat(day[period].snow) || 0;
+            totalSnow += snow;
+            const temp = parseFloat(day[period].temperature);
+            if (!isNaN(temp) && temp < lowestTemp) lowestTemp = temp;
+            const feels = parseFloat(day[period].feels_like);
+            if (!isNaN(feels) && feels < lowestFeels) lowestFeels = feels;
+          }
+        });
+        if (totalSnow > 0) snowDays++;
+        if (totalSnow > bestSnow) {
+          bestSnow = totalSnow;
+          bestDay = day.name;
+        }
+      });
+      document.getElementById('snow-days-value').textContent = snowDays;
+      document.getElementById('best-day-value').textContent = bestDay;
+      const tempStr = lowestTemp < 99 ? `${lowestTemp}°C` : '—';
+      const feelsStr = (lowestFeels < 99 && lowestFeels < lowestTemp) ? ` (feels ${lowestFeels}°C)` : '';
+      document.getElementById('lowest-temp-value').textContent = tempStr;
+      document.getElementById('lowest-feels-like').textContent = feelsStr;
+    }
+
+    function renderForecast() {
+      const elevData = getCurrentElevationData();
+      if (!elevData || !elevData.days) {
+        document.getElementById('forecast-content').innerHTML = '';
+        return;
+      }
+      let html = '<div class="forecast-table-scroll">';
+      elevData.days.forEach(day => {
+        let totalSnow = 0;
+        let maxTemp = null;
+        let minTemp = null;
+        ['am', 'pm', 'night'].forEach(period => {
+          if (day[period]) {
+            totalSnow += parseFloat(day[period].snow) || 0;
+            const temp = parseFloat(day[period].temperature);
+            if (!isNaN(temp)) {
+              if (maxTemp === null || temp > maxTemp) maxTemp = temp;
+              if (minTemp === null || temp < minTemp) minTemp = temp;
+            }
+          }
+        });
+        const snowClass = totalSnow >= 10 ? 'heavy' : '';
+        const snowIcon = totalSnow > 0 ? '❄️' : '';
+        html += `
+          <div class="day-card">
+            <div class="day-header">
+              <h2>${day.name}</h2>
+              <div class="date">${day.date}</div>
+            </div>
+            <div class="day-summary">
+              <div class="snow-total ${snowClass}">${snowIcon} ${totalSnow.toFixed(0)} cm</div>
+              <div class="day-info">${minTemp !== null && maxTemp !== null ? `${minTemp}° to ${maxTemp}°C` : ''}</div>
+            </div>
+            <div class="details-matrix">
+        `;
+        let periods = [];
+        ['AM', 'PM', 'Night'].forEach((label, idx) => {
+          const periodKey = label === 'AM' ? 'am' : label === 'PM' ? 'pm' : 'night';
+          const p = day[periodKey];
+          if (p) {
+            const emoji = getWeatherEmoji(p.condition || '');
+            periods.push(`${emoji} ${label}`);
+          }
+        });
+        html += `<div class="details-row">${periods.map(p => `<span>${p}</span>`).join('')}</div>`;
+        html += `</div></div>`;
+      });
+      html += '</div>';
+      document.getElementById('forecast-content').innerHTML = html;
+    }
+
+    function renderExtendedForecast() {
+      const elevData = getCurrentElevationData();
+      if (!elevData || !elevData.extended || !elevData.extended.extended_forecast) {
+        document.getElementById('extended-forecast').style.display = 'none';
+        return;
+      }
+      const forecasts = elevData.extended.extended_forecast;
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const day7 = new Date(today.getTime() + 6 * 24 * 60 * 60 * 1000);
+      const longRange = forecasts.filter(day => {
+        const dayDate = new Date(day.date);
+        dayDate.setHours(0, 0, 0, 0);
+        return dayDate > day7;
+      });
+      if (longRange.length === 0) {
+        document.getElementById('extended-forecast').style.display = 'none';
+        return;
+      }
+      const info = resortInfo[currentResort];
+      const resortHeight = info.heights[currentElevation];
+      let html = `
+        <h3>📅 Extended Outlook (Days 8-16)</h3>
+        <div class="extended-note"><em>Long-range forecast from OpenMeteo - trends only, subject to change</em></div>
+        <div class="extended-grid">
+      `;
+      longRange.forEach(day => {
+        let snowfall = day.snowfall || 0;
+        let rain = day.rain || 0;
+        const avgTemp = (day.temp_min + day.temp_max) / 2;
+        if (avgTemp < 0 && rain > 0) {
+          snowfall += rain / 10;
+          rain = 0;
+        }
+        const hasSnow = snowfall > 0;
+        const hasRain = rain > 0;
+        const weatherEmoji = getWeatherCodeEmoji(day.weather_code);
+        let weatherCondition = getWeatherConditionText(day.weather_code);
+        let snowLineMsg = '';
+        let weatherDesc = '';
+        if (hasSnow && hasRain) {
+          if (day.weather_code >= 85 && day.weather_code <= 86) {
+            weatherCondition = 'Shwrs';
+            weatherDesc = 'Snow showers at altitude, rain showers below.';
+          } else {
+            weatherCondition = 'Lt Snow Shwrs';
+            weatherDesc = 'Light snow at altitude, light rain showers below.';
+          }
+          if (day.freezing_level_min && day.freezing_level_max) {
+            const minFreeze = Math.round(day.freezing_level_min);
+            const maxFreeze = Math.round(day.freezing_level_max);
+            if (minFreeze < resortHeight) {
+              snowLineMsg = `Snow Line from ${maxFreeze}m to resort level.`;
+            } else {
+              snowLineMsg = `Snow Line from ${maxFreeze}m to ${minFreeze}m, with rain below.`;
+            }
+          }
+        } else if (hasSnow) {
+          if (day.freezing_level_min && day.freezing_level_min < resortHeight) {
+            snowLineMsg = 'Snow falling to resort level.';
+          }
+        } else if (hasRain) {
+          snowLineMsg = 'Rain';
+        }
+        let snowDisplay = '';
+        if (hasSnow) {
+          const snowCm = Math.round(snowfall);
+          if (snowfall < 1) {
+            snowDisplay = `up to 1cm New Snow`;
+          } else if (snowfall < 2) {
+            snowDisplay = `up to ${snowCm + 1}cm New Snow`;
+          } else {
+            snowDisplay = `${snowCm}cm New Snow`;
+          }
+        }
+        html += `
+          <div class="extended-day">
+            <div class="extended-day-name">${day.day_name}</div>
+            <div class="extended-date">${new Date(day.date).toLocaleDateString('en-GB', {day: 'numeric', month: 'short'})}</div>
+            <div class="extended-weather">${weatherEmoji}</div>
+            <div class="extended-condition">${weatherCondition}</div>
+            ${snowDisplay ? `<div class="extended-snow">${snowDisplay}</div>` : ''}
+            ${weatherDesc ? `<div class="extended-description">${weatherDesc}</div>` : ''}
+            ${snowLineMsg ? `<div class="extended-snow-line">${snowLineMsg}</div>` : ''}
+            <div class="extended-temp">Max ${Math.round(day.temp_max)}℃<br>Min ${Math.round(day.temp_min)}℃</div>
+          </div>
+        `;
+      });
+      html += '</div>';
+      document.getElementById('extended-forecast').innerHTML = html;
+      document.getElementById('extended-forecast').style.display = 'flex';
+    }
+
+    function renderChart() {
+      const elevData = getCurrentElevationData();
+      if (!elevData || !elevData.extended || !elevData.extended.extended_forecast) {
+        document.getElementById('snowfall-chart-container').style.display = 'none';
+        return;
+      }
+      const sevenDayData = elevData.days || [];
+      const extendedData = elevData.extended.extended_forecast || [];
+      const labels = [];
+      const snowfallData = [];
+      const temperatureData = [];
+      const weatherEmojis = [];
+      const colors = [];
+      sevenDayData.forEach(day => {
+        let totalSnow = 0;
+        let maxTemp = null;
+        let conditions = [];
+        ['am', 'pm', 'night'].forEach(period => {
+          if (day[period]) {
+            totalSnow += parseFloat(day[period].snow) || 0;
+            const temp = parseFloat(day[period].temperature);
+            if (!isNaN(temp) && (maxTemp === null || temp > maxTemp)) {
+              maxTemp = temp;
+            }
+            if (day[period].condition) {
+              conditions.push(day[period].condition.toLowerCase());
+            }
+          }
+        });
+        const conditionsStr = conditions.join(' ');
+        let emoji = '☁️';
+        if (conditionsStr.includes('clear') || conditionsStr.includes('sunny')) emoji = '☀️';
+        else if (conditionsStr.includes('snow')) emoji = '❄️';
+        else if (conditionsStr.includes('rain')) emoji = '🌧️';
+        else if (conditionsStr.includes('fog')) emoji = '🌫️';
+        else if (conditionsStr.includes('part') || conditionsStr.includes('partly')) emoji = '⛅';
+        // Use date if available, otherwise use day name
+        let label = day.name;
+        if (day.date) {
+          const dateStr = day.date;
+          if (dateStr.match(/\d+\s+\w+/) || dateStr.match(/\d+\/\d+/)) {
+            label = dateStr;
+          }
+        }
+        labels.push(label);
+        snowfallData.push(totalSnow);
+        temperatureData.push(maxTemp);
+        weatherEmojis.push(emoji);
+        colors.push('rgba(56, 189, 248, 0.8)');
+      });
+      extendedData.forEach(day => {
+        let snowfall = day.snowfall || 0;
+        let rain = day.rain || 0;
+        const avgTemp = (day.temp_min + day.temp_max) / 2;
+        if (avgTemp < 0 && rain > 0) {
+          snowfall += rain / 10;
+        }
+        const date = new Date(day.date);
+        const shortLabel = date.toLocaleDateString('en-GB', {day: 'numeric', month: 'short'});
+        const emoji = getWeatherCodeEmoji(day.weather_code);
+        labels.push(shortLabel);
+        snowfallData.push(snowfall);
+        temperatureData.push(day.temp_max);
+        weatherEmojis.push(emoji);
+        colors.push('rgba(147, 112, 219, 0.7)');
+      });
+      document.getElementById('snowfall-chart-container').style.display = 'block';
+      if (snowfallChart) {
+        snowfallChart.destroy();
+      }
+      const ctx = document.getElementById('snowfallChart').getContext('2d');
+      snowfallChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Snowfall (cm)',
+            data: snowfallData,
+            backgroundColor: colors,
+            borderColor: colors.map(c => c.replace('0.8', '1').replace('0.7', '1')),
+            borderWidth: 2,
+            yAxisID: 'y',
+            order: 2
+          }, {
+            label: 'Max Temp (°C)',
+            data: temperatureData,
+            type: 'line',
+            borderColor: 'rgba(255, 99, 132, 1)',
+            backgroundColor: 'rgba(255, 99, 132, 0.1)',
+            borderWidth: 3,
+            pointRadius: 6,
+            pointHoverRadius: 8,
+            pointBackgroundColor: 'rgba(255, 99, 132, 1)',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2,
+            yAxisID: 'y1',
+            order: 1,
+            tension: 0.3
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: true,
+              position: 'top',
+              labels: {
+                font: { size: 12, weight: 'bold' },
+                usePointStyle: true,
+                padding: 15,
+                color: '#e0e0e0'
+              }
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  if (context.dataset.label === 'Snowfall (cm)') {
+                    return '❄️ ' + context.parsed.y.toFixed(1) + ' cm';
+                  } else {
+                    return '🌡️ ' + context.parsed.y.toFixed(1) + '°C';
+                  }
+                },
+                title: function(context) {
+                  const index = context[0].dataIndex;
+                  return weatherEmojis[index] + ' ' + context[0].label;
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              position: 'left',
+              title: {
+                display: true,
+                text: 'Snowfall (cm)',
+                font: { size: 14, weight: 'bold' },
+                color: 'rgba(56, 189, 248, 1)'
+              },
+              ticks: {
+                callback: function(value) { return value + ' cm'; },
+                color: 'rgba(56, 189, 248, 1)'
+              },
+              grid: { color: 'rgba(255, 255, 255, 0.05)' }
+            },
+            y1: {
+              position: 'right',
+              title: {
+                display: true,
+                text: 'Max Temperature (°C)',
+                font: { size: 14, weight: 'bold' },
+                color: 'rgba(255, 99, 132, 1)'
+              },
+              ticks: {
+                callback: function(value) { return value + '°C'; },
+                color: 'rgba(255, 99, 132, 1)'
+              },
+              grid: { drawOnChartArea: false }
+            },
+            x: {
+              ticks: {
+                callback: function(value, index) {
+                  return weatherEmojis[index] + '\n' + this.getLabelForValue(value);
+                },
+                font: { size: 11 },
+                maxRotation: 0,
+                minRotation: 0,
+                color: '#94a3b8'
+              },
+              title: {
+                display: true,
+                text: 'Date',
+                font: { size: 14, weight: 'bold' },
+                color: '#38bdf8'
+              },
+              grid: { color: 'rgba(255, 255, 255, 0.05)' }
+            }
+          }
+        }
+      });
+    }
+
+    function renderLastUpdated() {
+      const resortData = allForecastsData[currentResort];
+      if (!resortData) return;
+      let mostRecent = null;
+      ['bot', 'mid', 'top'].forEach(elev => {
+        if (resortData[elev] && resortData[elev].last_updated) {
+          const t = new Date(resortData[elev].last_updated);
+          if (!mostRecent || t > mostRecent) mostRecent = t;
+        }
+      });
+      if (mostRecent) {
+        const opts = {
+          year: 'numeric', month: 'numeric', day: 'numeric',
+          hour: 'numeric', minute: 'numeric', second: 'numeric',
+          timeZone: 'Europe/Paris', timeZoneName: 'short'
+        };
+        document.getElementById('last-updated').innerHTML = `📅 Last updated: ${mostRecent.toLocaleString('en-US', opts)}`;
+      } else {
+        document.getElementById('last-updated').innerHTML = `📅 Last updated: ${new Date().toLocaleString()}`;
+      }
+    }
+
+    function renderDataSources() {
+      const indicator = document.getElementById('source-snow-forecast');
+      if (indicator) {
+        indicator.classList.remove('inactive');
+        indicator.classList.add('active');
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', loadForecast);
+  </script>
+</body>
+</html>

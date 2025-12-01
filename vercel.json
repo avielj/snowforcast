@@ -16,6 +16,10 @@
     {
       "src": "forecast-modern.html",
       "use": "@vercel/static"
+    },
+    {
+      "src": "forecast_new.html",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
@@ -30,6 +34,10 @@
     {
       "src": "/forecast-modern.html",
       "dest": "/forecast-modern.html"
+    },
+    {
+      "src": "/forecast_new.html",
+      "dest": "/forecast_new.html"
     },
     {
       "src": "/api/(.*)",

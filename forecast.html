@@ -574,6 +574,33 @@
             color: #2c3e50;
         }
         
+        /* Version Link Styles */
+        .version-link {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background: linear-gradient(135deg, #f8f9fa, #ffffff);
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .version-link a {
+            display: inline-block;
+            background: linear-gradient(135deg, #4a90e2, #357abd);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.95em;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .version-link a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.4);
+        }
+        
         /* Extended Forecast Styles */
         .extended-forecast {
             margin-top: 40px;
@@ -771,9 +798,14 @@
                 </div>
             </div>
         </div>
+        
+        <div class="version-link">
+            <a href="/forecast_new.html">✨ Try the New Dark Design →</a>
+        </div>
     </div>
 
     <script>
+        // Chart date label fix - Updated: 2025-12-01
         let currentElevation = 'bot';
         let currentResort = 'Val-Thorens';
         let allElevationData = {}; // Store data for all elevations
@@ -939,7 +971,18 @@
                     emoji = '⛅';
                 }
                 
-                labels.push(day.name);
+                // Use date if available, otherwise use day name
+                let label = day.name;
+                if (day.date) {
+                    // Parse the date string (format is usually like "1 Dec" or "01/12/2025")
+                    const dateStr = day.date;
+                    // If date contains "/" or a number followed by month name, parse it
+                    if (dateStr.match(/\d+\s+\w+/) || dateStr.match(/\d+\/\d+/)) {
+                        label = dateStr;
+                    }
+                }
+                
+                labels.push(label);
                 snowfallData.push(totalSnow);
                 temperatureData.push(maxTemp);
                 weatherEmojis.push(emoji);

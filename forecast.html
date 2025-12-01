@@ -335,6 +335,13 @@
             padding: 25px;
             margin: 30px 0;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .snowfall-chart-container:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
         }
         
         .snowfall-chart-container h3 {
@@ -342,6 +349,82 @@
             margin-bottom: 20px;
             text-align: center;
             font-size: 1.5em;
+        }
+        
+        /* Chart Modal Styles */
+        .chart-modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            overflow: auto;
+            animation: fadeIn 0.3s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .chart-modal-content {
+            position: relative;
+            background-color: white;
+            margin: 2% auto;
+            padding: 30px;
+            width: 95%;
+            max-width: 1400px;
+            border-radius: 20px;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.3s;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .chart-modal-close {
+            position: absolute;
+            top: 15px;
+            right: 25px;
+            color: #2c3e50;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+            z-index: 10000;
+        }
+        
+        .chart-modal-close:hover,
+        .chart-modal-close:focus {
+            color: #e74c3c;
+        }
+        
+        .modal-chart-wrapper {
+            position: relative;
+            height: 600px;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .modal-chart-wrapper {
+                height: 500px;
+            }
+            .chart-modal-content {
+                width: 98%;
+                margin: 5% auto;
+                padding: 20px;
+            }
         }
         
         .chart-wrapper {
@@ -768,10 +851,21 @@
         </div>
         
         <!-- Snowfall Chart -->
-        <div id="snowfall-chart-container" class="snowfall-chart-container" style="display: none;">
-            <h3>❄️ 16-Day Snowfall Forecast</h3>
+        <div id="snowfall-chart-container" class="snowfall-chart-container" style="display: none;" onclick="openChartModal()">
+            <h3>❄️ 16-Day Snowfall Forecast <span style="font-size: 0.7em; opacity: 0.7;">(Click to zoom)</span></h3>
             <div class="chart-wrapper">
                 <canvas id="snowfallChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- Chart Modal -->
+        <div id="chartModal" class="chart-modal">
+            <div class="chart-modal-content">
+                <span class="chart-modal-close" onclick="closeChartModal()">&times;</span>
+                <h3 style="text-align: center; color: #2c3e50; margin-bottom: 20px;">❄️ 16-Day Snowfall Forecast</h3>
+                <div class="modal-chart-wrapper">
+                    <canvas id="modalSnowfallChart"></canvas>
+                </div>
             </div>
         </div>
         
@@ -1189,6 +1283,312 @@
                                 text: 'Date',
                                 font: {
                                     size: 14,
+                                    weight: 'bold'
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        let modalChart = null;
+        
+        function openChartModal() {
+            const modal = document.getElementById('chartModal');
+            modal.style.display = 'block';
+            
+            // Prevent event from bubbling
+            event.stopPropagation();
+            
+            // Create the chart in the modal
+            setTimeout(() => {
+                createModalChart();
+            }, 100);
+            
+            // Close modal on ESC key
+            document.addEventListener('keydown', handleEscKey);
+        }
+        
+        function closeChartModal() {
+            const modal = document.getElementById('chartModal');
+            modal.style.display = 'none';
+            
+            // Destroy modal chart
+            if (modalChart) {
+                modalChart.destroy();
+                modalChart = null;
+            }
+            
+            // Remove ESC key listener
+            document.removeEventListener('keydown', handleEscKey);
+        }
+        
+        function handleEscKey(event) {
+            if (event.key === 'Escape') {
+                closeChartModal();
+            }
+        }
+        
+        // Close modal when clicking outside the chart
+        window.onclick = function(event) {
+            const modal = document.getElementById('chartModal');
+            if (event.target === modal) {
+                closeChartModal();
+            }
+        }
+        
+        function createModalChart() {
+            const resortData = allForecastsData[currentResort];
+            if (!resortData) return;
+            
+            const elevationData = resortData[currentElevation];
+            if (!elevationData || !elevationData.extended || !elevationData.extended.extended_forecast) {
+                return;
+            }
+            
+            // Combine 7-day forecast and extended forecast
+            const sevenDayData = elevationData.days || [];
+            const extendedData = elevationData.extended.extended_forecast || [];
+            
+            // Get the last date from 7-day forecast to filter extended forecast
+            let lastSevenDayDate = null;
+            if (sevenDayData.length > 0) {
+                const lastDay = sevenDayData[sevenDayData.length - 1];
+                if (lastDay.date) {
+                    const today = new Date();
+                    const currentYear = today.getFullYear();
+                    const currentMonth = today.getMonth();
+                    const dayNum = parseInt(lastDay.date);
+                    lastSevenDayDate = new Date(currentYear, currentMonth, dayNum);
+                    lastSevenDayDate.setHours(23, 59, 59, 999); // End of day
+                }
+            }
+            
+            // Prepare data for chart
+            const labels = [];
+            const snowfallData = [];
+            const temperatureData = [];
+            const weatherEmojis = [];
+            const colors = [];
+            
+            // Add 7-day forecast data (BLUE)
+            sevenDayData.forEach(day => {
+                let totalSnow = 0;
+                let maxTemp = null;
+                let conditions = [];
+                
+                ['am', 'pm', 'night'].forEach(period => {
+                    if (day[period]) {
+                        totalSnow += parseFloat(day[period].snow) || 0;
+                        const temp = parseFloat(day[period].temperature);
+                        if (!isNaN(temp) && (maxTemp === null || temp > maxTemp)) {
+                            maxTemp = temp;
+                        }
+                        if (day[period].condition) {
+                            conditions.push(day[period].condition.toLowerCase());
+                        }
+                    }
+                });
+                
+                // Determine emoji from conditions
+                const conditionsStr = conditions.join(' ');
+                let emoji = '☁️'; // default cloudy
+                if (conditionsStr.includes('clear') || conditionsStr.includes('sunny')) {
+                    emoji = '☀️';
+                } else if (conditionsStr.includes('snow')) {
+                    emoji = '❄️';
+                } else if (conditionsStr.includes('rain')) {
+                    emoji = '🌧️';
+                } else if (conditionsStr.includes('fog')) {
+                    emoji = '🌫️';
+                } else if (conditionsStr.includes('part') || conditionsStr.includes('partly')) {
+                    emoji = '⛅';
+                }
+                
+                // Use computed weekday and date from actual date
+                const weekday = day.date ? getWeekdayFromDate(day.date) : day.name;
+                const shortDate = day.date ? getShortDate(day.date) : '';
+                const label = shortDate ? `${weekday} ${shortDate}` : weekday;
+                
+                labels.push(label);
+                snowfallData.push(totalSnow);
+                temperatureData.push(maxTemp);
+                weatherEmojis.push(emoji);
+                colors.push('rgba(74, 144, 226, 0.8)'); // Blue for 7-day forecast
+            });
+            
+            // Add extended forecast data (PURPLE) - only days AFTER the 7-day forecast
+            extendedData.forEach(day => {
+                // Filter: only include days after the last 7-day forecast date
+                if (lastSevenDayDate) {
+                    const extDate = new Date(day.date);
+                    if (extDate <= lastSevenDayDate) {
+                        return; // Skip this day - it's already in the 7-day forecast
+                    }
+                }
+                
+                let snowfall = day.snowfall || 0;
+                let rain = day.rain || 0;
+                
+                // Convert rain to snow if temp is below 0°C
+                const avgTemp = (day.temp_min + day.temp_max) / 2;
+                if (avgTemp < 0 && rain > 0) {
+                    snowfall += rain / 10;
+                }
+                
+                const weekday = getWeekdayFromDate(day.date);
+                const shortDate = getShortDate(day.date);
+                const label = `${weekday} ${shortDate}`;
+                const emoji = getWeatherCodeEmoji(day.weather_code);
+                
+                labels.push(label);
+                snowfallData.push(snowfall);
+                temperatureData.push(day.temp_max);
+                weatherEmojis.push(emoji);
+                colors.push('rgba(147, 112, 219, 0.7)'); // Purple for extended forecast
+            });
+            
+            // Destroy existing modal chart if it exists
+            if (modalChart) {
+                modalChart.destroy();
+            }
+            
+            // Create new chart in modal
+            const ctx = document.getElementById('modalSnowfallChart').getContext('2d');
+            modalChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Snowfall (cm)',
+                        data: snowfallData,
+                        backgroundColor: colors,
+                        borderColor: colors.map(c => c.replace('0.8', '1').replace('0.7', '1')),
+                        borderWidth: 2,
+                        yAxisID: 'y',
+                    }, {
+                        label: 'Max Temperature (°C)',
+                        data: temperatureData,
+                        type: 'line',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                        borderWidth: 3,
+                        pointRadius: 5,
+                        pointBackgroundColor: 'rgba(255, 99, 132, 1)',
+                        yAxisID: 'y1',
+                        tension: 0.4,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                font: {
+                                    size: 16,
+                                    weight: 'bold'
+                                },
+                                usePointStyle: true,
+                                padding: 20
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    if (context.dataset.label === 'Snowfall (cm)') {
+                                        return '❄️ ' + context.parsed.y.toFixed(1) + ' cm';
+                                    } else {
+                                        return '🌡️ ' + context.parsed.y.toFixed(1) + '°C';
+                                    }
+                                },
+                                title: function(context) {
+                                    const index = context[0].dataIndex;
+                                    return weatherEmojis[index] + ' ' + context[0].label;
+                                }
+                            },
+                            titleFont: {
+                                size: 16
+                            },
+                            bodyFont: {
+                                size: 14
+                            },
+                            padding: 12
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'Snowfall (cm)',
+                                font: {
+                                    size: 18,
+                                    weight: 'bold'
+                                },
+                                color: 'rgba(74, 144, 226, 1)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return value + ' cm';
+                                },
+                                color: 'rgba(74, 144, 226, 1)',
+                                font: {
+                                    size: 14
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        y1: {
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'Max Temperature (°C)',
+                                font: {
+                                    size: 18,
+                                    weight: 'bold'
+                                },
+                                color: 'rgba(255, 99, 132, 1)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '°C';
+                                },
+                                color: 'rgba(255, 99, 132, 1)',
+                                font: {
+                                    size: 14
+                                }
+                            },
+                            grid: {
+                                drawOnChartArea: false
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                callback: function(value, index) {
+                                    return weatherEmojis[index] + '\n' + this.getLabelForValue(value);
+                                },
+                                font: {
+                                    size: 13
+                                },
+                                maxRotation: 0,
+                                minRotation: 0
+                            },
+                            title: {
+                                display: true,
+                                text: 'Date',
+                                font: {
+                                    size: 18,
                                     weight: 'bold'
                                 }
                             }

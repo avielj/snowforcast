@@ -353,6 +353,106 @@ def fetch_forecast(resort='Val-Thorens', elevation='bot'):
     
     return result
 
+def fill_missing_days_from_openmeteo(snow_forecast_data, extended_forecast, target_days=7):
+    """
+    Fill missing days to reach target_days using OpenMeteo extended forecast data.
+    Converts OpenMeteo daily data into the snow-forecast.com format with AM/PM/Night periods.
+    """
+    if not extended_forecast or 'extended_forecast' not in extended_forecast:
+        return snow_forecast_data
+    
+    current_days = snow_forecast_data.get('days', [])
+    if len(current_days) >= target_days:
+        return snow_forecast_data  # Already have enough days
+    
+    # Get the dates we already have
+    existing_dates = set()
+    for day in current_days:
+        if 'date' in day:
+            # Convert to full date for comparison
+            from datetime import datetime
+            today = datetime.now()
+            day_num = int(day['date'])
+            existing_dates.add(f"{today.year}-{today.month:02d}-{day_num:02d}")
+    
+    # Map weather codes to conditions
+    def weather_code_to_condition(code):
+        weather_map = {
+            0: 'clear', 1: 'clear', 2: 'part cloud', 3: 'cloud',
+            45: 'fog', 48: 'fog',
+            51: 'light drizzle', 53: 'drizzle', 55: 'drizzle',
+            61: 'light rain', 63: 'rain', 65: 'rain',
+            71: 'light snow', 73: 'snow', 75: 'snow showers',
+            77: 'snow', 80: 'rain showers', 81: 'rain showers', 82: 'rain showers',
+            85: 'snow showers', 86: 'snow showers',
+            95: 'thunderstorm', 96: 'thunderstorm', 99: 'thunderstorm'
+        }
+        return weather_map.get(code, 'cloud')
+    
+    # Add missing days from extended forecast
+    days_added = 0
+    for ext_day in extended_forecast['extended_forecast']:
+        if len(current_days) >= target_days:
+            break
+            
+        # Check if this date is already in our forecast
+        if ext_day['date'] in existing_dates:
+            continue
+        
+        # Extract date parts
+        date_parts = ext_day['date'].split('-')
+        day_num = date_parts[2].lstrip('0')  # Remove leading zero
+        
+        # Create periods (AM/PM/Night) from daily data
+        # We'll approximate since OpenMeteo gives us daily averages
+        temp_avg = (ext_day['temp_max'] + ext_day['temp_min']) / 2
+        snowfall_total = ext_day.get('snowfall', 0)
+        rain_total = ext_day.get('rain', 0)
+        condition = weather_code_to_condition(ext_day.get('weather_code', 3))
+        
+        # Distribute snow across periods (mostly at night in mountains)
+        snow_night = round(snowfall_total * 0.5, 1) if snowfall_total > 0 else 0
+        snow_am = round(snowfall_total * 0.3, 1) if snowfall_total > 0 else 0
+        snow_pm = round(snowfall_total * 0.2, 1) if snowfall_total > 0 else 0
+        
+        new_day = {
+            'name': ext_day['day_name'],
+            'date': day_num,
+            'am': {
+                'condition': condition,
+                'temperature': f"{ext_day['temp_min']:.1f}",
+                'feels_like': f"{ext_day['temp_min'] - 3:.1f}",  # Approximate wind chill
+                'snow': str(snow_am),
+                'rain': str(round(rain_total * 0.3, 1)),
+                'wind': '10.0 km/h W'  # Default wind
+            },
+            'pm': {
+                'condition': condition,
+                'temperature': f"{ext_day['temp_max']:.1f}",
+                'feels_like': f"{ext_day['temp_max'] - 2:.1f}",
+                'snow': str(snow_pm),
+                'rain': str(round(rain_total * 0.4, 1)),
+                'wind': '10.0 km/h W'
+            },
+            'night': {
+                'condition': condition,
+                'temperature': f"{temp_avg:.1f}",
+                'feels_like': f"{temp_avg - 4:.1f}",
+                'snow': str(snow_night),
+                'rain': str(round(rain_total * 0.3, 1)),
+                'wind': '5.0 km/h W'
+            }
+        }
+        
+        current_days.append(new_day)
+        days_added += 1
+    
+    if days_added > 0:
+        print(f"  ✓ Added {days_added} day(s) from OpenMeteo to reach {len(current_days)} days")
+    
+    snow_forecast_data['days'] = current_days
+    return snow_forecast_data
+
 def main():
     """Generate forecast data for all resorts and elevations."""
     
@@ -451,6 +551,20 @@ def main():
                     # Store extended forecast within the elevation data
                     if elevation in all_data[resort]:
                         all_data[resort][elevation]['extended'] = extended
+                        
+                        # Fill missing days to get 7-day forecast
+                        if 'days' in all_data[resort][elevation]:
+                            all_data[resort][elevation] = fill_missing_days_from_openmeteo(
+                                all_data[resort][elevation],
+                                extended,
+                                target_days=7
+                            )
+                            
+                            # Re-save individual file with complete 7 days
+                            filename = f"data/{resort.lower()}-{elevation}.json"
+                            with open(filename, 'w') as f:
+                                json.dump(all_data[resort][elevation], f, indent=2, default=str)
+                            print(f"  ✓ Updated {filename} with complete forecast")
                     else:
                         all_data[resort][elevation] = {'extended': extended}
     

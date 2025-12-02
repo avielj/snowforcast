@@ -1941,7 +1941,24 @@
             
             let html = `<div class="forecast-grid ${forecastVisible ? 'visible' : ''}">`;
             
+            // Get today's date for filtering
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // Reset to start of day
+            const currentMonth = today.getMonth();
+            const currentYear = today.getFullYear();
+            
             for (const day of data.days) {
+                // Skip past days - only show today and future
+                if (day.date) {
+                    const dayNum = parseInt(day.date);
+                    const dayDate = new Date(currentYear, currentMonth, dayNum);
+                    dayDate.setHours(0, 0, 0, 0);
+                    
+                    if (dayDate < today) {
+                        continue; // Skip this day - it's in the past
+                    }
+                }
+                
                 // Calculate total snow for the day
                 let totalSnow = 0;
                 let maxTemp = null;

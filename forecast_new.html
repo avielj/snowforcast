@@ -1214,8 +1214,26 @@
         document.getElementById('forecast-content').innerHTML = '';
         return;
       }
+      
+      // Get today's date for filtering
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Reset to start of day
+      const currentMonth = today.getMonth();
+      const currentYear = today.getFullYear();
+      
       let html = '<div class="forecast-table-scroll">';
       elevData.days.forEach(day => {
+        // Skip past days - only show today and future
+        if (day.date) {
+          const dayNum = parseInt(day.date);
+          const dayDate = new Date(currentYear, currentMonth, dayNum);
+          dayDate.setHours(0, 0, 0, 0);
+          
+          if (dayDate < today) {
+            return; // Skip this day - it's in the past
+          }
+        }
+        
         let totalSnow = 0;
         let maxTemp = null;
         let minTemp = null;

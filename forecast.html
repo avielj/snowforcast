@@ -1049,6 +1049,9 @@
         function switchResort(resort) {
             currentResort = resort;
             
+            // Update URL hash (e.g., #gudauri)
+            window.location.hash = resort.toLowerCase();
+            
             // Update active link
             document.querySelectorAll('.elevation-links a[data-resort]').forEach(link => {
                 link.classList.remove('active');
@@ -1066,6 +1069,28 @@
             // Reload forecast for new resort (will use cached data)
             loadForecast();
         }
+        
+        // Load resort from URL hash on page load
+        function loadResortFromHash() {
+            const hash = window.location.hash.substring(1); // Remove the '#'
+            if (hash) {
+                // Convert hash to proper resort key format (e.g., 'valthorens' -> 'Val-Thorens')
+                const resortKey = Object.keys(resortInfo).find(key => 
+                    key.toLowerCase().replace('-', '') === hash.toLowerCase().replace('-', '')
+                );
+                if (resortKey) {
+                    switchResort(resortKey);
+                    return;
+                }
+            }
+            // Default to Val-Thorens if no valid hash
+            loadForecast();
+        }
+        
+        // Listen for hash changes (back/forward navigation)
+        window.addEventListener('hashchange', function() {
+            loadResortFromHash();
+        });
         
         function updateResortLinks() {
             const info = resortInfo[currentResort];
@@ -2317,7 +2342,7 @@
         // Load forecast when page loads
         window.addEventListener('DOMContentLoaded', function() {
             updateResortLinks();
-            loadForecast();
+            loadResortFromHash(); // Load from URL hash or default resort
         });
     </script>
 </body>

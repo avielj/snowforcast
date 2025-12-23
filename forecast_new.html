@@ -1073,8 +1073,37 @@
     function switchResort(resort) {
       currentResort = resort;
       currentElevation = 'bot';
+      
+      // Update URL hash (e.g., #gudauri)
+      window.location.hash = resort.toLowerCase();
+      
+      // Update dropdown selection
+      document.getElementById('resort-select').value = resort;
+      
       loadForecast();
     }
+    
+    // Load resort from URL hash on page load
+    function loadResortFromHash() {
+      const hash = window.location.hash.substring(1); // Remove the '#'
+      if (hash) {
+        // Convert hash to proper resort key format (e.g., 'valthorens' -> 'Val-Thorens')
+        const resortKey = Object.keys(resortInfo).find(key => 
+          key.toLowerCase().replace('-', '') === hash.toLowerCase().replace('-', '')
+        );
+        if (resortKey) {
+          currentResort = resortKey;
+          document.getElementById('resort-select').value = resortKey;
+        }
+      }
+      // Load forecast (either from hash or default)
+      loadForecast();
+    }
+    
+    // Listen for hash changes (back/forward navigation)
+    window.addEventListener('hashchange', function() {
+      loadResortFromHash();
+    });
 
     function toggleElevation(elev) {
       currentElevation = elev;
@@ -1842,7 +1871,7 @@
       }
     }
 
-    window.addEventListener('DOMContentLoaded', loadForecast);
+    window.addEventListener('DOMContentLoaded', loadResortFromHash);
   </script>
 </body>
 </html>

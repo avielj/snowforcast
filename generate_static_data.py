@@ -464,7 +464,10 @@ def main():
         'Val-Thorens': {'lat': 45.2973, 'lon': 6.5801},
         'Cervinia': {'lat': 45.9333, 'lon': 7.6294},
         'Via-Lattea': {'lat': 45.0, 'lon': 6.8833},  # Sestriere
-        'Monterosa-Ski': {'lat': 45.8333, 'lon': 7.7167}  # Champoluc
+        'Monterosa-Ski': {'lat': 45.8333, 'lon': 7.7167},  # Champoluc
+        'Gudauri': {'lat': 42.4789, 'lon': 44.4728},
+        'St-Anton': {'lat': 47.1275, 'lon': 10.2639},
+        'Alpe-d-Huez': {'lat': 45.0908, 'lon': 6.0714}
     }
     
     # Elevation heights in meters for each resort
@@ -472,7 +475,10 @@ def main():
         'Val-Thorens': {'bot': 2300, 'mid': 2800, 'top': 3230},
         'Cervinia': {'bot': 2050, 'mid': 2900, 'top': 3480},
         'Via-Lattea': {'bot': 1350, 'mid': 2100, 'top': 2823},
-        'Monterosa-Ski': {'bot': 1212, 'mid': 2200, 'top': 3275}
+        'Monterosa-Ski': {'bot': 1212, 'mid': 2200, 'top': 3275},
+        'Gudauri': {'bot': 1990, 'mid': 2350, 'top': 3279},
+        'St-Anton': {'bot': 1304, 'mid': 2150, 'top': 2811},
+        'Alpe-d-Huez': {'bot': 1250, 'mid': 2350, 'top': 3330}
     }
     
     # Map internal keys to snow-forecast.com resort names
@@ -480,14 +486,20 @@ def main():
         'Val-Thorens': 'Val-Thorens',
         'Cervinia': 'Cervinia',
         'Via-Lattea': 'Sestriere',
-        'Monterosa-Ski': 'Champoluc'
+        'Monterosa-Ski': 'Champoluc',
+        'Gudauri': 'Gudauri',
+        'St-Anton': 'St-Anton',
+        'Alpe-d-Huez': 'Alpe-d-Huez'
     }
     
     resorts = {
         'Val-Thorens': ['bot', 'mid', 'top'],
         'Cervinia': ['bot', 'mid', 'top'],
         'Via-Lattea': ['bot', 'mid', 'top'],
-        'Monterosa-Ski': ['bot', 'mid', 'top']
+        'Monterosa-Ski': ['bot', 'mid', 'top'],
+        'Gudauri': ['bot', 'mid', 'top'],
+        'St-Anton': ['bot', 'mid', 'top'],
+        'Alpe-d-Huez': ['bot', 'mid', 'top']
     }
     
     # Initialize OpenWeather API if available

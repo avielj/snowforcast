@@ -830,6 +830,7 @@
                 <a href="#" data-resort="Gudauri" onclick="switchResort('Gudauri'); return false;">🇬🇪 Gudauri</a>
                 <a href="#" data-resort="St-Anton" onclick="switchResort('St-Anton'); return false;">🇦🇹 St. Anton</a>
                 <a href="#" data-resort="Alpe-d-Huez" onclick="switchResort('Alpe-d-Huez'); return false;">🇫🇷 Alpe d'Huez</a>
+                <a href="#" data-resort="Mount-Hermon" onclick="switchResort('Mount-Hermon'); return false;">🇮🇱 Mount Hermon</a>
             </div>
         </div>
         
@@ -1027,6 +1028,18 @@
                     'bot': { name: 'Bottom', height: '1250m', emoji: '🏔️' },
                     'mid': { name: 'Mid', height: '2350m', emoji: '⛰️' },
                     'top': { name: 'Top', height: '3330m', emoji: '🗻' }
+                }
+            },
+            'Mount-Hermon': {
+                name: 'Mount Hermon',
+                webcam: 'https://www.skihermon.co.il/en/webcams',
+                pisteMap: 'https://www.skihermon.co.il/en/ski-map',
+                website: 'https://www.skihermon.co.il/en/',
+                liftStatus: 'https://www.skihermon.co.il/en/lifts',
+                elevations: {
+                    'bot': { name: 'Bottom', height: '1600m', emoji: '🏔️' },
+                    'mid': { name: 'Mid', height: '2000m', emoji: '⛰️' },
+                    'top': { name: 'Top', height: '2236m', emoji: '🗻' }
                 }
             }
         };
@@ -2148,7 +2161,8 @@
                     'Val-Thorens': { bot: 2300, mid: 2800, top: 3230 },
                     'Cervinia': { bot: 2050, mid: 2900, top: 3480 },
                     'Via-Lattea': { bot: 1350, mid: 2100, top: 2823 },
-                    'Monterosa-Ski': { bot: 1212, mid: 2200, top: 3275 }
+                    'Monterosa-Ski': { bot: 1212, mid: 2200, top: 3275 },
+                    'Mount-Hermon': { bot: 1600, mid: 2000, top: 2236 }
                 };
                 const resortElevation = elevationHeights[currentResort]?.[currentElevation] || 2300;
                 

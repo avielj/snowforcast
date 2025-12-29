@@ -1,10 +1,10 @@
-# ❄️ Val Thorens Snow Forecast
+# ❄️ Snow Forecast Dashboard
 
-Snow and weather dashboard for Val Thorens and Cervinia. The app scrapes snow-forecast.com, optionally merges OpenWeatherMap data, and serves an interactive front-end via `forecast.html`.
+Snow and weather dashboard for multiple ski resorts including Val Thorens, Cervinia, Mount Hermon, and more. The app scrapes snow-forecast.com, optionally merges OpenWeatherMap data, and serves an interactive front-end via `forecast.html`.
 
 ## Highlights
 - 7-day outlook for bottom, mid, and top elevations (AM/PM/Night breakdown)
-- Multi-resort support (Val Thorens, Cervinia) with combined JSON feeds in `data/`
+- Multi-resort support (Val Thorens, Cervinia, Via Lattea, Monterosa Ski, Gudauri, St. Anton, Alpe d'Huez, Mount Hermon) with combined JSON feeds in `data/`
 - Optional OpenWeatherMap fusion for temperature, snow, and precipitation cross-checks
 - REST API for live pulls plus static JSON for CDN/static hosting workflows
 - Works on Vercel (dynamic Flask) or GitHub Pages (static assets refreshed every 3 hours)

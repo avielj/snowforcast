@@ -139,12 +139,25 @@ def get_formatted_forecast():
             elevation = 'bot'
         
         # Validate resort
-        valid_resorts = ['Val-Thorens', 'Cervinia']
+        valid_resorts = ['Val-Thorens', 'Cervinia', 'Via-Lattea', 'Monterosa-Ski', 'Gudauri', 'St-Anton', 'Alpe-d-Huez', 'Mount-Hermon']
         if resort not in valid_resorts:
             resort = 'Val-Thorens'
         
+        # Map internal resort names to snow-forecast.com URLs
+        resort_url_mapping = {
+            'Val-Thorens': 'Val-Thorens',
+            'Cervinia': 'Cervinia',
+            'Via-Lattea': 'Sestriere',
+            'Monterosa-Ski': 'Champoluc',
+            'Gudauri': 'Gudauri',
+            'St-Anton': 'St-Anton',
+            'Alpe-d-Huez': 'Alpe-d-Huez',
+            'Mount-Hermon': 'mounthermon'
+        }
+        resort_url = resort_url_mapping.get(resort, resort)
+        
         # Fetch fresh data from snow-forecast.com
-        url = f'https://www.snow-forecast.com/resorts/{resort}/6day/{elevation}'
+        url = f'https://www.snow-forecast.com/resorts/{resort_url}/6day/{elevation}'
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',

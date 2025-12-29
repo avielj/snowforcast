@@ -467,7 +467,8 @@ def main():
         'Monterosa-Ski': {'lat': 45.8333, 'lon': 7.7167},  # Champoluc
         'Gudauri': {'lat': 42.4789, 'lon': 44.4728},
         'St-Anton': {'lat': 47.1275, 'lon': 10.2639},
-        'Alpe-d-Huez': {'lat': 45.0908, 'lon': 6.0714}
+        'Alpe-d-Huez': {'lat': 45.0908, 'lon': 6.0714},
+        'Mount-Hermon': {'lat': 33.4162, 'lon': 35.8572}
     }
     
     # Elevation heights in meters for each resort
@@ -478,7 +479,8 @@ def main():
         'Monterosa-Ski': {'bot': 1212, 'mid': 2200, 'top': 3275},
         'Gudauri': {'bot': 1990, 'mid': 2350, 'top': 3279},
         'St-Anton': {'bot': 1304, 'mid': 2150, 'top': 2811},
-        'Alpe-d-Huez': {'bot': 1250, 'mid': 2350, 'top': 3330}
+        'Alpe-d-Huez': {'bot': 1250, 'mid': 2350, 'top': 3330},
+        'Mount-Hermon': {'bot': 1600, 'mid': 2000, 'top': 2236}
     }
     
     # Map internal keys to snow-forecast.com resort names
@@ -489,7 +491,8 @@ def main():
         'Monterosa-Ski': 'Champoluc',
         'Gudauri': 'Gudauri',
         'St-Anton': 'St-Anton',
-        'Alpe-d-Huez': 'Alpe-d-Huez'
+        'Alpe-d-Huez': 'Alpe-d-Huez',
+        'Mount-Hermon': 'mounthermon'
     }
     
     resorts = {
@@ -499,7 +502,8 @@ def main():
         'Monterosa-Ski': ['bot', 'mid', 'top'],
         'Gudauri': ['bot', 'mid', 'top'],
         'St-Anton': ['bot', 'mid', 'top'],
-        'Alpe-d-Huez': ['bot', 'mid', 'top']
+        'Alpe-d-Huez': ['bot', 'mid', 'top'],
+        'Mount-Hermon': ['bot', 'mid', 'top']
     }
     
     # Initialize OpenWeather API if available

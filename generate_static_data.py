@@ -19,6 +19,14 @@ except ImportError:
     OPENWEATHER_AVAILABLE = False
     print("OpenWeather integration not available, using snow-forecast.com only")
 
+# Try to import Weather Unlocked integration
+try:
+    from weatherunlocked_integration import WeatherUnlockedAPI, compare_with_weatherunlocked
+    WEATHERUNLOCKED_AVAILABLE = True
+except ImportError:
+    WEATHERUNLOCKED_AVAILABLE = False
+    print("Weather Unlocked integration not available")
+
 def fetch_valthorens_conditions():
     """Fetch current snow conditions from Val Thorens official website"""
     url = 'https://www.valthorens.com/infos-neige/'
@@ -516,6 +524,17 @@ def main():
         else:
             print("⚠ OPENWEATHER_API_KEY not set, using snow-forecast.com only")
     
+    # Initialize Weather Unlocked API if available
+    weatherunlocked_api = None
+    if WEATHERUNLOCKED_AVAILABLE:
+        app_id = os.environ.get('WEATHERUNLOCKED_APP_ID', '24fbe7db')
+        app_key = os.environ.get('WEATHERUNLOCKED_KEY', 'c553a3a126b8b8eb808f36548c1ed467')
+        if app_id and app_key:
+            weatherunlocked_api = WeatherUnlockedAPI(app_id, app_key)
+            print("✓ Weather Unlocked API initialized")
+        else:
+            print("⚠ Weather Unlocked credentials not set")
+    
     all_data = {}
     
     for resort, elevations in resorts.items():
@@ -537,9 +556,20 @@ def main():
                         ow_data = openweather_api.get_forecast(resort=resort, elevation=elevation)
                         if ow_data:
                             forecast_data = compare_forecasts(forecast_data, ow_data)
-                            print(f"  ✓ Combined data from both sources")
+                            print(f"  ✓ Combined data from OpenWeather")
                     except Exception as e:
-                        print(f"  ⚠ OpenWeather fetch failed: {e}, using snow-forecast.com only")
+                        print(f"  ⚠ OpenWeather fetch failed: {e}")
+                
+                # Try to fetch from Weather Unlocked and combine
+                if weatherunlocked_api and forecast_data:
+                    try:
+                        print(f"  → Fetching Weather Unlocked data...")
+                        wu_data = weatherunlocked_api.get_forecast(resort=resort, elevation=elevation)
+                        if wu_data:
+                            forecast_data = compare_with_weatherunlocked(forecast_data, wu_data)
+                            print(f"  ✓ Combined data from Weather Unlocked")
+                    except Exception as e:
+                        print(f"  ⚠ Weather Unlocked fetch failed: {e}")
                 
                 if forecast_data and 'days' in forecast_data:
                     all_data[resort][elevation] = forecast_data

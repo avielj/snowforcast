@@ -4,14 +4,6 @@
       "name": "Sunday",
       "date": "11",
       "am": {
-        "condition": "light snow",
-        "temperature": "-13.0",
-        "feels_like": "-25.0",
-        "snow": "3",
-        "rain": "0",
-        "wind": "20.0 km/h SE"
-      },
-      "pm": {
         "condition": "clear",
         "temperature": "-8.0",
         "feels_like": "-18.0",
@@ -19,10 +11,18 @@
         "rain": "0",
         "wind": "15.0 km/h SE"
       },
-      "night": {
-        "condition": "clear",
+      "pm": {
+        "condition": "part cloud",
         "temperature": "-5.0",
         "feels_like": "-12.0",
+        "snow": "0",
+        "rain": "0",
+        "wind": "15.0 km/h SE"
+      },
+      "night": {
+        "condition": "part cloud",
+        "temperature": "-4.0",
+        "feels_like": "-10.0",
         "snow": "0",
         "rain": "0",
         "wind": "15.0 km/h SE"
@@ -32,9 +32,9 @@
       "name": "Monday",
       "date": "12",
       "am": {
-        "condition": "part cloud",
-        "temperature": "-4.0",
-        "feels_like": "-10.0",
+        "condition": "light snow",
+        "temperature": "-2.0",
+        "feels_like": "-8.0",
         "snow": "0",
         "rain": "0",
         "wind": "15.0 km/h SE"
@@ -42,18 +42,18 @@
       "pm": {
         "condition": "part cloud",
         "temperature": "-2.0",
-        "feels_like": "-7.0",
-        "snow": "0",
-        "rain": "0",
-        "wind": "10.0 km/h SE"
-      },
-      "night": {
-        "condition": "part cloud",
-        "temperature": "-2.0",
         "feels_like": "-6.0",
         "snow": "0",
         "rain": "0",
         "wind": "10.0 km/h E"
+      },
+      "night": {
+        "condition": "part cloud",
+        "temperature": "-1.0",
+        "feels_like": "-6.0",
+        "snow": "0",
+        "rain": "0",
+        "wind": "5.0 km/h NE"
       }
     },
     {
@@ -61,36 +61,36 @@
       "date": "13",
       "am": {
         "condition": "part cloud",
-        "temperature": "-2.0",
-        "feels_like": "-6.0",
-        "snow": "0",
-        "rain": "0",
-        "wind": "5.0 km/h E"
-      },
-      "pm": {
-        "condition": "clear",
-        "temperature": "0.0",
+        "temperature": "-1.0",
         "feels_like": "-4.0",
         "snow": "0",
         "rain": "0",
         "wind": "5.0 km/h N"
       },
-      "night": {
+      "pm": {
         "condition": "clear",
         "temperature": "-1.0",
         "feels_like": "-5.0",
         "snow": "0",
         "rain": "0",
         "wind": "5.0 km/h N"
+      },
+      "night": {
+        "condition": "part cloud",
+        "temperature": "-2.0",
+        "feels_like": "-7.0",
+        "snow": "0",
+        "rain": "0",
+        "wind": "10.0 km/h N"
       }
     },
     {
       "name": "Wednesday",
       "date": "14",
       "am": {
-        "condition": "clear",
-        "temperature": "-2.0",
-        "feels_like": "-7.0",
+        "condition": "part cloud",
+        "temperature": "-3.0",
+        "feels_like": "-6.0",
         "snow": "0",
         "rain": "0",
         "wind": "10.0 km/h N"
@@ -101,12 +101,12 @@
         "feels_like": "-7.0",
         "snow": "0",
         "rain": "0",
-        "wind": "5.0 km/h NE"
+        "wind": "10.0 km/h N"
       },
       "night": {
-        "condition": "part cloud",
-        "temperature": "-4.0",
-        "feels_like": "-9.0",
+        "condition": "light snow",
+        "temperature": "-5.0",
+        "feels_like": "-10.0",
         "snow": "0",
         "rain": "0",
         "wind": "10.0 km/h N"
@@ -118,37 +118,58 @@
       "am": {
         "condition": "part cloud",
         "temperature": "-5.0",
-        "feels_like": "-10.0",
+        "feels_like": "-9.0",
         "snow": "0",
         "rain": "0",
         "wind": "10.0 km/h N"
       },
       "pm": {
         "condition": "part cloud",
-        "temperature": "-5.0",
-        "feels_like": "-10.0",
-        "snow": "0",
-        "rain": "0",
-        "wind": "10.0 km/h N"
-      },
-      "night": {
-        "condition": "part cloud",
-        "temperature": "-5.0",
+        "temperature": "-4.0",
         "feels_like": "-11.0",
         "snow": "0",
         "rain": "0",
         "wind": "15.0 km/h NW"
+      },
+      "night": {
+        "condition": "snow showers",
+        "temperature": "-6.0",
+        "feels_like": "-12.0",
+        "snow": "0",
+        "rain": "0",
+        "wind": "15.0 km/h NW"
       }
+    },
+    {
+      "name": "Friday",
+      "date": "16",
+      "am": {
+        "condition": "light snow",
+        "temperature": "-7.0",
+        "feels_like": "-12.0",
+        "snow": "1",
+        "rain": "0",
+        "wind": "10.0 km/h NW"
+      },
+      "pm": {
+        "condition": "light snow",
+        "temperature": "-7.0",
+        "feels_like": "-11.0",
+        "snow": "1",
+        "rain": "0",
+        "wind": "10.0 km/h NW"
+      },
+      "night": null
     }
   ],
-  "last_updated": "2026-01-11T06:16:44.153658",
+  "last_updated": "2026-01-11T09:11:36.316626",
   "resort": "Val-Thorens",
   "elevation": "mid",
   "snow_conditions": {
     "Top snow depth": "170cm",
     "Bottom snow depth": "120cm",
     "Fresh snowfall depth": "58cm",
-    "Last snowfall": "9 Jan 2026",
+    "Last snowfall": "10 Jan 2026",
     "Snow Alerts": "Create Alert"
   }
 }

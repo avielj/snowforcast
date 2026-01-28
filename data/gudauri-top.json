@@ -20,12 +20,12 @@
         "wind": "10.0 km/h N"
       },
       "night": {
-        "condition": "clear",
+        "condition": "part cloud",
         "temperature": "-9.0",
-        "feels_like": "-13.0",
+        "feels_like": "-14.0",
         "snow": "0",
         "rain": "0",
-        "wind": "5.0 km/h N"
+        "wind": "10.0 km/h N"
       }
     },
     {
@@ -42,7 +42,7 @@
       "pm": {
         "condition": "clear",
         "temperature": "-8.0",
-        "feels_like": "-8.0",
+        "feels_like": "-11.0",
         "snow": "0",
         "rain": "0",
         "wind": "5.0 km/h SE"
@@ -50,7 +50,7 @@
       "night": {
         "condition": "clear",
         "temperature": "-8.0",
-        "feels_like": "-12.0",
+        "feels_like": "-8.0",
         "snow": "0",
         "rain": "0",
         "wind": "5.0 km/h NE"
@@ -60,9 +60,9 @@
       "name": "Friday",
       "date": "30",
       "am": {
-        "condition": "part cloud",
-        "temperature": "-9.0",
-        "feels_like": "-14.0",
+        "condition": "clear",
+        "temperature": "-8.0",
+        "feels_like": "-12.0",
         "snow": "0",
         "rain": "0",
         "wind": "10.0 km/h NE"
@@ -70,44 +70,44 @@
       "pm": {
         "condition": "cloud",
         "temperature": "-8.0",
-        "feels_like": "-14.0",
+        "feels_like": "-13.0",
         "snow": "0",
         "rain": "0",
         "wind": "10.0 km/h NE"
       },
       "night": {
-        "condition": "cloud",
+        "condition": "part cloud",
         "temperature": "-8.0",
         "feels_like": "-15.0",
         "snow": "0",
         "rain": "0",
-        "wind": "15.0 km/h NE"
+        "wind": "10.0 km/h NE"
       }
     },
     {
       "name": "Saturday",
       "date": "31",
       "am": {
-        "condition": "part cloud",
+        "condition": "clear",
         "temperature": "-8.0",
-        "feels_like": "-15.0",
+        "feels_like": "-14.0",
+        "snow": "0",
+        "rain": "0",
+        "wind": "10.0 km/h NE"
+      },
+      "pm": {
+        "condition": "cloud",
+        "temperature": "-7.0",
+        "feels_like": "-13.0",
         "snow": "0",
         "rain": "0",
         "wind": "15.0 km/h NE"
       },
-      "pm": {
+      "night": {
         "condition": "light snow",
         "temperature": "-8.0",
         "feels_like": "-16.0",
-        "snow": "0",
-        "rain": "0",
-        "wind": "20.0 km/h NE"
-      },
-      "night": {
-        "condition": "mod snow",
-        "temperature": "-8.0",
-        "feels_like": "-16.0",
-        "snow": "7",
+        "snow": "2",
         "rain": "0",
         "wind": "15.0 km/h N"
       }
@@ -117,23 +117,23 @@
       "date": "1",
       "am": {
         "condition": "light snow",
-        "temperature": "-10.0",
-        "feels_like": "-15.0",
-        "snow": "2",
-        "rain": "0",
-        "wind": "10.0 km/h NE"
-      },
-      "pm": {
-        "condition": "light snow",
         "temperature": "-9.0",
         "feels_like": "-16.0",
         "snow": "1",
         "rain": "0",
         "wind": "10.0 km/h NE"
       },
+      "pm": {
+        "condition": "light snow",
+        "temperature": "-9.0",
+        "feels_like": "-17.0",
+        "snow": "1",
+        "rain": "0",
+        "wind": "20.0 km/h E"
+      },
       "night": {
-        "condition": "snow showers",
-        "temperature": "-10.0",
+        "condition": "clear",
+        "temperature": "-9.0",
         "feels_like": "-17.0",
         "snow": "0",
         "rain": "0",
@@ -145,17 +145,17 @@
       "date": "2",
       "am": {
         "condition": "part cloud",
-        "temperature": "-10.0",
-        "feels_like": "-16.0",
+        "temperature": "-9.0",
+        "feels_like": "-17.0",
         "snow": "0",
         "rain": "0",
-        "wind": "15.0 km/h NE"
+        "wind": "15.0 km/h N"
       },
       "pm": {
-        "condition": "light snow",
-        "temperature": "-10.0",
+        "condition": "heavy snow",
+        "temperature": "-9.0",
         "feels_like": "-17.0",
-        "snow": "1",
+        "snow": "12",
         "rain": "0",
         "wind": "15.0 km/h N"
       },
@@ -190,7 +190,7 @@
       }
     }
   ],
-  "last_updated": "2026-01-28T06:30:41.171235",
+  "last_updated": "2026-01-28T09:34:28.836120",
   "resort": "Gudauri",
   "elevation": "top",
   "snow_conditions": {
@@ -259,7 +259,7 @@
         "rain": 0.0,
         "snowfall": 2.03,
         "weather_code": 71,
-        "freezing_level_min": 2210.0,
+        "freezing_level_min": 2177.5,
         "freezing_level_max": 2370.0
       },
       {
@@ -271,7 +271,7 @@
         "rain": 0.0,
         "snowfall": 13.37,
         "weather_code": 85,
-        "freezing_level_min": 2200.0,
+        "freezing_level_min": 2090.0,
         "freezing_level_max": 2420.0
       },
       {
@@ -395,7 +395,7 @@
         "freezing_level_max": 2030.0
       }
     ],
-    "last_updated": "2026-01-28T06:31:11.952232",
+    "last_updated": "2026-01-28T09:34:59.705112",
     "source": "OpenMeteo",
     "elevation": 3279.0,
     "elevation_used": 3279

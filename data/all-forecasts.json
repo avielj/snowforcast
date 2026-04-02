@@ -3,31 +3,31 @@
     "bot": {
       "days": [
         {
-          "name": "Thursday",
+          "name": "Thu",
           "date": "2",
           "am": {
-            "condition": "clear",
-            "temperature": "-4.0",
-            "feels_like": "-13.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h S"
-          },
-          "pm": {
             "condition": "light snow",
             "temperature": "-4.0",
             "feels_like": "-10.0",
             "snow": "0",
             "rain": "0",
-            "wind": "15.0 km/h SE"
+            "wind": "10.0 km/h S"
           },
-          "night": {
+          "pm": {
             "condition": "light snow",
             "temperature": "-6.0",
             "feels_like": "-11.0",
             "snow": "0",
             "rain": "0",
             "wind": "10.0 km/h S"
+          },
+          "night": {
+            "condition": "part cloud",
+            "temperature": "-3.0",
+            "feels_like": "-12.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "10.0 km/h SE"
           }
         },
         {
@@ -35,23 +35,23 @@
           "date": "3",
           "am": {
             "condition": "part cloud",
-            "temperature": "-3.0",
-            "feels_like": "-12.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "10.0 km/h SE"
-          },
-          "pm": {
-            "condition": "part cloud",
             "temperature": "-2.0",
             "feels_like": "-6.0",
             "snow": "0",
             "rain": "0",
             "wind": "10.0 km/h SE"
           },
-          "night": {
+          "pm": {
             "condition": "part cloud",
             "temperature": "-3.0",
+            "feels_like": "-8.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "5.0 km/h S"
+          },
+          "night": {
+            "condition": "clear",
+            "temperature": "1.0",
             "feels_like": "-7.0",
             "snow": "0",
             "rain": "0",
@@ -62,24 +62,24 @@
           "name": "Saturday",
           "date": "4",
           "am": {
-            "condition": "clear",
-            "temperature": "0.0",
-            "feels_like": "-7.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h S"
-          },
-          "pm": {
             "condition": "part cloud",
             "temperature": "2.0",
             "feels_like": "2.0",
             "snow": "0",
             "rain": "0",
-            "wind": "5.0 km/h E"
+            "wind": "0.0 km/h E"
+          },
+          "pm": {
+            "condition": "clear",
+            "temperature": "0.0",
+            "feels_like": "0.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "0.0 km/h E"
           },
           "night": {
             "condition": "part cloud",
-            "temperature": "0.0",
+            "temperature": "4.0",
             "feels_like": "0.0",
             "snow": "0",
             "rain": "0",
@@ -91,24 +91,24 @@
           "date": "5",
           "am": {
             "condition": "part cloud",
-            "temperature": "4.0",
-            "feels_like": "0.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h SE"
-          },
-          "pm": {
-            "condition": "clear",
             "temperature": "5.0",
             "feels_like": "4.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h E"
           },
-          "night": {
+          "pm": {
             "condition": "part cloud",
-            "temperature": "2.0",
-            "feels_like": "0.0",
+            "temperature": "1.0",
+            "feels_like": "-2.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "5.0 km/h E"
+          },
+          "night": {
+            "condition": "clear",
+            "temperature": "4.0",
+            "feels_like": "1.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h E"
@@ -118,49 +118,42 @@
           "name": "Monday",
           "date": "6",
           "am": {
-            "condition": "cloud",
-            "temperature": "4.0",
-            "feels_like": "1.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h E"
-          },
-          "pm": {
-            "condition": "part cloud",
+            "condition": "rain showers",
             "temperature": "6.0",
-            "feels_like": "4.0",
+            "feels_like": "6.0",
             "snow": "0",
-            "rain": "0",
+            "rain": "1",
             "wind": "5.0 km/h SE"
           },
-          "night": {
+          "pm": {
             "condition": "rain showers",
             "temperature": "3.0",
-            "feels_like": "-2.0",
+            "feels_like": "1.0",
             "snow": "0",
-            "rain": "3",
+            "rain": "1",
             "wind": "5.0 km/h NW"
+          },
+          "night": {
+            "condition": "part cloud",
+            "temperature": "5.0",
+            "feels_like": "-1.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "5.0 km/h N"
           }
         },
         {
           "name": "Tuesday",
           "date": "7",
           "am": {
-            "condition": "clear",
-            "temperature": "5.0",
-            "feels_like": "-1.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "10.0 km/h NW"
-          },
-          "pm": {
-            "condition": "clear",
-            "temperature": "8.0",
+            "condition": "rain showers",
+            "temperature": "7.0",
             "feels_like": "5.0",
             "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h N"
+            "rain": "3",
+            "wind": "5.0 km/h E"
           },
+          "pm": null,
           "night": null
         },
         {
@@ -192,13 +185,13 @@
           }
         }
       ],
-      "last_updated": "2026-04-02T12:43:22.384476",
+      "last_updated": "2026-04-02T15:49:10.027456",
       "resort": "Val-Thorens",
       "elevation": "bot",
       "snow_conditions": {
         "Top snow depth": "295cm",
         "Bottom snow depth": "230cm",
-        "Fresh snowfall depth": "20cm",
+        "Fresh snowfall depth": "21cm",
         "Last snowfall": "31 Mar 2026",
         "Snow Alerts": "Create Alert"
       },
@@ -207,7 +200,7 @@
           {
             "date": "2026-04-02",
             "day_name": "Thursday",
-            "temp_max": -4.7,
+            "temp_max": -4.6,
             "temp_min": -9.5,
             "precipitation": 0.0,
             "rain": 0.0,
@@ -220,7 +213,7 @@
             "date": "2026-04-03",
             "day_name": "Friday",
             "temp_max": -1.7,
-            "temp_min": -7.1,
+            "temp_min": -7.0,
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
@@ -232,13 +225,13 @@
             "date": "2026-04-04",
             "day_name": "Saturday",
             "temp_max": 6.9,
-            "temp_min": -3.9,
+            "temp_min": -4.3,
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
             "weather_code": 2,
-            "freezing_level_min": 2317.5,
-            "freezing_level_max": 2920.0
+            "freezing_level_min": 2362.5,
+            "freezing_level_max": 2900.0
           },
           {
             "date": "2026-04-05",
@@ -249,8 +242,8 @@
             "rain": 0.0,
             "snowfall": 0.0,
             "weather_code": 3,
-            "freezing_level_min": 2810.0,
-            "freezing_level_max": 2970.0
+            "freezing_level_min": 2750.0,
+            "freezing_level_max": 3020.0
           },
           {
             "date": "2026-04-06",
@@ -261,8 +254,8 @@
             "rain": 0.0,
             "snowfall": 0.0,
             "weather_code": 2,
-            "freezing_level_min": 2730.0,
-            "freezing_level_max": 3260.0
+            "freezing_level_min": 2770.0,
+            "freezing_level_max": 3050.0
           },
           {
             "date": "2026-04-07",
@@ -273,8 +266,8 @@
             "rain": 0.0,
             "snowfall": 0.0,
             "weather_code": 0,
-            "freezing_level_min": 2970.0,
-            "freezing_level_max": 3332.5
+            "freezing_level_min": 2960.0,
+            "freezing_level_max": 3130.0
           },
           {
             "date": "2026-04-08",
@@ -356,7 +349,7 @@
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
-            "weather_code": 3,
+            "weather_code": 45,
             "freezing_level_min": 1210.0,
             "freezing_level_max": 1860.0
           },
@@ -380,7 +373,7 @@
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
-            "weather_code": 45,
+            "weather_code": 3,
             "freezing_level_min": 800.0,
             "freezing_level_max": 2010.0
           },
@@ -392,12 +385,12 @@
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
-            "weather_code": 45,
+            "weather_code": 3,
             "freezing_level_min": 1490.0,
             "freezing_level_max": 2090.0
           }
         ],
-        "last_updated": "2026-04-02T12:43:53.186365",
+        "last_updated": "2026-04-02T15:49:40.763557",
         "source": "OpenMeteo",
         "elevation": 2300.0,
         "elevation_used": 2300
@@ -406,31 +399,31 @@
     "mid": {
       "days": [
         {
-          "name": "Thursday",
+          "name": "Thu",
           "date": "2",
           "am": {
             "condition": "clear",
-            "temperature": "-5.0",
-            "feels_like": "-12.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "10.0 km/h S"
-          },
-          "pm": {
-            "condition": "clear",
-            "temperature": "-5.0",
-            "feels_like": "-13.0",
+            "temperature": "-6.0",
+            "feels_like": "-14.0",
             "snow": "0",
             "rain": "0",
             "wind": "15.0 km/h S"
           },
-          "night": {
+          "pm": {
             "condition": "part cloud",
             "temperature": "-5.0",
-            "feels_like": "-16.0",
+            "feels_like": "-15.0",
             "snow": "0",
             "rain": "0",
             "wind": "10.0 km/h S"
+          },
+          "night": {
+            "condition": "clear",
+            "temperature": "-4.0",
+            "feels_like": "-12.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "15.0 km/h SE"
           }
         },
         {
@@ -439,23 +432,23 @@
           "am": {
             "condition": "clear",
             "temperature": "-4.0",
-            "feels_like": "-12.0",
+            "feels_like": "-9.0",
             "snow": "0",
             "rain": "0",
             "wind": "15.0 km/h SE"
           },
           "pm": {
             "condition": "clear",
-            "temperature": "-4.0",
-            "feels_like": "-10.0",
+            "temperature": "-2.0",
+            "feels_like": "-9.0",
             "snow": "0",
             "rain": "0",
-            "wind": "15.0 km/h SE"
+            "wind": "10.0 km/h SE"
           },
           "night": {
-            "condition": "part cloud",
-            "temperature": "-3.0",
-            "feels_like": "-9.0",
+            "condition": "clear",
+            "temperature": "0.0",
+            "feels_like": "-6.0",
             "snow": "0",
             "rain": "0",
             "wind": "10.0 km/h S"
@@ -466,19 +459,19 @@
           "date": "4",
           "am": {
             "condition": "clear",
-            "temperature": "-1.0",
-            "feels_like": "-5.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h S"
-          },
-          "pm": {
-            "condition": "clear",
             "temperature": "0.0",
             "feels_like": "0.0",
             "snow": "0",
             "rain": "0",
-            "wind": "5.0 km/h NE"
+            "wind": "0.0 km/h NE"
+          },
+          "pm": {
+            "condition": "clear",
+            "temperature": "1.0",
+            "feels_like": "0.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "5.0 km/h SE"
           },
           "night": {
             "condition": "part cloud",
@@ -494,22 +487,22 @@
           "date": "5",
           "am": {
             "condition": "part cloud",
-            "temperature": "2.0",
-            "feels_like": "-2.0",
+            "temperature": "1.0",
+            "feels_like": "-1.0",
             "snow": "0",
             "rain": "0",
-            "wind": "5.0 km/h SE"
+            "wind": "5.0 km/h E"
           },
           "pm": {
-            "condition": "clear",
-            "temperature": "2.0",
-            "feels_like": "0.0",
+            "condition": "part cloud",
+            "temperature": "0.0",
+            "feels_like": "-2.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h E"
           },
           "night": {
-            "condition": "part cloud",
+            "condition": "clear",
             "temperature": "1.0",
             "feels_like": "-2.0",
             "snow": "0",
@@ -521,59 +514,52 @@
           "name": "Monday",
           "date": "6",
           "am": {
-            "condition": "cloud",
+            "condition": "snow showers",
+            "temperature": "1.0",
+            "feels_like": "1.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "5.0 km/h SE"
+          },
+          "pm": {
+            "condition": "snow showers",
+            "temperature": "1.0",
+            "feels_like": "0.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "5.0 km/h N"
+          },
+          "night": {
+            "condition": "part cloud",
             "temperature": "1.0",
             "feels_like": "-2.0",
             "snow": "0",
             "rain": "0",
-            "wind": "5.0 km/h E"
-          },
-          "pm": {
-            "condition": "part cloud",
-            "temperature": "2.0",
-            "feels_like": "0.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h E"
-          },
-          "night": {
-            "condition": "snow showers",
-            "temperature": "1.0",
-            "feels_like": "-3.0",
-            "snow": "1",
-            "rain": "0",
-            "wind": "5.0 km/h NW"
+            "wind": "5.0 km/h N"
           }
         },
         {
           "name": "Tuesday",
           "date": "7",
           "am": {
-            "condition": "clear",
+            "condition": "snow showers",
             "temperature": "2.0",
-            "feels_like": "-2.0",
+            "feels_like": "0.0",
             "snow": "0",
-            "rain": "0",
-            "wind": "10.0 km/h NW"
+            "rain": "2",
+            "wind": "10.0 km/h NE"
           },
-          "pm": {
-            "condition": "clear",
-            "temperature": "3.0",
-            "feels_like": "-1.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "10.0 km/h N"
-          },
+          "pm": null,
           "night": null
         }
       ],
-      "last_updated": "2026-04-02T12:43:54.071248",
+      "last_updated": "2026-04-02T15:49:41.561080",
       "resort": "Val-Thorens",
       "elevation": "mid",
       "snow_conditions": {
         "Top snow depth": "295cm",
         "Bottom snow depth": "230cm",
-        "Fresh snowfall depth": "20cm",
+        "Fresh snowfall depth": "21cm",
         "Last snowfall": "31 Mar 2026",
         "Snow Alerts": "Create Alert"
       }
@@ -581,31 +567,31 @@
     "top": {
       "days": [
         {
-          "name": "Thursday",
+          "name": "Thu",
           "date": "2",
           "am": {
             "condition": "clear",
-            "temperature": "-8.0",
-            "feels_like": "-15.0",
+            "temperature": "-9.0",
+            "feels_like": "-18.0",
             "snow": "0",
             "rain": "0",
-            "wind": "10.0 km/h S"
+            "wind": "15.0 km/h S"
           },
           "pm": {
             "condition": "clear",
-            "temperature": "-8.0",
-            "feels_like": "-16.0",
+            "temperature": "-7.0",
+            "feels_like": "-19.0",
             "snow": "0",
             "rain": "0",
             "wind": "15.0 km/h S"
           },
           "night": {
             "condition": "clear",
-            "temperature": "-8.0",
-            "feels_like": "-19.0",
+            "temperature": "-7.0",
+            "feels_like": "-15.0",
             "snow": "0",
             "rain": "0",
-            "wind": "15.0 km/h S"
+            "wind": "20.0 km/h S"
           }
         },
         {
@@ -613,24 +599,24 @@
           "date": "3",
           "am": {
             "condition": "clear",
-            "temperature": "-7.0",
-            "feels_like": "-15.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "20.0 km/h S"
-          },
-          "pm": {
-            "condition": "clear",
-            "temperature": "-7.0",
+            "temperature": "-6.0",
             "feels_like": "-14.0",
             "snow": "0",
             "rain": "0",
             "wind": "15.0 km/h S"
           },
-          "night": {
+          "pm": {
             "condition": "clear",
             "temperature": "-4.0",
-            "feels_like": "-14.0",
+            "feels_like": "-12.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "15.0 km/h SE"
+          },
+          "night": {
+            "condition": "clear",
+            "temperature": "-3.0",
+            "feels_like": "-8.0",
             "snow": "0",
             "rain": "0",
             "wind": "10.0 km/h S"
@@ -641,23 +627,23 @@
           "date": "4",
           "am": {
             "condition": "clear",
-            "temperature": "-3.0",
-            "feels_like": "-9.0",
+            "temperature": "-2.0",
+            "feels_like": "-2.0",
             "snow": "0",
             "rain": "0",
-            "wind": "5.0 km/h S"
+            "wind": "0.0 km/h NE"
           },
           "pm": {
             "condition": "clear",
-            "temperature": "-3.0",
-            "feels_like": "-3.0",
+            "temperature": "-1.0",
+            "feels_like": "-4.0",
             "snow": "0",
             "rain": "0",
-            "wind": "5.0 km/h NE"
+            "wind": "5.0 km/h SE"
           },
           "night": {
             "condition": "part cloud",
-            "temperature": "-1.0",
+            "temperature": "-2.0",
             "feels_like": "-6.0",
             "snow": "0",
             "rain": "0",
@@ -668,77 +654,70 @@
           "name": "Sunday",
           "date": "5",
           "am": {
-            "condition": "part cloud",
-            "temperature": "-1.0",
+            "condition": "clear",
+            "temperature": "-2.0",
             "feels_like": "-6.0",
             "snow": "0",
             "rain": "0",
-            "wind": "10.0 km/h SE"
+            "wind": "10.0 km/h E"
           },
           "pm": {
-            "condition": "clear",
-            "temperature": "-1.0",
-            "feels_like": "-5.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h E"
-          },
-          "night": {
             "condition": "part cloud",
             "temperature": "-2.0",
-            "feels_like": "-5.0",
+            "feels_like": "-7.0",
             "snow": "0",
             "rain": "0",
             "wind": "10.0 km/h E"
+          },
+          "night": {
+            "condition": "clear",
+            "temperature": "-3.0",
+            "feels_like": "-7.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "5.0 km/h E"
           }
         },
         {
           "name": "Monday",
           "date": "6",
           "am": {
-            "condition": "cloud",
+            "condition": "clear",
             "temperature": "-2.0",
-            "feels_like": "-5.0",
+            "feels_like": "-3.0",
             "snow": "0",
             "rain": "0",
-            "wind": "5.0 km/h E"
+            "wind": "5.0 km/h SE"
           },
           "pm": {
-            "condition": "part cloud",
+            "condition": "snow showers",
             "temperature": "-2.0",
+            "feels_like": "-3.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "5.0 km/h N"
+          },
+          "night": {
+            "condition": "part cloud",
+            "temperature": "-3.0",
             "feels_like": "-6.0",
             "snow": "0",
             "rain": "0",
-            "wind": "5.0 km/h E"
-          },
-          "night": {
-            "condition": "snow showers",
-            "temperature": "-2.0",
-            "feels_like": "-2.0",
-            "snow": "1",
-            "rain": "0",
-            "wind": "5.0 km/h NW"
+            "wind": "5.0 km/h N"
           }
         },
         {
           "name": "Tuesday",
           "date": "7",
           "am": {
-            "condition": "clear",
-            "temperature": "-2.0",
+            "condition": "snow showers",
+            "temperature": "-1.0",
             "feels_like": "-5.0",
-            "snow": "0",
+            "snow": "1",
             "rain": "0",
-            "wind": "10.0 km/h N"
+            "wind": "10.0 km/h NE"
           },
-          "pm": {
-            "condition": "clear",
-            "temperature": "0.0",
-            "feels_like": "-6.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "10.0 km/h N"
-          },
+          "pm": null,
           "night": null
         },
         {
@@ -770,13 +749,13 @@
           }
         }
       ],
-      "last_updated": "2026-04-02T12:44:55.232822",
+      "last_updated": "2026-04-02T15:50:42.675262",
       "resort": "Val-Thorens",
       "elevation": "top",
       "snow_conditions": {
         "Top snow depth": "295cm",
         "Bottom snow depth": "230cm",
-        "Fresh snowfall depth": "20cm",
+        "Fresh snowfall depth": "21cm",
         "Last snowfall": "31 Mar 2026",
         "Snow Alerts": "Create Alert"
       },
@@ -785,7 +764,7 @@
           {
             "date": "2026-04-02",
             "day_name": "Thursday",
-            "temp_max": -9.9,
+            "temp_max": -9.8,
             "temp_min": -11.8,
             "precipitation": 0.0,
             "rain": 0.0,
@@ -797,8 +776,8 @@
           {
             "date": "2026-04-03",
             "day_name": "Friday",
-            "temp_max": -7.2,
-            "temp_min": -11.9,
+            "temp_max": -7.3,
+            "temp_min": -12.2,
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
@@ -809,50 +788,50 @@
           {
             "date": "2026-04-04",
             "day_name": "Saturday",
-            "temp_max": 1.4,
-            "temp_min": -7.8,
+            "temp_max": 1.2,
+            "temp_min": -7.9,
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
             "weather_code": 2,
-            "freezing_level_min": 2500.0,
-            "freezing_level_max": 2950.0
+            "freezing_level_min": 2510.0,
+            "freezing_level_max": 2940.0
           },
           {
             "date": "2026-04-05",
             "day_name": "Sunday",
             "temp_max": 2.5,
-            "temp_min": -3.7,
+            "temp_min": -3.9,
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
             "weather_code": 3,
             "freezing_level_min": 2470.0,
-            "freezing_level_max": 2910.0
+            "freezing_level_max": 3010.0
           },
           {
             "date": "2026-04-06",
             "day_name": "Monday",
-            "temp_max": 3.1,
-            "temp_min": -4.3,
+            "temp_max": 3.0,
+            "temp_min": -3.6,
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
             "weather_code": 2,
             "freezing_level_min": 2490.0,
-            "freezing_level_max": 3380.0
+            "freezing_level_max": 3050.0
           },
           {
             "date": "2026-04-07",
             "day_name": "Tuesday",
             "temp_max": 2.3,
-            "temp_min": -4.1,
+            "temp_min": -2.3,
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
             "weather_code": 0,
-            "freezing_level_min": 2970.0,
-            "freezing_level_max": 3570.0
+            "freezing_level_min": 2840.0,
+            "freezing_level_max": 3130.0
           },
           {
             "date": "2026-04-08",
@@ -934,7 +913,7 @@
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
-            "weather_code": 3,
+            "weather_code": 45,
             "freezing_level_min": 1210.0,
             "freezing_level_max": 1860.0
           },
@@ -958,7 +937,7 @@
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
-            "weather_code": 45,
+            "weather_code": 3,
             "freezing_level_min": 800.0,
             "freezing_level_max": 2010.0
           },
@@ -970,12 +949,12 @@
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
-            "weather_code": 45,
+            "weather_code": 3,
             "freezing_level_min": 1490.0,
             "freezing_level_max": 2090.0
           }
         ],
-        "last_updated": "2026-04-02T12:45:25.919050",
+        "last_updated": "2026-04-02T15:51:13.289540",
         "source": "OpenMeteo",
         "elevation": 3230.0,
         "elevation_used": 3230
@@ -986,17 +965,9 @@
     "bot": {
       "days": [
         {
-          "name": "Thursday",
+          "name": "Thu",
           "date": "2",
           "am": {
-            "condition": "clear",
-            "temperature": "3.0",
-            "feels_like": "-7.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h SE"
-          },
-          "pm": {
             "condition": "rain showers",
             "temperature": "4.0",
             "feels_like": "0.0",
@@ -1004,13 +975,21 @@
             "rain": "1",
             "wind": "10.0 km/h SE"
           },
-          "night": {
+          "pm": {
             "condition": "snow showers",
             "temperature": "-1.0",
             "feels_like": "-9.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h SE"
+          },
+          "night": {
+            "condition": "clear",
+            "temperature": "4.0",
+            "feels_like": "-7.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "10.0 km/h SE"
           }
         },
         {
@@ -1018,24 +997,24 @@
           "date": "3",
           "am": {
             "condition": "clear",
-            "temperature": "4.0",
-            "feels_like": "-7.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "10.0 km/h SE"
-          },
-          "pm": {
-            "condition": "clear",
             "temperature": "5.0",
             "feels_like": "3.0",
             "snow": "0",
             "rain": "0",
             "wind": "10.0 km/h SE"
           },
-          "night": {
+          "pm": {
             "condition": "clear",
             "temperature": "-1.0",
-            "feels_like": "-5.0",
+            "feels_like": "-6.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "5.0 km/h SE"
+          },
+          "night": {
+            "condition": "clear",
+            "temperature": "6.0",
+            "feels_like": "-2.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h SE"
@@ -1045,14 +1024,6 @@
           "name": "Saturday",
           "date": "4",
           "am": {
-            "condition": "clear",
-            "temperature": "6.0",
-            "feels_like": "-3.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h SE"
-          },
-          "pm": {
             "condition": "part cloud",
             "temperature": "9.0",
             "feels_like": "8.0",
@@ -1060,13 +1031,21 @@
             "rain": "0",
             "wind": "0.0 km/h NW"
           },
-          "night": {
+          "pm": {
             "condition": "clear",
             "temperature": "4.0",
             "feels_like": "2.0",
             "snow": "0",
             "rain": "0",
-            "wind": "0.0 km/h E"
+            "wind": "0.0 km/h N"
+          },
+          "night": {
+            "condition": "part cloud",
+            "temperature": "9.0",
+            "feels_like": "3.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "5.0 km/h E"
           }
         },
         {
@@ -1074,54 +1053,54 @@
           "date": "5",
           "am": {
             "condition": "part cloud",
-            "temperature": "9.0",
-            "feels_like": "3.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "0.0 km/h E"
-          },
-          "pm": {
-            "condition": "clear",
             "temperature": "10.0",
             "feels_like": "10.0",
             "snow": "0",
             "rain": "0",
             "wind": "0.0 km/h S"
           },
-          "night": {
+          "pm": {
             "condition": "part cloud",
             "temperature": "5.0",
-            "feels_like": "3.0",
+            "feels_like": "2.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h SE"
+          },
+          "night": {
+            "condition": "clear",
+            "temperature": "9.0",
+            "feels_like": "4.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "0.0 km/h SE"
           }
         },
         {
           "name": "Monday",
           "date": "6",
           "am": {
-            "condition": "part cloud",
-            "temperature": "9.0",
-            "feels_like": "4.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "0.0 km/h E"
-          },
-          "pm": {
-            "condition": "rain showers",
+            "condition": "light rain",
             "temperature": "11.0",
             "feels_like": "11.0",
             "snow": "0",
             "rain": "1",
             "wind": "0.0 km/h NW"
           },
-          "night": {
+          "pm": {
             "condition": "rain showers",
             "temperature": "7.0",
-            "feels_like": "4.0",
+            "feels_like": "5.0",
             "snow": "0",
             "rain": "1",
+            "wind": "5.0 km/h NW"
+          },
+          "night": {
+            "condition": "part cloud",
+            "temperature": "8.0",
+            "feels_like": "4.0",
+            "snow": "0",
+            "rain": "0",
             "wind": "5.0 km/h NW"
           }
         },
@@ -1129,25 +1108,18 @@
           "name": "Tuesday",
           "date": "7",
           "am": {
-            "condition": "clear",
+            "condition": "light rain",
             "temperature": "10.0",
-            "feels_like": "4.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h NW"
-          },
-          "pm": {
-            "condition": "rain showers",
-            "temperature": "11.0",
             "feels_like": "10.0",
             "snow": "0",
-            "rain": "1",
+            "rain": "3",
             "wind": "5.0 km/h N"
           },
+          "pm": null,
           "night": null
         }
       ],
-      "last_updated": "2026-04-02T12:45:26.723639",
+      "last_updated": "2026-04-02T15:51:14.082915",
       "resort": "Cervinia",
       "elevation": "bot",
       "snow_conditions": {
@@ -1161,17 +1133,9 @@
     "mid": {
       "days": [
         {
-          "name": "Thursday",
+          "name": "Thu",
           "date": "2",
           "am": {
-            "condition": "clear",
-            "temperature": "-4.0",
-            "feels_like": "-9.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h S"
-          },
-          "pm": {
             "condition": "snow showers",
             "temperature": "-4.0",
             "feels_like": "-10.0",
@@ -1179,10 +1143,18 @@
             "rain": "0",
             "wind": "15.0 km/h SE"
           },
-          "night": {
+          "pm": {
             "condition": "snow showers",
             "temperature": "-6.0",
-            "feels_like": "-12.0",
+            "feels_like": "-13.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "10.0 km/h SE"
+          },
+          "night": {
+            "condition": "clear",
+            "temperature": "-3.0",
+            "feels_like": "-10.0",
             "snow": "0",
             "rain": "0",
             "wind": "10.0 km/h SE"
@@ -1193,15 +1165,15 @@
           "date": "3",
           "am": {
             "condition": "clear",
-            "temperature": "-3.0",
-            "feels_like": "-10.0",
+            "temperature": "-2.0",
+            "feels_like": "-5.0",
             "snow": "0",
             "rain": "0",
             "wind": "10.0 km/h SE"
           },
           "pm": {
             "condition": "clear",
-            "temperature": "-3.0",
+            "temperature": "-2.0",
             "feels_like": "-7.0",
             "snow": "0",
             "rain": "0",
@@ -1209,8 +1181,8 @@
           },
           "night": {
             "condition": "clear",
-            "temperature": "-2.0",
-            "feels_like": "-8.0",
+            "temperature": "0.0",
+            "feels_like": "-4.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h SE"
@@ -1220,28 +1192,28 @@
           "name": "Saturday",
           "date": "4",
           "am": {
-            "condition": "clear",
-            "temperature": "0.0",
-            "feels_like": "-4.0",
+            "condition": "part cloud",
+            "temperature": "2.0",
+            "feels_like": "2.0",
             "snow": "0",
             "rain": "0",
-            "wind": "5.0 km/h SE"
+            "wind": "0.0 km/h SE"
           },
           "pm": {
-            "condition": "part cloud",
+            "condition": "clear",
             "temperature": "2.0",
             "feels_like": "1.0",
             "snow": "0",
             "rain": "0",
-            "wind": "0.0 km/h NE"
+            "wind": "5.0 km/h E"
           },
           "night": {
-            "condition": "clear",
-            "temperature": "1.0",
-            "feels_like": "1.0",
+            "condition": "part cloud",
+            "temperature": "2.0",
+            "feels_like": "-1.0",
             "snow": "0",
             "rain": "0",
-            "wind": "5.0 km/h E"
+            "wind": "5.0 km/h SE"
           }
         },
         {
@@ -1250,66 +1222,38 @@
           "am": {
             "condition": "part cloud",
             "temperature": "3.0",
-            "feels_like": "-1.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h E"
-          },
-          "pm": {
-            "condition": "clear",
-            "temperature": "4.0",
             "feels_like": "3.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h SE"
           },
-          "night": {
+          "pm": {
             "condition": "part cloud",
+            "temperature": "2.0",
+            "feels_like": "-1.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "5.0 km/h E"
+          },
+          "night": {
+            "condition": "clear",
             "temperature": "2.0",
             "feels_like": "0.0",
             "snow": "0",
             "rain": "0",
-            "wind": "5.0 km/h E"
+            "wind": "5.0 km/h SE"
           }
         },
         {
           "name": "Monday",
           "date": "6",
           "am": {
-            "condition": "part cloud",
-            "temperature": "2.0",
-            "feels_like": "0.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h E"
-          },
-          "pm": {
-            "condition": "rain showers",
+            "condition": "light rain",
             "temperature": "4.0",
             "feels_like": "3.0",
             "snow": "0",
             "rain": "1",
-            "wind": "0.0 km/h SE"
-          },
-          "night": {
-            "condition": "rain showers",
-            "temperature": "2.0",
-            "feels_like": "0.0",
-            "snow": "0",
-            "rain": "1",
-            "wind": "5.0 km/h N"
-          }
-        },
-        {
-          "name": "Tuesday",
-          "date": "7",
-          "am": {
-            "condition": "clear",
-            "temperature": "2.0",
-            "feels_like": "-1.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h NW"
+            "wind": "0.0 km/h E"
           },
           "pm": {
             "condition": "rain showers",
@@ -1319,6 +1263,27 @@
             "rain": "1",
             "wind": "5.0 km/h N"
           },
+          "night": {
+            "condition": "part cloud",
+            "temperature": "2.0",
+            "feels_like": "0.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "5.0 km/h N"
+          }
+        },
+        {
+          "name": "Tuesday",
+          "date": "7",
+          "am": {
+            "condition": "light rain",
+            "temperature": "3.0",
+            "feels_like": "3.0",
+            "snow": "0",
+            "rain": "3",
+            "wind": "0.0 km/h NE"
+          },
+          "pm": null,
           "night": null
         },
         {
@@ -1350,7 +1315,7 @@
           }
         }
       ],
-      "last_updated": "2026-04-02T12:46:27.819281",
+      "last_updated": "2026-04-02T15:52:15.144989",
       "resort": "Cervinia",
       "elevation": "mid",
       "snow_conditions": {
@@ -1365,7 +1330,7 @@
           {
             "date": "2026-04-02",
             "day_name": "Thursday",
-            "temp_max": -6.2,
+            "temp_max": -6.3,
             "temp_min": -8.5,
             "precipitation": 0.0,
             "rain": 0.0,
@@ -1378,7 +1343,7 @@
             "date": "2026-04-03",
             "day_name": "Friday",
             "temp_max": -3.5,
-            "temp_min": -7.9,
+            "temp_min": -7.8,
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
@@ -1389,50 +1354,50 @@
           {
             "date": "2026-04-04",
             "day_name": "Saturday",
-            "temp_max": 0.8,
-            "temp_min": -4.3,
+            "temp_max": 0.5,
+            "temp_min": -4.1,
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
             "weather_code": 3,
-            "freezing_level_min": 2707.5,
+            "freezing_level_min": 2810.0,
             "freezing_level_max": 3000.0
           },
           {
             "date": "2026-04-05",
             "day_name": "Sunday",
-            "temp_max": 1.3,
-            "temp_min": -2.9,
+            "temp_max": 1.6,
+            "temp_min": -2.8,
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
             "weather_code": 3,
-            "freezing_level_min": 2690.0,
-            "freezing_level_max": 3020.0
+            "freezing_level_min": 2810.0,
+            "freezing_level_max": 3060.0
           },
           {
             "date": "2026-04-06",
             "day_name": "Monday",
             "temp_max": 2.2,
-            "temp_min": -3.9,
+            "temp_min": -3.2,
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
             "weather_code": 71,
-            "freezing_level_min": 2630.0,
-            "freezing_level_max": 3120.0
+            "freezing_level_min": 2670.0,
+            "freezing_level_max": 3100.0
           },
           {
             "date": "2026-04-07",
             "day_name": "Tuesday",
             "temp_max": 2.9,
-            "temp_min": -2.7,
+            "temp_min": -3.2,
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
             "weather_code": 0,
-            "freezing_level_min": 2810.0,
-            "freezing_level_max": 3420.0
+            "freezing_level_min": 2670.0,
+            "freezing_level_max": 3150.0
           },
           {
             "date": "2026-04-08",
@@ -1526,7 +1491,7 @@
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
-            "weather_code": 45,
+            "weather_code": 3,
             "freezing_level_min": 770.0,
             "freezing_level_max": 1780.0
           },
@@ -1538,7 +1503,7 @@
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
-            "weather_code": 45,
+            "weather_code": 3,
             "freezing_level_min": 530.0,
             "freezing_level_max": 2150.0
           },
@@ -1555,7 +1520,7 @@
             "freezing_level_max": 2250.0
           }
         ],
-        "last_updated": "2026-04-02T12:46:58.418707",
+        "last_updated": "2026-04-02T15:52:45.843776",
         "source": "OpenMeteo",
         "elevation": 2900.0,
         "elevation_used": 2900
@@ -1564,17 +1529,9 @@
     "top": {
       "days": [
         {
-          "name": "Thursday",
+          "name": "Thu",
           "date": "2",
           "am": {
-            "condition": "clear",
-            "temperature": "-11.0",
-            "feels_like": "-17.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h S"
-          },
-          "pm": {
             "condition": "clear",
             "temperature": "-11.0",
             "feels_like": "-18.0",
@@ -1582,13 +1539,21 @@
             "rain": "0",
             "wind": "10.0 km/h SE"
           },
-          "night": {
-            "condition": "snow showers",
+          "pm": {
+            "condition": "part cloud",
             "temperature": "-10.0",
             "feels_like": "-20.0",
             "snow": "0",
             "rain": "0",
             "wind": "15.0 km/h SE"
+          },
+          "night": {
+            "condition": "clear",
+            "temperature": "-9.0",
+            "feels_like": "-17.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "15.0 km/h S"
           }
         },
         {
@@ -1597,26 +1562,26 @@
           "am": {
             "condition": "clear",
             "temperature": "-9.0",
-            "feels_like": "-18.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "15.0 km/h SE"
-          },
-          "pm": {
-            "condition": "clear",
-            "temperature": "-9.0",
             "feels_like": "-16.0",
             "snow": "0",
             "rain": "0",
-            "wind": "20.0 km/h S"
+            "wind": "15.0 km/h S"
+          },
+          "pm": {
+            "condition": "clear",
+            "temperature": "-6.0",
+            "feels_like": "-15.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "15.0 km/h SE"
           },
           "night": {
             "condition": "clear",
             "temperature": "-6.0",
-            "feels_like": "-16.0",
+            "feels_like": "-12.0",
             "snow": "0",
             "rain": "0",
-            "wind": "15.0 km/h SE"
+            "wind": "10.0 km/h SE"
           }
         },
         {
@@ -1624,22 +1589,22 @@
           "date": "4",
           "am": {
             "condition": "clear",
-            "temperature": "-6.0",
-            "feels_like": "-11.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "10.0 km/h SE"
-          },
-          "pm": {
-            "condition": "part cloud",
             "temperature": "-5.0",
-            "feels_like": "-5.0",
+            "feels_like": "-8.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h SE"
           },
-          "night": {
+          "pm": {
             "condition": "clear",
+            "temperature": "-3.0",
+            "feels_like": "-7.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "10.0 km/h E"
+          },
+          "night": {
+            "condition": "part cloud",
             "temperature": "-4.0",
             "feels_like": "-8.0",
             "snow": "0",
@@ -1653,50 +1618,50 @@
           "am": {
             "condition": "part cloud",
             "temperature": "-4.0",
-            "feels_like": "-9.0",
+            "feels_like": "-8.0",
             "snow": "0",
             "rain": "0",
-            "wind": "10.0 km/h SE"
+            "wind": "10.0 km/h E"
           },
           "pm": {
-            "condition": "clear",
-            "temperature": "-3.0",
-            "feels_like": "-8.0",
+            "condition": "part cloud",
+            "temperature": "-4.0",
+            "feels_like": "-10.0",
             "snow": "0",
             "rain": "0",
             "wind": "10.0 km/h E"
           },
           "night": {
-            "condition": "part cloud",
-            "temperature": "-4.0",
-            "feels_like": "-8.0",
+            "condition": "clear",
+            "temperature": "-5.0",
+            "feels_like": "-9.0",
             "snow": "0",
             "rain": "0",
-            "wind": "10.0 km/h E"
+            "wind": "5.0 km/h SE"
           }
         },
         {
           "name": "Monday",
           "date": "6",
           "am": {
-            "condition": "part cloud",
-            "temperature": "-5.0",
-            "feels_like": "-9.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h E"
-          },
-          "pm": {
             "condition": "snow showers",
             "temperature": "-4.0",
             "feels_like": "-4.0",
             "snow": "0",
             "rain": "0",
-            "wind": "5.0 km/h E"
+            "wind": "5.0 km/h S"
           },
-          "night": {
+          "pm": {
             "condition": "snow showers",
             "temperature": "-4.0",
+            "feels_like": "-8.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "5.0 km/h NW"
+          },
+          "night": {
+            "condition": "clear",
+            "temperature": "-5.0",
             "feels_like": "-8.0",
             "snow": "0",
             "rain": "0",
@@ -1707,25 +1672,18 @@
           "name": "Tuesday",
           "date": "7",
           "am": {
-            "condition": "clear",
-            "temperature": "-5.0",
-            "feels_like": "-9.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "10.0 km/h NW"
-          },
-          "pm": {
-            "condition": "snow showers",
+            "condition": "light snow",
             "temperature": "-4.0",
-            "feels_like": "-7.0",
-            "snow": "0",
+            "feels_like": "-4.0",
+            "snow": "1",
             "rain": "0",
             "wind": "5.0 km/h NE"
           },
+          "pm": null,
           "night": null
         }
       ],
-      "last_updated": "2026-04-02T12:46:59.211379",
+      "last_updated": "2026-04-02T15:52:46.647224",
       "resort": "Cervinia",
       "elevation": "top",
       "snow_conditions": {
@@ -1741,17 +1699,9 @@
     "bot": {
       "days": [
         {
-          "name": "Thursday",
+          "name": "Thu",
           "date": "2",
           "am": {
-            "condition": "clear",
-            "temperature": "5.0",
-            "feels_like": "-4.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h SE"
-          },
-          "pm": {
             "condition": "clear",
             "temperature": "8.0",
             "feels_like": "4.0",
@@ -1759,13 +1709,21 @@
             "rain": "0",
             "wind": "10.0 km/h SE"
           },
-          "night": {
+          "pm": {
             "condition": "part cloud",
             "temperature": "-1.0",
-            "feels_like": "-7.0",
+            "feels_like": "-6.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h E"
+          },
+          "night": {
+            "condition": "clear",
+            "temperature": "5.0",
+            "feels_like": "-5.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "5.0 km/h SE"
           }
         },
         {
@@ -1773,27 +1731,27 @@
           "date": "3",
           "am": {
             "condition": "clear",
-            "temperature": "5.0",
-            "feels_like": "-5.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h SE"
-          },
-          "pm": {
-            "condition": "clear",
             "temperature": "9.0",
             "feels_like": "7.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h SE"
           },
-          "night": {
+          "pm": {
             "condition": "clear",
             "temperature": "1.0",
             "feels_like": "-1.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h E"
+          },
+          "night": {
+            "condition": "clear",
+            "temperature": "9.0",
+            "feels_like": "1.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "0.0 km/h E"
           }
         },
         {
@@ -1801,24 +1759,24 @@
           "date": "4",
           "am": {
             "condition": "clear",
-            "temperature": "9.0",
-            "feels_like": "1.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "0.0 km/h SE"
-          },
-          "pm": {
-            "condition": "clear",
-            "temperature": "12.0",
+            "temperature": "13.0",
             "feels_like": "12.0",
             "snow": "0",
             "rain": "0",
             "wind": "0.0 km/h NE"
           },
-          "night": {
+          "pm": {
             "condition": "clear",
             "temperature": "6.0",
             "feels_like": "3.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "5.0 km/h NE"
+          },
+          "night": {
+            "condition": "part cloud",
+            "temperature": "12.0",
+            "feels_like": "4.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h NE"
@@ -1829,76 +1787,69 @@
           "date": "5",
           "am": {
             "condition": "clear",
-            "temperature": "11.0",
-            "feels_like": "4.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "0.0 km/h E"
-          },
-          "pm": {
-            "condition": "clear",
             "temperature": "14.0",
             "feels_like": "14.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h E"
           },
-          "night": {
+          "pm": {
             "condition": "part cloud",
             "temperature": "8.0",
             "feels_like": "5.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h E"
+          },
+          "night": {
+            "condition": "part cloud",
+            "temperature": "13.0",
+            "feels_like": "6.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "0.0 km/h E"
           }
         },
         {
           "name": "Monday",
           "date": "6",
           "am": {
-            "condition": "cloud",
-            "temperature": "12.0",
-            "feels_like": "6.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h NE"
-          },
-          "pm": {
-            "condition": "rain showers",
+            "condition": "light rain",
             "temperature": "15.0",
             "feels_like": "14.0",
             "snow": "0",
             "rain": "1",
             "wind": "0.0 km/h E"
           },
-          "night": {
+          "pm": {
             "condition": "rain showers",
-            "temperature": "10.0",
-            "feels_like": "5.0",
+            "temperature": "9.0",
+            "feels_like": "6.0",
             "snow": "0",
-            "rain": "1",
-            "wind": "5.0 km/h NE"
+            "rain": "3",
+            "wind": "0.0 km/h N"
+          },
+          "night": {
+            "condition": "part cloud",
+            "temperature": "12.0",
+            "feels_like": "6.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "5.0 km/h N"
           }
         },
         {
           "name": "Tuesday",
           "date": "7",
           "am": {
-            "condition": "clear",
-            "temperature": "12.0",
-            "feels_like": "6.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h NW"
-          },
-          "pm": {
             "condition": "rain showers",
             "temperature": "14.0",
             "feels_like": "14.0",
             "snow": "0",
-            "rain": "1",
-            "wind": "5.0 km/h NW"
+            "rain": "2",
+            "wind": "5.0 km/h N"
           },
+          "pm": null,
           "night": null
         },
         {
@@ -1930,7 +1881,7 @@
           }
         }
       ],
-      "last_updated": "2026-04-02T12:48:00.286937",
+      "last_updated": "2026-04-02T15:53:47.806471",
       "resort": "Sestriere",
       "elevation": "bot",
       "snow_conditions": {
@@ -1945,74 +1896,74 @@
           {
             "date": "2026-04-02",
             "day_name": "Thursday",
-            "temp_max": 11.1,
+            "temp_max": 11.4,
             "temp_min": -1.7,
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
             "weather_code": 1,
             "freezing_level_min": 1520.0,
-            "freezing_level_max": 2340.0
+            "freezing_level_max": 2350.0
           },
           {
             "date": "2026-04-03",
             "day_name": "Friday",
             "temp_max": 12.8,
-            "temp_min": 1.2,
+            "temp_min": 1.3,
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
             "weather_code": 0,
-            "freezing_level_min": 1860.0,
-            "freezing_level_max": 2590.0
+            "freezing_level_min": 1870.0,
+            "freezing_level_max": 2600.0
           },
           {
             "date": "2026-04-04",
             "day_name": "Saturday",
-            "temp_max": 14.8,
-            "temp_min": 4.8,
+            "temp_max": 14.7,
+            "temp_min": 4.3,
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
             "weather_code": 3,
-            "freezing_level_min": 2450.0,
-            "freezing_level_max": 3040.0
+            "freezing_level_min": 2440.0,
+            "freezing_level_max": 3030.0
           },
           {
             "date": "2026-04-05",
             "day_name": "Sunday",
-            "temp_max": 15.5,
-            "temp_min": 4.9,
+            "temp_max": 15.8,
+            "temp_min": 4.6,
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
             "weather_code": 3,
-            "freezing_level_min": 2770.0,
-            "freezing_level_max": 3010.0
+            "freezing_level_min": 2720.0,
+            "freezing_level_max": 3040.0
           },
           {
             "date": "2026-04-06",
             "day_name": "Monday",
-            "temp_max": 16.5,
-            "temp_min": 5.3,
+            "temp_max": 16.4,
+            "temp_min": 6.0,
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
-            "weather_code": 0,
-            "freezing_level_min": 2770.0,
-            "freezing_level_max": 3420.0
+            "weather_code": 3,
+            "freezing_level_min": 2830.0,
+            "freezing_level_max": 3140.0
           },
           {
             "date": "2026-04-07",
             "day_name": "Tuesday",
             "temp_max": 16.9,
-            "temp_min": 5.1,
+            "temp_min": 5.9,
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
-            "weather_code": 1,
-            "freezing_level_min": 2920.0,
-            "freezing_level_max": 3250.0
+            "weather_code": 2,
+            "freezing_level_min": 2900.0,
+            "freezing_level_max": 3120.0
           },
           {
             "date": "2026-04-08",
@@ -2106,7 +2057,7 @@
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
-            "weather_code": 45,
+            "weather_code": 3,
             "freezing_level_min": 1220.0,
             "freezing_level_max": 2130.0
           },
@@ -2135,7 +2086,7 @@
             "freezing_level_max": 2190.0
           }
         ],
-        "last_updated": "2026-04-02T12:48:30.935788",
+        "last_updated": "2026-04-02T15:54:18.423176",
         "source": "OpenMeteo",
         "elevation": 1350.0,
         "elevation_used": 1350
@@ -2144,28 +2095,28 @@
     "mid": {
       "days": [
         {
-          "name": "Thursday",
+          "name": "Thu",
           "date": "2",
           "am": {
             "condition": "clear",
-            "temperature": "0.0",
-            "feels_like": "-4.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h S"
-          },
-          "pm": {
-            "condition": "clear",
-            "temperature": "2.0",
+            "temperature": "1.0",
             "feels_like": "-1.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h SE"
           },
-          "night": {
+          "pm": {
             "condition": "part cloud",
             "temperature": "-2.0",
             "feels_like": "-3.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "5.0 km/h SE"
+          },
+          "night": {
+            "condition": "clear",
+            "temperature": "1.0",
+            "feels_like": "-6.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h SE"
@@ -2176,27 +2127,27 @@
           "date": "3",
           "am": {
             "condition": "clear",
-            "temperature": "1.0",
-            "feels_like": "-6.0",
+            "temperature": "3.0",
+            "feels_like": "0.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h SE"
           },
           "pm": {
             "condition": "clear",
-            "temperature": "2.0",
-            "feels_like": "0.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h SE"
-          },
-          "night": {
-            "condition": "clear",
             "temperature": "0.0",
             "feels_like": "-1.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h E"
+          },
+          "night": {
+            "condition": "clear",
+            "temperature": "4.0",
+            "feels_like": "-2.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "0.0 km/h SE"
           }
         },
         {
@@ -2204,24 +2155,24 @@
           "date": "4",
           "am": {
             "condition": "clear",
-            "temperature": "4.0",
-            "feels_like": "-2.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "0.0 km/h SE"
-          },
-          "pm": {
-            "condition": "clear",
             "temperature": "6.0",
             "feels_like": "6.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h NE"
           },
-          "night": {
+          "pm": {
             "condition": "clear",
-            "temperature": "3.0",
+            "temperature": "4.0",
             "feels_like": "3.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "5.0 km/h NE"
+          },
+          "night": {
+            "condition": "part cloud",
+            "temperature": "6.0",
+            "feels_like": "2.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h E"
@@ -2232,23 +2183,23 @@
           "date": "5",
           "am": {
             "condition": "clear",
-            "temperature": "7.0",
-            "feels_like": "2.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h E"
-          },
-          "pm": {
-            "condition": "clear",
             "temperature": "8.0",
             "feels_like": "8.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h E"
           },
-          "night": {
+          "pm": {
             "condition": "part cloud",
             "temperature": "5.0",
+            "feels_like": "1.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "5.0 km/h E"
+          },
+          "night": {
+            "condition": "part cloud",
+            "temperature": "7.0",
             "feels_like": "2.0",
             "snow": "0",
             "rain": "0",
@@ -2259,27 +2210,27 @@
           "name": "Monday",
           "date": "6",
           "am": {
-            "condition": "cloud",
-            "temperature": "6.0",
-            "feels_like": "4.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h E"
-          },
-          "pm": {
-            "condition": "rain showers",
+            "condition": "light rain",
             "temperature": "8.0",
             "feels_like": "8.0",
             "snow": "0",
             "rain": "1",
-            "wind": "5.0 km/h E"
+            "wind": "0.0 km/h E"
+          },
+          "pm": {
+            "condition": "rain showers",
+            "temperature": "5.0",
+            "feels_like": "3.0",
+            "snow": "0",
+            "rain": "3",
+            "wind": "0.0 km/h N"
           },
           "night": {
-            "condition": "rain showers",
+            "condition": "part cloud",
             "temperature": "6.0",
             "feels_like": "3.0",
             "snow": "0",
-            "rain": "1",
+            "rain": "0",
             "wind": "5.0 km/h N"
           }
         },
@@ -2287,25 +2238,18 @@
           "name": "Tuesday",
           "date": "7",
           "am": {
-            "condition": "clear",
-            "temperature": "6.0",
-            "feels_like": "2.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h N"
-          },
-          "pm": {
             "condition": "rain showers",
             "temperature": "8.0",
-            "feels_like": "7.0",
+            "feels_like": "6.0",
             "snow": "0",
-            "rain": "1",
-            "wind": "5.0 km/h N"
+            "rain": "2",
+            "wind": "5.0 km/h NE"
           },
+          "pm": null,
           "night": null
         }
       ],
-      "last_updated": "2026-04-02T12:48:31.826929",
+      "last_updated": "2026-04-02T15:54:19.236474",
       "resort": "Sestriere",
       "elevation": "mid",
       "snow_conditions": {
@@ -2319,7 +2263,7 @@
     "top": {
       "days": [
         {
-          "name": "Thursday",
+          "name": "Thu",
           "date": "2",
           "am": {
             "condition": "clear",
@@ -2327,20 +2271,20 @@
             "feels_like": "-8.0",
             "snow": "0",
             "rain": "0",
-            "wind": "5.0 km/h SW"
+            "wind": "5.0 km/h SE"
           },
           "pm": {
             "condition": "clear",
-            "temperature": "-4.0",
-            "feels_like": "-8.0",
+            "temperature": "-5.0",
+            "feels_like": "-5.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h SE"
           },
           "night": {
             "condition": "clear",
-            "temperature": "-5.0",
-            "feels_like": "-7.0",
+            "temperature": "-4.0",
+            "feels_like": "-9.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h SE"
@@ -2352,26 +2296,26 @@
           "am": {
             "condition": "clear",
             "temperature": "-3.0",
-            "feels_like": "-9.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "10.0 km/h SE"
-          },
-          "pm": {
-            "condition": "clear",
-            "temperature": "-3.0",
             "feels_like": "-6.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h SE"
           },
-          "night": {
+          "pm": {
             "condition": "clear",
             "temperature": "-2.0",
             "feels_like": "-6.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h E"
+          },
+          "night": {
+            "condition": "clear",
+            "temperature": "0.0",
+            "feels_like": "-5.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "5.0 km/h SE"
           }
         },
         {
@@ -2379,44 +2323,16 @@
           "date": "4",
           "am": {
             "condition": "clear",
-            "temperature": "-1.0",
-            "feels_like": "-5.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h E"
-          },
-          "pm": {
-            "condition": "clear",
             "temperature": "0.0",
-            "feels_like": "-1.0",
+            "feels_like": "0.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h NE"
           },
-          "night": {
+          "pm": {
             "condition": "clear",
             "temperature": "0.0",
             "feels_like": "-3.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "10.0 km/h SE"
-          }
-        },
-        {
-          "name": "Sunday",
-          "date": "5",
-          "am": {
-            "condition": "clear",
-            "temperature": "2.0",
-            "feels_like": "-3.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "10.0 km/h SE"
-          },
-          "pm": {
-            "condition": "clear",
-            "temperature": "2.0",
-            "feels_like": "0.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h E"
@@ -2431,52 +2347,73 @@
           }
         },
         {
-          "name": "Monday",
-          "date": "6",
+          "name": "Sunday",
+          "date": "5",
           "am": {
-            "condition": "cloud",
-            "temperature": "1.0",
-            "feels_like": "-2.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h E"
-          },
-          "pm": {
-            "condition": "snow showers",
+            "condition": "clear",
             "temperature": "2.0",
             "feels_like": "-1.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h E"
           },
-          "night": {
-            "condition": "snow showers",
+          "pm": {
+            "condition": "part cloud",
             "temperature": "1.0",
-            "feels_like": "0.0",
+            "feels_like": "-3.0",
             "snow": "0",
             "rain": "0",
+            "wind": "10.0 km/h E"
+          },
+          "night": {
+            "condition": "part cloud",
+            "temperature": "1.0",
+            "feels_like": "-3.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "5.0 km/h E"
+          }
+        },
+        {
+          "name": "Monday",
+          "date": "6",
+          "am": {
+            "condition": "light snow",
+            "temperature": "2.0",
+            "feels_like": "1.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "5.0 km/h E"
+          },
+          "pm": {
+            "condition": "snow showers",
+            "temperature": "1.0",
+            "feels_like": "-3.0",
+            "snow": "1",
+            "rain": "0",
             "wind": "5.0 km/h N"
+          },
+          "night": {
+            "condition": "part cloud",
+            "temperature": "0.0",
+            "feels_like": "-3.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "10.0 km/h NE"
           }
         },
         {
           "name": "Tuesday",
           "date": "7",
           "am": {
-            "condition": "clear",
+            "condition": "snow showers",
             "temperature": "1.0",
             "feels_like": "-2.0",
             "snow": "0",
             "rain": "0",
-            "wind": "10.0 km/h N"
+            "wind": "10.0 km/h NE"
           },
-          "pm": {
-            "condition": "snow showers",
-            "temperature": "2.0",
-            "feels_like": "-1.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "10.0 km/h N"
-          },
+          "pm": null,
           "night": null
         },
         {
@@ -2508,7 +2445,7 @@
           }
         }
       ],
-      "last_updated": "2026-04-02T12:49:33.052657",
+      "last_updated": "2026-04-02T15:55:20.372993",
       "resort": "Sestriere",
       "elevation": "top",
       "snow_conditions": {
@@ -2523,20 +2460,20 @@
           {
             "date": "2026-04-02",
             "day_name": "Thursday",
-            "temp_max": 0.3,
+            "temp_max": 0.5,
             "temp_min": -8.7,
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
             "weather_code": 1,
             "freezing_level_min": 2300.0,
-            "freezing_level_max": 2430.0
+            "freezing_level_max": 2460.0
           },
           {
             "date": "2026-04-03",
             "day_name": "Friday",
-            "temp_max": 1.9,
-            "temp_min": -7.2,
+            "temp_max": 1.8,
+            "temp_min": -7.1,
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
@@ -2547,49 +2484,49 @@
           {
             "date": "2026-04-04",
             "day_name": "Saturday",
-            "temp_max": 5.1,
-            "temp_min": -3.5,
+            "temp_max": 4.9,
+            "temp_min": -3.4,
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
             "weather_code": 3,
-            "freezing_level_min": 2360.0,
-            "freezing_level_max": 3060.0
+            "freezing_level_min": 2378.75,
+            "freezing_level_max": 3030.0
           },
           {
             "date": "2026-04-05",
             "day_name": "Sunday",
-            "temp_max": 5.7,
-            "temp_min": -2.0,
+            "temp_max": 6.1,
+            "temp_min": -2.3,
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
             "weather_code": 3,
-            "freezing_level_min": 2840.0,
-            "freezing_level_max": 3030.0
+            "freezing_level_min": 2780.0,
+            "freezing_level_max": 3080.0
           },
           {
             "date": "2026-04-06",
             "day_name": "Monday",
-            "temp_max": 6.6,
-            "temp_min": -1.9,
+            "temp_max": 6.5,
+            "temp_min": -1.0,
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
-            "weather_code": 1,
-            "freezing_level_min": 2800.0,
-            "freezing_level_max": 3170.0
+            "weather_code": 3,
+            "freezing_level_min": 2870.0,
+            "freezing_level_max": 3180.0
           },
           {
             "date": "2026-04-07",
             "day_name": "Tuesday",
             "temp_max": 7.3,
-            "temp_min": -3.9,
+            "temp_min": -1.3,
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
-            "weather_code": 1,
-            "freezing_level_min": 2940.0,
+            "weather_code": 3,
+            "freezing_level_min": 2840.0,
             "freezing_level_max": 3120.0
           },
           {
@@ -2684,7 +2621,7 @@
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
-            "weather_code": 45,
+            "weather_code": 3,
             "freezing_level_min": 1220.0,
             "freezing_level_max": 2130.0
           },
@@ -2713,7 +2650,7 @@
             "freezing_level_max": 2190.0
           }
         ],
-        "last_updated": "2026-04-02T12:50:10.859804",
+        "last_updated": "2026-04-02T15:55:50.961448",
         "source": "OpenMeteo",
         "elevation": 2823.0,
         "elevation_used": 2823
@@ -2724,31 +2661,31 @@
     "bot": {
       "days": [
         {
-          "name": "Thursday",
+          "name": "Thu",
           "date": "2",
           "am": {
             "condition": "clear",
-            "temperature": "4.0",
-            "feels_like": "-6.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h SE"
-          },
-          "pm": {
-            "condition": "part cloud",
             "temperature": "6.0",
             "feels_like": "3.0",
             "snow": "0",
             "rain": "0",
             "wind": "10.0 km/h SE"
           },
-          "night": {
+          "pm": {
             "condition": "clear",
-            "temperature": "0.0",
+            "temperature": "-1.0",
             "feels_like": "-7.0",
             "snow": "0",
             "rain": "0",
             "wind": "10.0 km/h SE"
+          },
+          "night": {
+            "condition": "clear",
+            "temperature": "5.0",
+            "feels_like": "-5.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "5.0 km/h SE"
           }
         },
         {
@@ -2756,27 +2693,27 @@
           "date": "3",
           "am": {
             "condition": "clear",
-            "temperature": "5.0",
-            "feels_like": "-5.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h SE"
-          },
-          "pm": {
-            "condition": "clear",
             "temperature": "7.0",
             "feels_like": "6.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h E"
           },
-          "night": {
+          "pm": {
             "condition": "clear",
             "temperature": "0.0",
-            "feels_like": "-3.0",
+            "feels_like": "-4.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h SE"
+          },
+          "night": {
+            "condition": "clear",
+            "temperature": "7.0",
+            "feels_like": "-1.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "0.0 km/h E"
           }
         },
         {
@@ -2784,108 +2721,101 @@
           "date": "4",
           "am": {
             "condition": "clear",
-            "temperature": "7.0",
-            "feels_like": "-1.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "0.0 km/h E"
-          },
-          "pm": {
-            "condition": "part cloud",
             "temperature": "9.0",
             "feels_like": "9.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h NW"
           },
-          "night": {
+          "pm": {
             "condition": "clear",
-            "temperature": "4.0",
+            "temperature": "5.0",
             "feels_like": "2.0",
             "snow": "0",
             "rain": "0",
-            "wind": "5.0 km/h E"
+            "wind": "0.0 km/h E"
+          },
+          "night": {
+            "condition": "part cloud",
+            "temperature": "8.0",
+            "feels_like": "3.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "5.0 km/h NE"
           }
         },
         {
           "name": "Sunday",
           "date": "5",
           "am": {
-            "condition": "clear",
-            "temperature": "9.0",
-            "feels_like": "3.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "0.0 km/h NE"
-          },
-          "pm": {
-            "condition": "clear",
+            "condition": "part cloud",
             "temperature": "11.0",
             "feels_like": "11.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h NW"
           },
-          "night": {
+          "pm": {
             "condition": "part cloud",
-            "temperature": "7.0",
+            "temperature": "6.0",
             "feels_like": "3.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h SE"
+          },
+          "night": {
+            "condition": "clear",
+            "temperature": "10.0",
+            "feels_like": "5.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "0.0 km/h N"
           }
         },
         {
           "name": "Monday",
           "date": "6",
           "am": {
-            "condition": "part cloud",
-            "temperature": "10.0",
-            "feels_like": "4.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "0.0 km/h N"
-          },
-          "pm": {
             "condition": "rain showers",
             "temperature": "12.0",
-            "feels_like": "11.0",
+            "feels_like": "10.0",
             "snow": "0",
             "rain": "1",
             "wind": "5.0 km/h NW"
           },
-          "night": {
+          "pm": {
             "condition": "rain showers",
+            "temperature": "7.0",
+            "feels_like": "5.0",
+            "snow": "0",
+            "rain": "1",
+            "wind": "0.0 km/h E"
+          },
+          "night": {
+            "condition": "part cloud",
             "temperature": "8.0",
             "feels_like": "5.0",
             "snow": "0",
-            "rain": "2",
-            "wind": "0.0 km/h NW"
+            "rain": "0",
+            "wind": "5.0 km/h NW"
           }
         },
         {
           "name": "Tuesday",
           "date": "7",
           "am": {
-            "condition": "clear",
-            "temperature": "9.0",
-            "feels_like": "5.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h NW"
-          },
-          "pm": {
             "condition": "rain showers",
-            "temperature": "11.0",
+            "temperature": "10.0",
             "feels_like": "8.0",
             "snow": "0",
             "rain": "2",
             "wind": "5.0 km/h NW"
           },
+          "pm": null,
           "night": null
         }
       ],
-      "last_updated": "2026-04-02T12:50:11.643755",
+      "last_updated": "2026-04-02T15:55:51.715777",
       "resort": "Champoluc",
       "elevation": "bot",
       "snow_conditions": {
@@ -2899,28 +2829,28 @@
     "mid": {
       "days": [
         {
-          "name": "Thursday",
+          "name": "Thu",
           "date": "2",
           "am": {
             "condition": "clear",
-            "temperature": "0.0",
-            "feels_like": "-6.0",
+            "temperature": "1.0",
+            "feels_like": "-3.0",
             "snow": "0",
             "rain": "0",
-            "wind": "5.0 km/h SE"
+            "wind": "10.0 km/h SE"
           },
           "pm": {
-            "condition": "part cloud",
-            "temperature": "1.0",
-            "feels_like": "-4.0",
+            "condition": "snow showers",
+            "temperature": "-3.0",
+            "feels_like": "-8.0",
             "snow": "0",
             "rain": "0",
             "wind": "10.0 km/h SE"
           },
           "night": {
-            "condition": "snow showers",
-            "temperature": "-3.0",
-            "feels_like": "-8.0",
+            "condition": "clear",
+            "temperature": "1.0",
+            "feels_like": "-7.0",
             "snow": "0",
             "rain": "0",
             "wind": "10.0 km/h SE"
@@ -2931,24 +2861,24 @@
           "date": "3",
           "am": {
             "condition": "clear",
-            "temperature": "1.0",
-            "feels_like": "-7.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "10.0 km/h SE"
-          },
-          "pm": {
-            "condition": "clear",
             "temperature": "2.0",
             "feels_like": "0.0",
             "snow": "0",
             "rain": "0",
             "wind": "10.0 km/h SE"
           },
-          "night": {
+          "pm": {
             "condition": "clear",
             "temperature": "0.0",
             "feels_like": "-4.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "10.0 km/h SE"
+          },
+          "night": {
+            "condition": "clear",
+            "temperature": "3.0",
+            "feels_like": "-2.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h SE"
@@ -2959,23 +2889,23 @@
           "date": "4",
           "am": {
             "condition": "clear",
-            "temperature": "3.0",
-            "feels_like": "-2.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h SE"
-          },
-          "pm": {
-            "condition": "part cloud",
             "temperature": "5.0",
             "feels_like": "5.0",
             "snow": "0",
             "rain": "0",
-            "wind": "0.0 km/h N"
+            "wind": "0.0 km/h NW"
           },
-          "night": {
+          "pm": {
             "condition": "clear",
             "temperature": "3.0",
+            "feels_like": "3.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "5.0 km/h E"
+          },
+          "night": {
+            "condition": "part cloud",
+            "temperature": "5.0",
             "feels_like": "1.0",
             "snow": "0",
             "rain": "0",
@@ -2986,77 +2916,70 @@
           "name": "Sunday",
           "date": "5",
           "am": {
-            "condition": "clear",
-            "temperature": "5.0",
-            "feels_like": "0.0",
+            "condition": "part cloud",
+            "temperature": "6.0",
+            "feels_like": "6.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "0.0 km/h E"
+          },
+          "pm": {
+            "condition": "part cloud",
+            "temperature": "4.0",
+            "feels_like": "1.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h E"
           },
-          "pm": {
-            "condition": "clear",
-            "temperature": "7.0",
-            "feels_like": "7.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "0.0 km/h NE"
-          },
           "night": {
-            "condition": "part cloud",
+            "condition": "clear",
             "temperature": "5.0",
-            "feels_like": "1.0",
+            "feels_like": "2.0",
             "snow": "0",
             "rain": "0",
-            "wind": "5.0 km/h SE"
+            "wind": "0.0 km/h E"
           }
         },
         {
           "name": "Monday",
           "date": "6",
           "am": {
-            "condition": "part cloud",
-            "temperature": "5.0",
-            "feels_like": "2.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "0.0 km/h NE"
-          },
-          "pm": {
             "condition": "rain showers",
             "temperature": "7.0",
-            "feels_like": "7.0",
+            "feels_like": "6.0",
             "snow": "0",
             "rain": "1",
             "wind": "0.0 km/h N"
           },
-          "night": {
+          "pm": {
             "condition": "rain showers",
             "temperature": "5.0",
             "feels_like": "3.0",
             "snow": "0",
-            "rain": "2",
-            "wind": "0.0 km/h N"
+            "rain": "1",
+            "wind": "0.0 km/h NE"
+          },
+          "night": {
+            "condition": "part cloud",
+            "temperature": "4.0",
+            "feels_like": "3.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "5.0 km/h N"
           }
         },
         {
           "name": "Tuesday",
           "date": "7",
           "am": {
-            "condition": "clear",
-            "temperature": "5.0",
-            "feels_like": "3.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h NW"
-          },
-          "pm": {
             "condition": "rain showers",
-            "temperature": "6.0",
-            "feels_like": "5.0",
+            "temperature": "5.0",
+            "feels_like": "4.0",
             "snow": "0",
             "rain": "2",
-            "wind": "5.0 km/h NW"
+            "wind": "0.0 km/h NW"
           },
+          "pm": null,
           "night": null
         },
         {
@@ -3088,7 +3011,7 @@
           }
         }
       ],
-      "last_updated": "2026-04-02T12:51:12.707646",
+      "last_updated": "2026-04-02T15:56:52.868409",
       "resort": "Champoluc",
       "elevation": "mid",
       "snow_conditions": {
@@ -3103,74 +3026,74 @@
           {
             "date": "2026-04-02",
             "day_name": "Thursday",
-            "temp_max": 1.6,
+            "temp_max": 2.0,
             "temp_min": -4.6,
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
             "weather_code": 0,
             "freezing_level_min": 2270.0,
-            "freezing_level_max": 2360.0
+            "freezing_level_max": 2400.0
           },
           {
             "date": "2026-04-03",
             "day_name": "Friday",
-            "temp_max": 4.1,
+            "temp_max": 4.2,
             "temp_min": -3.3,
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
-            "weather_code": 1,
+            "weather_code": 0,
             "freezing_level_min": 2270.0,
             "freezing_level_max": 2620.0
           },
           {
             "date": "2026-04-04",
             "day_name": "Saturday",
-            "temp_max": 8.9,
+            "temp_max": 8.7,
             "temp_min": 0.1,
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
-            "weather_code": 3,
-            "freezing_level_min": 2070.0,
-            "freezing_level_max": 2940.0
+            "weather_code": 1,
+            "freezing_level_min": 2185.0,
+            "freezing_level_max": 2890.0
           },
           {
             "date": "2026-04-05",
             "day_name": "Sunday",
-            "temp_max": 9.6,
-            "temp_min": 2.3,
+            "temp_max": 10.1,
+            "temp_min": 2.5,
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
             "weather_code": 3,
-            "freezing_level_min": 2790.0,
-            "freezing_level_max": 2990.0
+            "freezing_level_min": 2750.0,
+            "freezing_level_max": 3050.0
           },
           {
             "date": "2026-04-06",
             "day_name": "Monday",
-            "temp_max": 10.8,
-            "temp_min": 2.9,
+            "temp_max": 11.3,
+            "temp_min": 3.7,
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
-            "weather_code": 1,
-            "freezing_level_min": 2700.0,
-            "freezing_level_max": 3130.0
+            "weather_code": 3,
+            "freezing_level_min": 2800.0,
+            "freezing_level_max": 3080.0
           },
           {
             "date": "2026-04-07",
             "day_name": "Tuesday",
             "temp_max": 9.2,
-            "temp_min": 2.9,
+            "temp_min": 3.6,
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
-            "weather_code": 1,
-            "freezing_level_min": 2910.0,
-            "freezing_level_max": 3290.0
+            "weather_code": 2,
+            "freezing_level_min": 2840.0,
+            "freezing_level_max": 3140.0
           },
           {
             "date": "2026-04-08",
@@ -3216,7 +3139,7 @@
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
-            "weather_code": 45,
+            "weather_code": 3,
             "freezing_level_min": 1250.0,
             "freezing_level_max": 2360.0
           },
@@ -3264,7 +3187,7 @@
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
-            "weather_code": 45,
+            "weather_code": 2,
             "freezing_level_min": 1280.0,
             "freezing_level_max": 2200.0
           },
@@ -3293,7 +3216,7 @@
             "freezing_level_max": 2120.0
           }
         ],
-        "last_updated": "2026-04-02T12:51:43.300575",
+        "last_updated": "2026-04-02T15:57:23.567888",
         "source": "OpenMeteo",
         "elevation": 2200.0,
         "elevation_used": 2200
@@ -3302,28 +3225,28 @@
     "top": {
       "days": [
         {
-          "name": "Thursday",
+          "name": "Thu",
           "date": "2",
           "am": {
             "condition": "clear",
-            "temperature": "-4.0",
-            "feels_like": "-9.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h SE"
-          },
-          "pm": {
-            "condition": "part cloud",
             "temperature": "-4.0",
             "feels_like": "-10.0",
             "snow": "0",
             "rain": "0",
             "wind": "10.0 km/h SE"
           },
-          "night": {
+          "pm": {
             "condition": "snow showers",
             "temperature": "-5.0",
             "feels_like": "-11.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "10.0 km/h SE"
+          },
+          "night": {
+            "condition": "clear",
+            "temperature": "-3.0",
+            "feels_like": "-10.0",
             "snow": "0",
             "rain": "0",
             "wind": "10.0 km/h SE"
@@ -3335,26 +3258,26 @@
           "am": {
             "condition": "clear",
             "temperature": "-3.0",
-            "feels_like": "-10.0",
+            "feels_like": "-7.0",
             "snow": "0",
             "rain": "0",
             "wind": "10.0 km/h SE"
           },
           "pm": {
             "condition": "clear",
-            "temperature": "-3.0",
-            "feels_like": "-6.0",
+            "temperature": "-2.0",
+            "feels_like": "-7.0",
             "snow": "0",
             "rain": "0",
             "wind": "10.0 km/h SE"
           },
           "night": {
             "condition": "clear",
-            "temperature": "-2.0",
-            "feels_like": "-8.0",
+            "temperature": "0.0",
+            "feels_like": "-5.0",
             "snow": "0",
             "rain": "0",
-            "wind": "10.0 km/h SE"
+            "wind": "5.0 km/h SE"
           }
         },
         {
@@ -3362,24 +3285,24 @@
           "date": "4",
           "am": {
             "condition": "clear",
-            "temperature": "-1.0",
-            "feels_like": "-5.0",
+            "temperature": "1.0",
+            "feels_like": "1.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h SE"
           },
           "pm": {
-            "condition": "part cloud",
+            "condition": "clear",
             "temperature": "1.0",
             "feels_like": "0.0",
             "snow": "0",
             "rain": "0",
-            "wind": "0.0 km/h SE"
+            "wind": "5.0 km/h E"
           },
           "night": {
-            "condition": "clear",
-            "temperature": "0.0",
-            "feels_like": "0.0",
+            "condition": "part cloud",
+            "temperature": "1.0",
+            "feels_like": "-2.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h E"
@@ -3389,25 +3312,25 @@
           "name": "Sunday",
           "date": "5",
           "am": {
-            "condition": "clear",
+            "condition": "part cloud",
             "temperature": "2.0",
-            "feels_like": "-3.0",
+            "feels_like": "0.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h E"
           },
           "pm": {
-            "condition": "clear",
-            "temperature": "3.0",
-            "feels_like": "1.0",
+            "condition": "part cloud",
+            "temperature": "1.0",
+            "feels_like": "-3.0",
             "snow": "0",
             "rain": "0",
-            "wind": "5.0 km/h E"
+            "wind": "10.0 km/h E"
           },
           "night": {
-            "condition": "part cloud",
-            "temperature": "2.0",
-            "feels_like": "-1.0",
+            "condition": "clear",
+            "temperature": "1.0",
+            "feels_like": "-2.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h E"
@@ -3417,14 +3340,6 @@
           "name": "Monday",
           "date": "6",
           "am": {
-            "condition": "part cloud",
-            "temperature": "1.0",
-            "feels_like": "-2.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h E"
-          },
-          "pm": {
             "condition": "rain showers",
             "temperature": "2.0",
             "feels_like": "2.0",
@@ -3432,9 +3347,17 @@
             "rain": "1",
             "wind": "5.0 km/h SE"
           },
-          "night": {
+          "pm": {
             "condition": "snow showers",
             "temperature": "1.0",
+            "feels_like": "0.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "0.0 km/h NE"
+          },
+          "night": {
+            "condition": "part cloud",
+            "temperature": "0.0",
             "feels_like": "0.0",
             "snow": "0",
             "rain": "0",
@@ -3445,25 +3368,18 @@
           "name": "Tuesday",
           "date": "7",
           "am": {
-            "condition": "clear",
+            "condition": "snow showers",
             "temperature": "1.0",
-            "feels_like": "-2.0",
+            "feels_like": "1.0",
             "snow": "0",
             "rain": "0",
-            "wind": "5.0 km/h NW"
+            "wind": "0.0 km/h N"
           },
-          "pm": {
-            "condition": "part cloud",
-            "temperature": "1.0",
-            "feels_like": "0.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "0.0 km/h NW"
-          },
+          "pm": null,
           "night": null
         }
       ],
-      "last_updated": "2026-04-02T12:51:44.077742",
+      "last_updated": "2026-04-02T15:57:24.320236",
       "resort": "Champoluc",
       "elevation": "top",
       "snow_conditions": {
@@ -3479,59 +3395,59 @@
     "bot": {
       "days": [
         {
-          "name": "Thursday",
+          "name": "Thu",
           "date": "2",
           "am": {
-            "condition": "light snow",
-            "temperature": "2.0",
-            "feels_like": "-2.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "10.0 km/h N"
-          },
-          "pm": {
             "condition": "light rain",
             "temperature": "3.0",
             "feels_like": "0.0",
             "snow": "0",
-            "rain": "1",
+            "rain": "2",
             "wind": "10.0 km/h N"
           },
-          "night": {
+          "pm": {
             "condition": "light snow",
             "temperature": "1.0",
-            "feels_like": "-1.0",
+            "feels_like": "1.0",
             "snow": "1",
             "rain": "3",
             "wind": "10.0 km/h N"
+          },
+          "night": {
+            "condition": "part cloud",
+            "temperature": "4.0",
+            "feels_like": "0.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "5.0 km/h NE"
           }
         },
         {
           "name": "Friday",
           "date": "3",
           "am": {
-            "condition": "light rain",
-            "temperature": "4.0",
-            "feels_like": "1.0",
+            "condition": "rain showers",
+            "temperature": "5.0",
+            "feels_like": "3.0",
             "snow": "0",
-            "rain": "1",
+            "rain": "2",
             "wind": "5.0 km/h NE"
           },
           "pm": {
-            "condition": "rain showers",
-            "temperature": "6.0",
-            "feels_like": "4.0",
+            "condition": "light snow",
+            "temperature": "2.0",
+            "feels_like": "0.0",
             "snow": "0",
-            "rain": "1",
-            "wind": "5.0 km/h NE"
+            "rain": "5",
+            "wind": "10.0 km/h N"
           },
           "night": {
-            "condition": "light snow",
+            "condition": "light rain",
             "temperature": "3.0",
-            "feels_like": "-1.0",
+            "feels_like": "2.0",
             "snow": "0",
-            "rain": "3",
-            "wind": "10.0 km/h N"
+            "rain": "1",
+            "wind": "0.0 km/h N"
           }
         },
         {
@@ -3539,24 +3455,24 @@
           "date": "4",
           "am": {
             "condition": "light snow",
-            "temperature": "2.0",
-            "feels_like": "1.0",
+            "temperature": "3.0",
+            "feels_like": "-1.0",
             "snow": "0",
-            "rain": "2",
-            "wind": "0.0 km/h E"
+            "rain": "3",
+            "wind": "5.0 km/h S"
           },
           "pm": {
             "condition": "light snow",
-            "temperature": "2.0",
-            "feels_like": "-2.0",
+            "temperature": "-1.0",
+            "feels_like": "-5.0",
             "snow": "0",
-            "rain": "4",
+            "rain": "0",
             "wind": "10.0 km/h S"
           },
           "night": {
-            "condition": "part cloud",
-            "temperature": "-2.0",
-            "feels_like": "-7.0",
+            "condition": "cloud",
+            "temperature": "4.0",
+            "feels_like": "0.0",
             "snow": "0",
             "rain": "0",
             "wind": "10.0 km/h S"
@@ -3566,77 +3482,70 @@
           "name": "Sunday",
           "date": "5",
           "am": {
-            "condition": "cloud",
-            "temperature": "3.0",
-            "feels_like": "-1.0",
+            "condition": "part cloud",
+            "temperature": "4.0",
+            "feels_like": "-2.0",
             "snow": "0",
             "rain": "0",
             "wind": "10.0 km/h S"
           },
           "pm": {
-            "condition": "part cloud",
-            "temperature": "4.0",
-            "feels_like": "-3.0",
+            "condition": "clear",
+            "temperature": "-2.0",
+            "feels_like": "-6.0",
             "snow": "0",
             "rain": "0",
             "wind": "10.0 km/h S"
           },
           "night": {
-            "condition": "cloud",
-            "temperature": "0.0",
-            "feels_like": "-5.0",
+            "condition": "part cloud",
+            "temperature": "4.0",
+            "feels_like": "0.0",
             "snow": "0",
             "rain": "0",
-            "wind": "15.0 km/h S"
+            "wind": "10.0 km/h S"
           }
         },
         {
           "name": "Monday",
           "date": "6",
           "am": {
-            "condition": "snow showers",
+            "condition": "rain showers",
             "temperature": "4.0",
             "feels_like": "0.0",
             "snow": "0",
-            "rain": "0",
-            "wind": "15.0 km/h S"
+            "rain": "2",
+            "wind": "10.0 km/h S"
           },
           "pm": {
             "condition": "part cloud",
-            "temperature": "4.0",
+            "temperature": "-2.0",
+            "feels_like": "-5.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "5.0 km/h SE"
+          },
+          "night": {
+            "condition": "light snow",
+            "temperature": "1.0",
             "feels_like": "-2.0",
             "snow": "0",
             "rain": "0",
-            "wind": "10.0 km/h S"
-          },
-          "night": {
-            "condition": "cloud",
-            "temperature": "-1.0",
-            "feels_like": "-3.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h E"
+            "wind": "10.0 km/h N"
           }
         },
         {
           "name": "Tuesday",
           "date": "7",
           "am": {
-            "condition": "light snow",
-            "temperature": "2.0",
-            "feels_like": "-3.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "10.0 km/h N"
-          },
-          "pm": {
-            "condition": "light snow",
-            "temperature": "2.0",
+            "condition": "rain showers",
+            "temperature": "3.0",
             "feels_like": "-2.0",
             "snow": "0",
-            "rain": "0",
+            "rain": "1",
             "wind": "10.0 km/h N"
           },
+          "pm": null,
           "night": null
         },
         {
@@ -3668,13 +3577,13 @@
           }
         }
       ],
-      "last_updated": "2026-04-02T12:52:45.620221",
+      "last_updated": "2026-04-02T15:58:25.421061",
       "resort": "Gudauri",
       "elevation": "bot",
       "snow_conditions": {
         "Top snow depth": "157cm",
         "Bottom snow depth": "96cm",
-        "Fresh snowfall depth": "3.0cm",
+        "Fresh snowfall depth": "4cm",
         "Last snowfall": "1 Apr 2026",
         "Snow Alerts": "Create Alert"
       },
@@ -3685,71 +3594,71 @@
             "day_name": "Thursday",
             "temp_max": 6.4,
             "temp_min": -1.8,
-            "precipitation": 1.9,
-            "rain": 1.2,
-            "snowfall": 0.07,
+            "precipitation": 2.2,
+            "rain": 1.4,
+            "snowfall": 0.14,
             "weather_code": 85,
             "freezing_level_min": 1850.0,
-            "freezing_level_max": 2610.0
+            "freezing_level_max": 2580.0
           },
           {
             "date": "2026-04-03",
             "day_name": "Friday",
-            "temp_max": 9.9,
+            "temp_max": 9.7,
             "temp_min": 1.3,
-            "precipitation": 2.9,
-            "rain": 1.8,
-            "snowfall": 0.07,
+            "precipitation": 3.2,
+            "rain": 0.9,
+            "snowfall": 0.28,
             "weather_code": 80,
-            "freezing_level_min": 2380.0,
+            "freezing_level_min": 2370.0,
             "freezing_level_max": 2990.0
           },
           {
             "date": "2026-04-04",
             "day_name": "Saturday",
-            "temp_max": 4.4,
-            "temp_min": 1.1,
+            "temp_max": 5.9,
+            "temp_min": 1.3,
             "precipitation": 2.2,
-            "rain": 1.4,
+            "rain": 1.1,
             "snowfall": 0.0,
-            "weather_code": 85,
-            "freezing_level_min": 2200.0,
-            "freezing_level_max": 2480.0
+            "weather_code": 80,
+            "freezing_level_min": 2230.0,
+            "freezing_level_max": 2600.0
           },
           {
             "date": "2026-04-05",
             "day_name": "Sunday",
-            "temp_max": 4.6,
-            "temp_min": 0.6,
-            "precipitation": 0.0,
-            "rain": 0.0,
-            "snowfall": 0.0,
-            "weather_code": 3,
-            "freezing_level_min": 2280.0,
-            "freezing_level_max": 2460.0
+            "temp_max": 5.1,
+            "temp_min": 0.8,
+            "precipitation": 0.9,
+            "rain": 0.2,
+            "snowfall": 0.07,
+            "weather_code": 80,
+            "freezing_level_min": 2310.0,
+            "freezing_level_max": 2530.0
           },
           {
             "date": "2026-04-06",
             "day_name": "Monday",
-            "temp_max": 5.5,
+            "temp_max": 5.2,
             "temp_min": 0.6,
-            "precipitation": 0.3,
+            "precipitation": 2.4,
             "rain": 0.0,
             "snowfall": 0.0,
-            "weather_code": 3,
-            "freezing_level_min": 2330.0,
-            "freezing_level_max": 2520.0
+            "weather_code": 80,
+            "freezing_level_min": 2250.0,
+            "freezing_level_max": 2490.0
           },
           {
             "date": "2026-04-07",
             "day_name": "Tuesday",
-            "temp_max": 0.5,
+            "temp_max": 2.9,
             "temp_min": -4.2,
-            "precipitation": 0.3,
+            "precipitation": 1.05,
             "rain": 0.0,
-            "snowfall": 0.21,
-            "weather_code": 3,
-            "freezing_level_min": 2150.0,
+            "snowfall": 0.11,
+            "weather_code": 85,
+            "freezing_level_min": 2140.0,
             "freezing_level_max": 2720.0
           },
           {
@@ -3796,7 +3705,7 @@
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
-            "weather_code": 45,
+            "weather_code": 3,
             "freezing_level_min": 2070.0,
             "freezing_level_max": 3030.0
           },
@@ -3856,7 +3765,7 @@
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
-            "weather_code": 3,
+            "weather_code": 45,
             "freezing_level_min": 1860.0,
             "freezing_level_max": 2700.0
           },
@@ -3868,12 +3777,12 @@
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
-            "weather_code": 3,
+            "weather_code": 45,
             "freezing_level_min": 1940.0,
             "freezing_level_max": 2870.0
           }
         ],
-        "last_updated": "2026-04-02T12:53:16.266960",
+        "last_updated": "2026-04-02T15:58:56.031747",
         "source": "OpenMeteo",
         "elevation": 1990.0,
         "elevation_used": 1990
@@ -3882,45 +3791,37 @@
     "mid": {
       "days": [
         {
-          "name": "Thursday",
+          "name": "Thu",
           "date": "2",
           "am": {
             "condition": "light snow",
-            "temperature": "-3.0",
-            "feels_like": "-9.0",
-            "snow": "1",
+            "temperature": "-2.0",
+            "feels_like": "-6.0",
+            "snow": "0",
             "rain": "0",
             "wind": "10.0 km/h N"
           },
           "pm": {
             "condition": "light snow",
             "temperature": "-2.0",
-            "feels_like": "-7.0",
-            "snow": "0",
+            "feels_like": "-5.0",
+            "snow": "3",
             "rain": "0",
             "wind": "10.0 km/h N"
           },
           "night": {
-            "condition": "light snow",
+            "condition": "part cloud",
             "temperature": "-1.0",
-            "feels_like": "-6.0",
-            "snow": "2",
+            "feels_like": "-5.0",
+            "snow": "0",
             "rain": "0",
-            "wind": "10.0 km/h N"
+            "wind": "10.0 km/h NE"
           }
         },
         {
           "name": "Friday",
           "date": "3",
           "am": {
-            "condition": "light snow",
-            "temperature": "0.0",
-            "feels_like": "-4.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h NE"
-          },
-          "pm": {
             "condition": "snow showers",
             "temperature": "1.0",
             "feels_like": "-2.0",
@@ -3928,13 +3829,21 @@
             "rain": "0",
             "wind": "10.0 km/h NE"
           },
-          "night": {
+          "pm": {
             "condition": "light snow",
             "temperature": "-1.0",
             "feels_like": "-3.0",
             "snow": "2",
             "rain": "0",
-            "wind": "15.0 km/h N"
+            "wind": "10.0 km/h N"
+          },
+          "night": {
+            "condition": "light snow",
+            "temperature": "-2.0",
+            "feels_like": "-3.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "0.0 km/h SW"
           }
         },
         {
@@ -3943,68 +3852,60 @@
           "am": {
             "condition": "light snow",
             "temperature": "-2.0",
-            "feels_like": "-3.0",
-            "snow": "1",
+            "feels_like": "-7.0",
+            "snow": "2",
             "rain": "0",
-            "wind": "0.0 km/h S"
+            "wind": "10.0 km/h S"
           },
           "pm": {
             "condition": "light snow",
-            "temperature": "-2.0",
-            "feels_like": "-7.0",
-            "snow": "3",
-            "rain": "0",
-            "wind": "10.0 km/h S"
-          },
-          "night": {
-            "condition": "snow showers",
             "temperature": "-3.0",
-            "feels_like": "-9.0",
+            "feels_like": "-8.0",
             "snow": "0",
             "rain": "0",
-            "wind": "10.0 km/h S"
+            "wind": "15.0 km/h S"
+          },
+          "night": {
+            "condition": "cloud",
+            "temperature": "-2.0",
+            "feels_like": "-7.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "15.0 km/h S"
           }
         },
         {
           "name": "Sunday",
           "date": "5",
           "am": {
-            "condition": "cloud",
-            "temperature": "-2.0",
-            "feels_like": "-8.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "15.0 km/h S"
-          },
-          "pm": {
             "condition": "part cloud",
             "temperature": "-1.0",
-            "feels_like": "-7.0",
+            "feels_like": "-6.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "10.0 km/h S"
+          },
+          "pm": {
+            "condition": "clear",
+            "temperature": "-3.0",
+            "feels_like": "-9.0",
             "snow": "0",
             "rain": "0",
             "wind": "10.0 km/h S"
           },
           "night": {
-            "condition": "cloud",
+            "condition": "part cloud",
             "temperature": "-2.0",
-            "feels_like": "-8.0",
+            "feels_like": "-6.0",
             "snow": "0",
             "rain": "0",
-            "wind": "15.0 km/h S"
+            "wind": "10.0 km/h S"
           }
         },
         {
           "name": "Monday",
           "date": "6",
           "am": {
-            "condition": "snow showers",
-            "temperature": "-2.0",
-            "feels_like": "-8.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "15.0 km/h S"
-          },
-          "pm": {
             "condition": "snow showers",
             "temperature": "-1.0",
             "feels_like": "-5.0",
@@ -4012,44 +3913,45 @@
             "rain": "0",
             "wind": "10.0 km/h S"
           },
-          "night": {
-            "condition": "cloud",
+          "pm": {
+            "condition": "part cloud",
             "temperature": "-3.0",
             "feels_like": "-7.0",
             "snow": "0",
             "rain": "0",
-            "wind": "5.0 km/h NE"
+            "wind": "0.0 km/h NE"
+          },
+          "night": {
+            "condition": "light snow",
+            "temperature": "-4.0",
+            "feels_like": "-7.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "10.0 km/h N"
           }
         },
         {
           "name": "Tuesday",
           "date": "7",
           "am": {
-            "condition": "light snow",
-            "temperature": "-3.0",
-            "feels_like": "-8.0",
+            "condition": "snow showers",
+            "temperature": "-2.0",
+            "feels_like": "-7.0",
             "snow": "0",
             "rain": "0",
-            "wind": "10.0 km/h N"
+            "wind": "15.0 km/h NE"
           },
-          "pm": {
-            "condition": "light snow",
-            "temperature": "-3.0",
-            "feels_like": "-7.0",
-            "snow": "1",
-            "rain": "0",
-            "wind": "10.0 km/h NE"
-          },
+          "pm": null,
           "night": null
         }
       ],
-      "last_updated": "2026-04-02T12:53:16.909893",
+      "last_updated": "2026-04-02T15:58:56.814797",
       "resort": "Gudauri",
       "elevation": "mid",
       "snow_conditions": {
         "Top snow depth": "157cm",
         "Bottom snow depth": "96cm",
-        "Fresh snowfall depth": "3.0cm",
+        "Fresh snowfall depth": "4cm",
         "Last snowfall": "1 Apr 2026",
         "Snow Alerts": "Create Alert"
       }
@@ -4057,17 +3959,9 @@
     "top": {
       "days": [
         {
-          "name": "Thursday",
+          "name": "Thu",
           "date": "2",
           "am": {
-            "condition": "light snow",
-            "temperature": "-7.0",
-            "feels_like": "-13.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "10.0 km/h N"
-          },
-          "pm": {
             "condition": "light snow",
             "temperature": "-6.0",
             "feels_like": "-12.0",
@@ -4075,41 +3969,49 @@
             "rain": "0",
             "wind": "10.0 km/h N"
           },
-          "night": {
+          "pm": {
             "condition": "light snow",
             "temperature": "-5.0",
             "feels_like": "-12.0",
-            "snow": "2",
+            "snow": "3",
             "rain": "0",
             "wind": "10.0 km/h N"
+          },
+          "night": {
+            "condition": "part cloud",
+            "temperature": "-5.0",
+            "feels_like": "-11.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "15.0 km/h NE"
           }
         },
         {
           "name": "Friday",
           "date": "3",
           "am": {
-            "condition": "cloud",
-            "temperature": "-5.0",
-            "feels_like": "-10.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "10.0 km/h NE"
-          },
-          "pm": {
-            "condition": "part cloud",
-            "temperature": "-3.0",
+            "condition": "snow showers",
+            "temperature": "-4.0",
             "feels_like": "-9.0",
             "snow": "0",
             "rain": "0",
             "wind": "10.0 km/h NE"
           },
-          "night": {
+          "pm": {
             "condition": "light snow",
             "temperature": "-5.0",
-            "feels_like": "-8.0",
+            "feels_like": "-11.0",
             "snow": "2",
             "rain": "0",
             "wind": "15.0 km/h N"
+          },
+          "night": {
+            "condition": "light snow",
+            "temperature": "-6.0",
+            "feels_like": "-7.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "5.0 km/h SW"
           }
         },
         {
@@ -4118,54 +4020,54 @@
           "am": {
             "condition": "light snow",
             "temperature": "-7.0",
-            "feels_like": "-7.0",
-            "snow": "1",
+            "feels_like": "-11.0",
+            "snow": "2",
             "rain": "0",
-            "wind": "5.0 km/h SW"
+            "wind": "10.0 km/h S"
           },
           "pm": {
             "condition": "light snow",
             "temperature": "-7.0",
-            "feels_like": "-12.0",
-            "snow": "4",
-            "rain": "0",
-            "wind": "10.0 km/h S"
-          },
-          "night": {
-            "condition": "snow showers",
-            "temperature": "-7.0",
             "feels_like": "-13.0",
             "snow": "0",
             "rain": "0",
-            "wind": "10.0 km/h S"
+            "wind": "15.0 km/h S"
+          },
+          "night": {
+            "condition": "light snow",
+            "temperature": "-6.0",
+            "feels_like": "-13.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "15.0 km/h S"
           }
         },
         {
           "name": "Sunday",
           "date": "5",
           "am": {
-            "condition": "cloud",
-            "temperature": "-7.0",
-            "feels_like": "-13.0",
+            "condition": "snow showers",
+            "temperature": "-6.0",
+            "feels_like": "-10.0",
             "snow": "0",
             "rain": "0",
-            "wind": "15.0 km/h S"
+            "wind": "10.0 km/h S"
           },
           "pm": {
-            "condition": "part cloud",
+            "condition": "clear",
             "temperature": "-6.0",
-            "feels_like": "-11.0",
+            "feels_like": "-12.0",
             "snow": "0",
             "rain": "0",
             "wind": "10.0 km/h S"
           },
           "night": {
-            "condition": "light snow",
+            "condition": "snow showers",
             "temperature": "-6.0",
             "feels_like": "-12.0",
             "snow": "0",
             "rain": "0",
-            "wind": "15.0 km/h S"
+            "wind": "10.0 km/h S"
           }
         },
         {
@@ -4173,48 +4075,41 @@
           "date": "6",
           "am": {
             "condition": "snow showers",
-            "temperature": "-7.0",
-            "feels_like": "-14.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "15.0 km/h S"
-          },
-          "pm": {
-            "condition": "snow showers",
             "temperature": "-6.0",
             "feels_like": "-11.0",
             "snow": "0",
             "rain": "0",
             "wind": "10.0 km/h S"
           },
-          "night": {
+          "pm": {
             "condition": "part cloud",
             "temperature": "-7.0",
+            "feels_like": "-12.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "5.0 km/h N"
+          },
+          "night": {
+            "condition": "light snow",
+            "temperature": "-8.0",
             "feels_like": "-13.0",
             "snow": "0",
             "rain": "0",
-            "wind": "10.0 km/h N"
+            "wind": "10.0 km/h NE"
           }
         },
         {
           "name": "Tuesday",
           "date": "7",
           "am": {
-            "condition": "light snow",
-            "temperature": "-8.0",
-            "feels_like": "-14.0",
+            "condition": "snow showers",
+            "temperature": "-7.0",
+            "feels_like": "-13.0",
             "snow": "0",
-            "rain": "0",
-            "wind": "10.0 km/h N"
-          },
-          "pm": {
-            "condition": "light snow",
-            "temperature": "-8.0",
-            "feels_like": "-14.0",
-            "snow": "1",
             "rain": "0",
             "wind": "15.0 km/h NE"
           },
+          "pm": null,
           "night": null
         },
         {
@@ -4246,13 +4141,13 @@
           }
         }
       ],
-      "last_updated": "2026-04-02T12:54:18.174360",
+      "last_updated": "2026-04-02T15:59:57.915606",
       "resort": "Gudauri",
       "elevation": "top",
       "snow_conditions": {
         "Top snow depth": "157cm",
         "Bottom snow depth": "96cm",
-        "Fresh snowfall depth": "3.0cm",
+        "Fresh snowfall depth": "4cm",
         "Last snowfall": "1 Apr 2026",
         "Snow Alerts": "Create Alert"
       },
@@ -4261,74 +4156,74 @@
           {
             "date": "2026-04-02",
             "day_name": "Thursday",
-            "temp_max": -1.1,
+            "temp_max": -1.3,
             "temp_min": -7.7,
-            "precipitation": 3.1,
-            "rain": 0.2,
-            "snowfall": 1.68,
+            "precipitation": 2.8,
+            "rain": 0.4,
+            "snowfall": 1.54,
             "weather_code": 85,
             "freezing_level_min": 2270.0,
-            "freezing_level_max": 2620.0
+            "freezing_level_max": 2610.0
           },
           {
             "date": "2026-04-03",
             "day_name": "Friday",
             "temp_max": 2.5,
             "temp_min": -4.2,
-            "precipitation": 5.1,
-            "rain": 0.5,
+            "precipitation": 5.0,
+            "rain": 0.1,
             "snowfall": 1.47,
             "weather_code": 85,
             "freezing_level_min": 2520.0,
-            "freezing_level_max": 2740.0
+            "freezing_level_max": 2750.0
           },
           {
             "date": "2026-04-04",
             "day_name": "Saturday",
-            "temp_max": -2.9,
-            "temp_min": -5.1,
-            "precipitation": 5.0,
+            "temp_max": -1.9,
+            "temp_min": -4.9,
+            "precipitation": 4.3,
             "rain": 0.1,
-            "snowfall": 2.31,
-            "weather_code": 86,
-            "freezing_level_min": 2450.0,
-            "freezing_level_max": 2610.0
+            "snowfall": 1.89,
+            "weather_code": 85,
+            "freezing_level_min": 2470.0,
+            "freezing_level_max": 2620.0
           },
           {
             "date": "2026-04-05",
             "day_name": "Sunday",
-            "temp_max": -3.0,
-            "temp_min": -5.7,
-            "precipitation": 1.7,
+            "temp_max": -2.2,
+            "temp_min": -5.5,
+            "precipitation": 2.1,
             "rain": 0.0,
-            "snowfall": 1.19,
+            "snowfall": 1.26,
             "weather_code": 71,
-            "freezing_level_min": 2420.0,
-            "freezing_level_max": 2600.0
+            "freezing_level_min": 2430.0,
+            "freezing_level_max": 2620.0
           },
           {
             "date": "2026-04-06",
             "day_name": "Monday",
-            "temp_max": -2.3,
-            "temp_min": -5.9,
-            "precipitation": 0.0,
+            "temp_max": -2.0,
+            "temp_min": -5.6,
+            "precipitation": 1.5,
             "rain": 0.0,
-            "snowfall": 0.0,
-            "weather_code": 3,
-            "freezing_level_min": 2410.0,
-            "freezing_level_max": 2620.0
+            "snowfall": 0.63,
+            "weather_code": 85,
+            "freezing_level_min": 2420.0,
+            "freezing_level_max": 2600.0
           },
           {
             "date": "2026-04-07",
             "day_name": "Tuesday",
-            "temp_max": -5.1,
+            "temp_max": -4.2,
             "temp_min": -8.9,
-            "precipitation": 0.3,
+            "precipitation": 1.2,
             "rain": 0.0,
-            "snowfall": 0.21,
-            "weather_code": 3,
+            "snowfall": 0.42,
+            "weather_code": 85,
             "freezing_level_min": 2350.0,
-            "freezing_level_max": 2610.0
+            "freezing_level_max": 2600.0
           },
           {
             "date": "2026-04-08",
@@ -4451,7 +4346,7 @@
             "freezing_level_max": 2870.0
           }
         ],
-        "last_updated": "2026-04-02T12:54:48.821983",
+        "last_updated": "2026-04-02T16:00:30.202382",
         "source": "OpenMeteo",
         "elevation": 3279.0,
         "elevation_used": 3279
@@ -4462,17 +4357,9 @@
     "bot": {
       "days": [
         {
-          "name": "Thursday",
+          "name": "Thu",
           "date": "2",
           "am": {
-            "condition": "part cloud",
-            "temperature": "-1.0",
-            "feels_like": "-11.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h S"
-          },
-          "pm": {
             "condition": "light snow",
             "temperature": "1.0",
             "feels_like": "-2.0",
@@ -4480,55 +4367,55 @@
             "rain": "0",
             "wind": "5.0 km/h SE"
           },
-          "night": {
+          "pm": {
             "condition": "light snow",
             "temperature": "-2.0",
-            "feels_like": "-8.0",
+            "feels_like": "-7.0",
             "snow": "1",
             "rain": "0",
             "wind": "0.0 km/h N"
+          },
+          "night": {
+            "condition": "snow showers",
+            "temperature": "0.0",
+            "feels_like": "-4.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "5.0 km/h SE"
           }
         },
         {
           "name": "Friday",
           "date": "3",
           "am": {
-            "condition": "snow showers",
-            "temperature": "0.0",
-            "feels_like": "-5.0",
+            "condition": "part cloud",
+            "temperature": "2.0",
+            "feels_like": "2.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h SE"
           },
           "pm": {
-            "condition": "part cloud",
-            "temperature": "2.0",
-            "feels_like": "1.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h SE"
-          },
-          "night": {
             "condition": "part cloud",
             "temperature": "-4.0",
             "feels_like": "-9.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h N"
+          },
+          "night": {
+            "condition": "cloud",
+            "temperature": "4.0",
+            "feels_like": "-1.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "0.0 km/h SE"
           }
         },
         {
           "name": "Saturday",
           "date": "4",
           "am": {
-            "condition": "part cloud",
-            "temperature": "4.0",
-            "feels_like": "-2.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "0.0 km/h SE"
-          },
-          "pm": {
             "condition": "cloud",
             "temperature": "5.0",
             "feels_like": "4.0",
@@ -4536,27 +4423,27 @@
             "rain": "0",
             "wind": "5.0 km/h N"
           },
-          "night": {
+          "pm": {
             "condition": "part cloud",
-            "temperature": "2.0",
-            "feels_like": "-2.0",
+            "temperature": "3.0",
+            "feels_like": "-3.0",
             "snow": "0",
             "rain": "0",
             "wind": "10.0 km/h N"
+          },
+          "night": {
+            "condition": "cloud",
+            "temperature": "7.0",
+            "feels_like": "1.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "5.0 km/h N"
           }
         },
         {
           "name": "Sunday",
           "date": "5",
           "am": {
-            "condition": "part cloud",
-            "temperature": "7.0",
-            "feels_like": "2.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h NE"
-          },
-          "pm": {
             "condition": "cloud",
             "temperature": "8.0",
             "feels_like": "8.0",
@@ -4564,66 +4451,67 @@
             "rain": "0",
             "wind": "5.0 km/h NE"
           },
-          "night": {
-            "condition": "cloud",
+          "pm": {
+            "condition": "light rain",
             "temperature": "6.0",
+            "feels_like": "4.0",
+            "snow": "0",
+            "rain": "3",
+            "wind": "5.0 km/h E"
+          },
+          "night": {
+            "condition": "light rain",
+            "temperature": "7.0",
             "feels_like": "5.0",
             "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h N"
+            "rain": "1",
+            "wind": "0.0 km/h SW"
           }
         },
         {
           "name": "Monday",
           "date": "6",
           "am": {
-            "condition": "cloud",
-            "temperature": "8.0",
-            "feels_like": "6.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "0.0 km/h W"
-          },
-          "pm": {
-            "condition": "rain showers",
-            "temperature": "10.0",
+            "condition": "part cloud",
+            "temperature": "9.0",
             "feels_like": "9.0",
             "snow": "0",
-            "rain": "2",
-            "wind": "0.0 km/h SE"
+            "rain": "0",
+            "wind": "0.0 km/h E"
           },
-          "night": {
+          "pm": {
             "condition": "clear",
-            "temperature": "6.0",
+            "temperature": "5.0",
             "feels_like": "5.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h N"
+          },
+          "night": {
+            "condition": "clear",
+            "temperature": "11.0",
+            "feels_like": "5.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "5.0 km/h NE"
           }
         },
         {
           "name": "Tuesday",
           "date": "7",
           "am": {
-            "condition": "clear",
-            "temperature": "11.0",
-            "feels_like": "5.0",
+            "condition": "part cloud",
+            "temperature": "12.0",
+            "feels_like": "12.0",
             "snow": "0",
             "rain": "0",
-            "wind": "5.0 km/h N"
+            "wind": "5.0 km/h SE"
           },
-          "pm": {
-            "condition": "rain showers",
-            "temperature": "13.0",
-            "feels_like": "13.0",
-            "snow": "0",
-            "rain": "1",
-            "wind": "0.0 km/h SE"
-          },
+          "pm": null,
           "night": null
         }
       ],
-      "last_updated": "2026-04-02T12:54:49.582088",
+      "last_updated": "2026-04-02T16:00:30.969908",
       "resort": "St-Anton",
       "elevation": "bot",
       "snow_conditions": {
@@ -4637,87 +4525,87 @@
     "mid": {
       "days": [
         {
-          "name": "Thursday",
+          "name": "Thu",
           "date": "2",
           "am": {
-            "condition": "part cloud",
+            "condition": "light snow",
             "temperature": "-4.0",
-            "feels_like": "-12.0",
-            "snow": "0",
+            "feels_like": "-8.0",
+            "snow": "1",
             "rain": "0",
             "wind": "10.0 km/h S"
           },
           "pm": {
-            "condition": "light snow",
-            "temperature": "-4.0",
-            "feels_like": "-8.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "10.0 km/h S"
-          },
-          "night": {
             "condition": "light snow",
             "temperature": "-5.0",
             "feels_like": "-10.0",
             "snow": "1",
             "rain": "0",
             "wind": "5.0 km/h S"
-          }
-        },
-        {
-          "name": "Friday",
-          "date": "3",
-          "am": {
+          },
+          "night": {
             "condition": "snow showers",
             "temperature": "-3.0",
             "feels_like": "-6.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h SE"
-          },
-          "pm": {
+          }
+        },
+        {
+          "name": "Friday",
+          "date": "3",
+          "am": {
             "condition": "part cloud",
             "temperature": "-2.0",
-            "feels_like": "-2.0",
+            "feels_like": "-4.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h SE"
           },
-          "night": {
+          "pm": {
             "condition": "part cloud",
             "temperature": "-4.0",
-            "feels_like": "-5.0",
+            "feels_like": "-7.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h NE"
+          },
+          "night": {
+            "condition": "cloud",
+            "temperature": "0.0",
+            "feels_like": "-5.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "5.0 km/h SE"
           }
         },
         {
           "name": "Saturday",
           "date": "4",
           "am": {
-            "condition": "part cloud",
-            "temperature": "0.0",
-            "feels_like": "-3.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h SE"
-          },
-          "pm": {
-            "condition": "part cloud",
+            "condition": "cloud",
             "temperature": "2.0",
             "feels_like": "1.0",
             "snow": "0",
             "rain": "0",
-            "wind": "0.0 km/h N"
+            "wind": "0.0 km/h NE"
           },
-          "night": {
-            "condition": "clear",
+          "pm": {
+            "condition": "part cloud",
             "temperature": "1.0",
             "feels_like": "-2.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h N"
+          },
+          "night": {
+            "condition": "cloud",
+            "temperature": "4.0",
+            "feels_like": "0.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "5.0 km/h NE"
           }
         },
         {
@@ -4725,76 +4613,69 @@
           "date": "5",
           "am": {
             "condition": "part cloud",
-            "temperature": "4.0",
-            "feels_like": "0.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h NE"
-          },
-          "pm": {
-            "condition": "cloud",
             "temperature": "5.0",
             "feels_like": "3.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h NE"
           },
-          "night": {
-            "condition": "cloud",
+          "pm": {
+            "condition": "light snow",
             "temperature": "4.0",
             "feels_like": "2.0",
             "snow": "0",
-            "rain": "0",
+            "rain": "1",
             "wind": "5.0 km/h NE"
+          },
+          "night": {
+            "condition": "light snow",
+            "temperature": "3.0",
+            "feels_like": "0.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "5.0 km/h E"
           }
         },
         {
           "name": "Monday",
           "date": "6",
           "am": {
-            "condition": "cloud",
-            "temperature": "4.0",
-            "feels_like": "1.0",
+            "condition": "part cloud",
+            "temperature": "5.0",
+            "feels_like": "4.0",
             "snow": "0",
             "rain": "0",
-            "wind": "5.0 km/h E"
+            "wind": "5.0 km/h NE"
           },
           "pm": {
-            "condition": "rain showers",
-            "temperature": "5.0",
-            "feels_like": "5.0",
-            "snow": "0",
-            "rain": "1",
-            "wind": "0.0 km/h E"
-          },
-          "night": {
             "condition": "clear",
             "temperature": "4.0",
-            "feels_like": "2.0",
+            "feels_like": "3.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h N"
+          },
+          "night": {
+            "condition": "clear",
+            "temperature": "6.0",
+            "feels_like": "3.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "5.0 km/h NE"
           }
         },
         {
           "name": "Tuesday",
           "date": "7",
           "am": {
-            "condition": "clear",
-            "temperature": "6.0",
-            "feels_like": "3.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h N"
-          },
-          "pm": {
-            "condition": "rain showers",
+            "condition": "part cloud",
             "temperature": "7.0",
             "feels_like": "7.0",
             "snow": "0",
-            "rain": "1",
-            "wind": "5.0 km/h NE"
+            "rain": "0",
+            "wind": "0.0 km/h E"
           },
+          "pm": null,
           "night": null
         },
         {
@@ -4826,7 +4707,7 @@
           }
         }
       ],
-      "last_updated": "2026-04-02T12:55:50.739301",
+      "last_updated": "2026-04-02T16:01:32.009051",
       "resort": "St-Anton",
       "elevation": "mid",
       "snow_conditions": {
@@ -4841,11 +4722,11 @@
           {
             "date": "2026-04-02",
             "day_name": "Thursday",
-            "temp_max": -3.5,
+            "temp_max": -3.2,
             "temp_min": -8.5,
-            "precipitation": 1.2,
+            "precipitation": 0.6,
             "rain": 0.0,
-            "snowfall": 0.49,
+            "snowfall": 0.07,
             "weather_code": 85,
             "freezing_level_min": 2150.0,
             "freezing_level_max": 2150.0
@@ -4853,8 +4734,8 @@
           {
             "date": "2026-04-03",
             "day_name": "Friday",
-            "temp_max": -1.4,
-            "temp_min": -7.2,
+            "temp_max": -1.3,
+            "temp_min": -7.0,
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
@@ -4865,50 +4746,50 @@
           {
             "date": "2026-04-04",
             "day_name": "Saturday",
-            "temp_max": 3.4,
-            "temp_min": -3.2,
-            "precipitation": 0.98,
-            "rain": 0.1,
-            "snowfall": 0.52,
+            "temp_max": 2.9,
+            "temp_min": -2.9,
+            "precipitation": 0.0,
+            "rain": 0.0,
+            "snowfall": 0.0,
             "weather_code": 85,
-            "freezing_level_min": 1932.5,
-            "freezing_level_max": 2740.0
+            "freezing_level_min": 2137.5,
+            "freezing_level_max": 2690.0
           },
           {
             "date": "2026-04-05",
             "day_name": "Sunday",
-            "temp_max": 9.1,
-            "temp_min": -0.1,
+            "temp_max": 8.7,
+            "temp_min": -0.3,
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
             "weather_code": 3,
-            "freezing_level_min": 2680.0,
-            "freezing_level_max": 2880.0
+            "freezing_level_min": 2710.0,
+            "freezing_level_max": 2830.0
           },
           {
             "date": "2026-04-06",
             "day_name": "Monday",
-            "temp_max": 8.5,
-            "temp_min": -0.3,
-            "precipitation": 5.4,
-            "rain": 3.9,
-            "snowfall": 0.42,
-            "weather_code": 73,
-            "freezing_level_min": 2220.0,
-            "freezing_level_max": 3100.0
+            "temp_max": 8.2,
+            "temp_min": 0.7,
+            "precipitation": 0.3,
+            "rain": 0.3,
+            "snowfall": 0.0,
+            "weather_code": 61,
+            "freezing_level_min": 2470.0,
+            "freezing_level_max": 2970.0
           },
           {
             "date": "2026-04-07",
             "day_name": "Tuesday",
-            "temp_max": 8.6,
-            "temp_min": 1.1,
+            "temp_max": 8.9,
+            "temp_min": -0.2,
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
-            "weather_code": 2,
-            "freezing_level_min": 2910.0,
-            "freezing_level_max": 3400.0
+            "weather_code": 1,
+            "freezing_level_min": 3000.0,
+            "freezing_level_max": 3380.0
           },
           {
             "date": "2026-04-08",
@@ -5031,7 +4912,7 @@
             "freezing_level_max": 2040.0
           }
         ],
-        "last_updated": "2026-04-02T12:56:21.343389",
+        "last_updated": "2026-04-02T16:02:02.596978",
         "source": "OpenMeteo",
         "elevation": 2150.0,
         "elevation_used": 2150
@@ -5040,59 +4921,59 @@
     "top": {
       "days": [
         {
-          "name": "Thursday",
+          "name": "Thu",
           "date": "2",
           "am": {
-            "condition": "clear",
-            "temperature": "-8.0",
-            "feels_like": "-15.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "15.0 km/h SW"
-          },
-          "pm": {
             "condition": "light snow",
-            "temperature": "-8.0",
+            "temperature": "-9.0",
             "feels_like": "-15.0",
             "snow": "0",
             "rain": "0",
             "wind": "10.0 km/h S"
           },
-          "night": {
+          "pm": {
             "condition": "light snow",
             "temperature": "-9.0",
             "feels_like": "-16.0",
             "snow": "1",
             "rain": "0",
             "wind": "10.0 km/h S"
-          }
-        },
-        {
-          "name": "Friday",
-          "date": "3",
-          "am": {
+          },
+          "night": {
             "condition": "part cloud",
             "temperature": "-7.0",
             "feels_like": "-12.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h SE"
-          },
-          "pm": {
+          }
+        },
+        {
+          "name": "Friday",
+          "date": "3",
+          "am": {
             "condition": "clear",
             "temperature": "-6.0",
             "feels_like": "-9.0",
             "snow": "0",
             "rain": "0",
-            "wind": "10.0 km/h SE"
+            "wind": "5.0 km/h SE"
           },
-          "night": {
+          "pm": {
             "condition": "part cloud",
             "temperature": "-5.0",
+            "feels_like": "-10.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "10.0 km/h E"
+          },
+          "night": {
+            "condition": "cloud",
+            "temperature": "-4.0",
             "feels_like": "-9.0",
             "snow": "0",
             "rain": "0",
-            "wind": "5.0 km/h E"
+            "wind": "5.0 km/h SE"
           }
         },
         {
@@ -5100,27 +4981,27 @@
           "date": "4",
           "am": {
             "condition": "part cloud",
-            "temperature": "-4.0",
-            "feels_like": "-9.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h SE"
-          },
-          "pm": {
-            "condition": "part cloud",
             "temperature": "-2.0",
-            "feels_like": "-2.0",
+            "feels_like": "-3.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h E"
           },
-          "night": {
-            "condition": "clear",
-            "temperature": "-1.0",
-            "feels_like": "-2.0",
+          "pm": {
+            "condition": "part cloud",
+            "temperature": "0.0",
+            "feels_like": "-1.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h NE"
+          },
+          "night": {
+            "condition": "cloud",
+            "temperature": "0.0",
+            "feels_like": "-4.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "5.0 km/h E"
           }
         },
         {
@@ -5128,24 +5009,24 @@
           "date": "5",
           "am": {
             "condition": "part cloud",
-            "temperature": "-1.0",
+            "temperature": "0.0",
             "feels_like": "-4.0",
             "snow": "0",
             "rain": "0",
             "wind": "10.0 km/h E"
           },
           "pm": {
-            "condition": "cloud",
-            "temperature": "0.0",
-            "feels_like": "-2.0",
+            "condition": "light snow",
+            "temperature": "-1.0",
+            "feels_like": "-4.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h NE"
           },
           "night": {
-            "condition": "cloud",
-            "temperature": "0.0",
-            "feels_like": "-5.0",
+            "condition": "snow showers",
+            "temperature": "-2.0",
+            "feels_like": "-8.0",
             "snow": "0",
             "rain": "0",
             "wind": "10.0 km/h E"
@@ -5155,25 +5036,25 @@
           "name": "Monday",
           "date": "6",
           "am": {
-            "condition": "cloud",
-            "temperature": "-1.0",
-            "feels_like": "-6.0",
+            "condition": "clear",
+            "temperature": "0.0",
+            "feels_like": "-3.0",
             "snow": "0",
             "rain": "0",
-            "wind": "15.0 km/h E"
+            "wind": "5.0 km/h NE"
           },
           "pm": {
             "condition": "clear",
             "temperature": "0.0",
-            "feels_like": "-1.0",
+            "feels_like": "-2.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h NE"
           },
           "night": {
             "condition": "clear",
-            "temperature": "0.0",
-            "feels_like": "-2.0",
+            "temperature": "1.0",
+            "feels_like": "0.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h N"
@@ -5183,25 +5064,18 @@
           "name": "Tuesday",
           "date": "7",
           "am": {
-            "condition": "clear",
-            "temperature": "1.0",
-            "feels_like": "0.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h N"
-          },
-          "pm": {
             "condition": "part cloud",
-            "temperature": "2.0",
+            "temperature": "1.0",
             "feels_like": "-1.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h NE"
           },
+          "pm": null,
           "night": null
         }
       ],
-      "last_updated": "2026-04-02T12:56:22.108309",
+      "last_updated": "2026-04-02T16:02:03.359612",
       "resort": "St-Anton",
       "elevation": "top",
       "snow_conditions": {
@@ -5217,31 +5091,31 @@
     "bot": {
       "days": [
         {
-          "name": "Thursday",
+          "name": "Thu",
           "date": "2",
           "am": {
-            "condition": "clear",
-            "temperature": "1.0",
-            "feels_like": "-8.0",
+            "condition": "part cloud",
+            "temperature": "2.0",
+            "feels_like": "-1.0",
             "snow": "0",
             "rain": "0",
             "wind": "10.0 km/h S"
           },
           "pm": {
             "condition": "part cloud",
-            "temperature": "2.0",
-            "feels_like": "0.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "10.0 km/h S"
-          },
-          "night": {
-            "condition": "part cloud",
-            "temperature": "-1.0",
+            "temperature": "0.0",
             "feels_like": "-4.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h SW"
+          },
+          "night": {
+            "condition": "clear",
+            "temperature": "3.0",
+            "feels_like": "-5.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "10.0 km/h S"
           }
         },
         {
@@ -5249,27 +5123,27 @@
           "date": "3",
           "am": {
             "condition": "clear",
-            "temperature": "4.0",
-            "feels_like": "-5.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "10.0 km/h S"
-          },
-          "pm": {
-            "condition": "clear",
             "temperature": "6.0",
             "feels_like": "4.0",
             "snow": "0",
             "rain": "0",
             "wind": "10.0 km/h S"
           },
-          "night": {
+          "pm": {
             "condition": "clear",
             "temperature": "2.0",
             "feels_like": "-2.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h SW"
+          },
+          "night": {
+            "condition": "clear",
+            "temperature": "8.0",
+            "feels_like": "0.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "5.0 km/h S"
           }
         },
         {
@@ -5277,41 +5151,33 @@
           "date": "4",
           "am": {
             "condition": "clear",
-            "temperature": "8.0",
-            "feels_like": "1.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h S"
-          },
-          "pm": {
-            "condition": "part cloud",
             "temperature": "11.0",
             "feels_like": "11.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h E"
           },
-          "night": {
-            "condition": "part cloud",
+          "pm": {
+            "condition": "clear",
             "temperature": "7.0",
-            "feels_like": "5.0",
+            "feels_like": "4.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h NW"
+          },
+          "night": {
+            "condition": "clear",
+            "temperature": "12.0",
+            "feels_like": "6.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "5.0 km/h E"
           }
         },
         {
           "name": "Sunday",
           "date": "5",
           "am": {
-            "condition": "part cloud",
-            "temperature": "12.0",
-            "feels_like": "6.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "0.0 km/h E"
-          },
-          "pm": {
             "condition": "clear",
             "temperature": "15.0",
             "feels_like": "14.0",
@@ -5319,41 +5185,49 @@
             "rain": "0",
             "wind": "5.0 km/h E"
           },
-          "night": {
+          "pm": {
             "condition": "part cloud",
             "temperature": "10.0",
             "feels_like": "8.0",
             "snow": "0",
             "rain": "0",
-            "wind": "0.0 km/h W"
+            "wind": "0.0 km/h SW"
+          },
+          "night": {
+            "condition": "part cloud",
+            "temperature": "13.0",
+            "feels_like": "8.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "5.0 km/h SE"
           }
         },
         {
           "name": "Monday",
           "date": "6",
           "am": {
-            "condition": "cloud",
-            "temperature": "13.0",
-            "feels_like": "8.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "0.0 km/h E"
-          },
-          "pm": {
-            "condition": "thunderstorm ",
+            "condition": "rain showers",
             "temperature": "15.0",
             "feels_like": "15.0",
             "snow": "0",
             "rain": "1",
             "wind": "5.0 km/h E"
           },
-          "night": {
+          "pm": {
             "condition": "rain showers",
-            "temperature": "11.0",
+            "temperature": "12.0",
             "feels_like": "7.0",
             "snow": "0",
-            "rain": "3",
+            "rain": "1",
             "wind": "5.0 km/h NW"
+          },
+          "night": {
+            "condition": "clear",
+            "temperature": "14.0",
+            "feels_like": "8.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "5.0 km/h N"
           }
         },
         {
@@ -5361,20 +5235,13 @@
           "date": "7",
           "am": {
             "condition": "clear",
-            "temperature": "14.0",
-            "feels_like": "7.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h N"
-          },
-          "pm": {
-            "condition": "clear",
             "temperature": "16.0",
             "feels_like": "16.0",
             "snow": "0",
             "rain": "0",
-            "wind": "10.0 km/h N"
+            "wind": "10.0 km/h NE"
           },
+          "pm": null,
           "night": null
         },
         {
@@ -5406,7 +5273,7 @@
           }
         }
       ],
-      "last_updated": "2026-04-02T12:57:23.207548",
+      "last_updated": "2026-04-02T16:03:04.411480",
       "resort": "Alpe-d-Huez",
       "elevation": "bot",
       "snow_conditions": {
@@ -5421,74 +5288,74 @@
           {
             "date": "2026-04-02",
             "day_name": "Thursday",
-            "temp_max": 6.9,
+            "temp_max": 7.2,
             "temp_min": -0.7,
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
             "weather_code": 2,
             "freezing_level_min": 1650.0,
-            "freezing_level_max": 1880.0
+            "freezing_level_max": 1910.0
           },
           {
             "date": "2026-04-03",
             "day_name": "Friday",
-            "temp_max": 9.6,
-            "temp_min": 2.1,
+            "temp_max": 9.9,
+            "temp_min": 2.2,
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
-            "weather_code": 1,
-            "freezing_level_min": 1750.0,
-            "freezing_level_max": 2300.0
+            "weather_code": 0,
+            "freezing_level_min": 1760.0,
+            "freezing_level_max": 2290.0
           },
           {
             "date": "2026-04-04",
             "day_name": "Saturday",
-            "temp_max": 14.5,
+            "temp_max": 14.2,
+            "temp_min": 5.4,
+            "precipitation": 0.0,
+            "rain": 0.0,
+            "snowfall": 0.0,
+            "weather_code": 1,
+            "freezing_level_min": 2290.0,
+            "freezing_level_max": 2840.0
+          },
+          {
+            "date": "2026-04-05",
+            "day_name": "Sunday",
+            "temp_max": 16.1,
             "temp_min": 5.7,
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
             "weather_code": 2,
-            "freezing_level_min": 2290.0,
-            "freezing_level_max": 2930.0
-          },
-          {
-            "date": "2026-04-05",
-            "day_name": "Sunday",
-            "temp_max": 16.2,
-            "temp_min": 5.9,
-            "precipitation": 0.0,
-            "rain": 0.0,
-            "snowfall": 0.0,
-            "weather_code": 2,
-            "freezing_level_min": 2780.0,
-            "freezing_level_max": 2980.0
+            "freezing_level_min": 2860.0,
+            "freezing_level_max": 3010.0
           },
           {
             "date": "2026-04-06",
             "day_name": "Monday",
             "temp_max": 16.5,
-            "temp_min": 5.1,
+            "temp_min": 6.0,
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
-            "weather_code": 2,
-            "freezing_level_min": 2720.0,
-            "freezing_level_max": 3380.0
+            "weather_code": 3,
+            "freezing_level_min": 2750.0,
+            "freezing_level_max": 3120.0
           },
           {
             "date": "2026-04-07",
             "day_name": "Tuesday",
             "temp_max": 18.0,
-            "temp_min": 7.6,
+            "temp_min": 6.5,
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
             "weather_code": 3,
-            "freezing_level_min": 2910.0,
-            "freezing_level_max": 3410.0
+            "freezing_level_min": 2950.0,
+            "freezing_level_max": 3120.0
           },
           {
             "date": "2026-04-08",
@@ -5611,7 +5478,7 @@
             "freezing_level_max": 2060.0
           }
         ],
-        "last_updated": "2026-04-02T12:57:53.840406",
+        "last_updated": "2026-04-02T16:03:35.013078",
         "source": "OpenMeteo",
         "elevation": 1250.0,
         "elevation_used": 1250
@@ -5620,17 +5487,9 @@
     "mid": {
       "days": [
         {
-          "name": "Thursday",
+          "name": "Thu",
           "date": "2",
           "am": {
-            "condition": "clear",
-            "temperature": "-3.0",
-            "feels_like": "-11.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "15.0 km/h S"
-          },
-          "pm": {
             "condition": "part cloud",
             "temperature": "-3.0",
             "feels_like": "-10.0",
@@ -5638,10 +5497,18 @@
             "rain": "0",
             "wind": "20.0 km/h S"
           },
-          "night": {
+          "pm": {
             "condition": "part cloud",
             "temperature": "-4.0",
             "feels_like": "-11.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "15.0 km/h S"
+          },
+          "night": {
+            "condition": "clear",
+            "temperature": "-2.0",
+            "feels_like": "-10.0",
             "snow": "0",
             "rain": "0",
             "wind": "15.0 km/h S"
@@ -5652,24 +5519,24 @@
           "date": "3",
           "am": {
             "condition": "clear",
-            "temperature": "-2.0",
-            "feels_like": "-10.0",
+            "temperature": "0.0",
+            "feels_like": "-4.0",
             "snow": "0",
             "rain": "0",
             "wind": "15.0 km/h S"
           },
           "pm": {
             "condition": "clear",
-            "temperature": "0.0",
-            "feels_like": "-6.0",
+            "temperature": "-1.0",
+            "feels_like": "-5.0",
             "snow": "0",
             "rain": "0",
-            "wind": "15.0 km/h S"
+            "wind": "10.0 km/h S"
           },
           "night": {
             "condition": "clear",
-            "temperature": "-1.0",
-            "feels_like": "-5.0",
+            "temperature": "2.0",
+            "feels_like": "-4.0",
             "snow": "0",
             "rain": "0",
             "wind": "10.0 km/h S"
@@ -5680,44 +5547,44 @@
           "date": "4",
           "am": {
             "condition": "clear",
-            "temperature": "2.0",
-            "feels_like": "-4.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h S"
-          },
-          "pm": {
-            "condition": "part cloud",
             "temperature": "4.0",
-            "feels_like": "4.0",
+            "feels_like": "3.0",
             "snow": "0",
             "rain": "0",
             "wind": "0.0 km/h E"
           },
-          "night": {
-            "condition": "part cloud",
+          "pm": {
+            "condition": "clear",
             "temperature": "3.0",
             "feels_like": "2.0",
             "snow": "0",
             "rain": "0",
-            "wind": "5.0 km/h S"
+            "wind": "0.0 km/h SW"
+          },
+          "night": {
+            "condition": "clear",
+            "temperature": "5.0",
+            "feels_like": "3.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "5.0 km/h E"
           }
         },
         {
           "name": "Sunday",
           "date": "5",
           "am": {
+            "condition": "clear",
+            "temperature": "6.0",
+            "feels_like": "5.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "5.0 km/h E"
+          },
+          "pm": {
             "condition": "part cloud",
             "temperature": "5.0",
             "feels_like": "3.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h SE"
-          },
-          "pm": {
-            "condition": "clear",
-            "temperature": "6.0",
-            "feels_like": "6.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h E"
@@ -5728,35 +5595,35 @@
             "feels_like": "3.0",
             "snow": "0",
             "rain": "0",
-            "wind": "0.0 km/h E"
+            "wind": "5.0 km/h E"
           }
         },
         {
           "name": "Monday",
           "date": "6",
           "am": {
-            "condition": "cloud",
-            "temperature": "5.0",
-            "feels_like": "3.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h E"
-          },
-          "pm": {
-            "condition": "thunderstorm ",
+            "condition": "rain showers",
             "temperature": "6.0",
             "feels_like": "6.0",
             "snow": "0",
             "rain": "1",
             "wind": "5.0 km/h E"
           },
-          "night": {
+          "pm": {
             "condition": "rain showers",
             "temperature": "5.0",
-            "feels_like": "4.0",
+            "feels_like": "1.0",
             "snow": "0",
-            "rain": "3",
-            "wind": "5.0 km/h N"
+            "rain": "1",
+            "wind": "5.0 km/h NW"
+          },
+          "night": {
+            "condition": "clear",
+            "temperature": "5.0",
+            "feels_like": "1.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "10.0 km/h N"
           }
         },
         {
@@ -5765,23 +5632,16 @@
           "am": {
             "condition": "clear",
             "temperature": "6.0",
-            "feels_like": "0.0",
+            "feels_like": "4.0",
             "snow": "0",
             "rain": "0",
             "wind": "10.0 km/h N"
           },
-          "pm": {
-            "condition": "clear",
-            "temperature": "7.0",
-            "feels_like": "5.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "10.0 km/h N"
-          },
+          "pm": null,
           "night": null
         }
       ],
-      "last_updated": "2026-04-02T12:57:54.624146",
+      "last_updated": "2026-04-02T16:03:35.773355",
       "resort": "Alpe-d-Huez",
       "elevation": "mid",
       "snow_conditions": {
@@ -5795,31 +5655,31 @@
     "top": {
       "days": [
         {
-          "name": "Thursday",
+          "name": "Thu",
           "date": "2",
           "am": {
             "condition": "clear",
             "temperature": "-8.0",
-            "feels_like": "-16.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "20.0 km/h S"
-          },
-          "pm": {
-            "condition": "clear",
-            "temperature": "-9.0",
             "feels_like": "-19.0",
             "snow": "0",
             "rain": "0",
-            "wind": "25.0 km/h S"
+            "wind": "30.0 km/h S"
           },
-          "night": {
+          "pm": {
             "condition": "clear",
             "temperature": "-8.0",
             "feels_like": "-20.0",
             "snow": "0",
             "rain": "0",
             "wind": "25.0 km/h S"
+          },
+          "night": {
+            "condition": "clear",
+            "temperature": "-7.0",
+            "feels_like": "-17.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "30.0 km/h S"
           }
         },
         {
@@ -5827,27 +5687,27 @@
           "date": "3",
           "am": {
             "condition": "clear",
-            "temperature": "-7.0",
-            "feels_like": "-17.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "30.0 km/h S"
-          },
-          "pm": {
-            "condition": "clear",
-            "temperature": "-7.0",
+            "temperature": "-6.0",
             "feels_like": "-15.0",
             "snow": "0",
             "rain": "0",
             "wind": "25.0 km/h S"
           },
-          "night": {
+          "pm": {
             "condition": "clear",
             "temperature": "-4.0",
-            "feels_like": "-14.0",
+            "feels_like": "-12.0",
             "snow": "0",
             "rain": "0",
             "wind": "20.0 km/h S"
+          },
+          "night": {
+            "condition": "clear",
+            "temperature": "-3.0",
+            "feels_like": "-9.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "15.0 km/h S"
           }
         },
         {
@@ -5855,39 +5715,11 @@
           "date": "4",
           "am": {
             "condition": "clear",
-            "temperature": "-3.0",
-            "feels_like": "-10.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "10.0 km/h S"
-          },
-          "pm": {
-            "condition": "clear",
-            "temperature": "-3.0",
-            "feels_like": "-6.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "5.0 km/h SE"
-          },
-          "night": {
-            "condition": "part cloud",
             "temperature": "-2.0",
-            "feels_like": "-6.0",
+            "feels_like": "-3.0",
             "snow": "0",
             "rain": "0",
-            "wind": "10.0 km/h SE"
-          }
-        },
-        {
-          "name": "Sunday",
-          "date": "5",
-          "am": {
-            "condition": "part cloud",
-            "temperature": "-2.0",
-            "feels_like": "-6.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "10.0 km/h SE"
+            "wind": "5.0 km/h S"
           },
           "pm": {
             "condition": "clear",
@@ -5895,11 +5727,11 @@
             "feels_like": "-6.0",
             "snow": "0",
             "rain": "0",
-            "wind": "10.0 km/h NE"
+            "wind": "10.0 km/h SE"
           },
           "night": {
-            "condition": "part cloud",
-            "temperature": "-2.0",
+            "condition": "clear",
+            "temperature": "-3.0",
             "feels_like": "-7.0",
             "snow": "0",
             "rain": "0",
@@ -5907,10 +5739,10 @@
           }
         },
         {
-          "name": "Monday",
-          "date": "6",
+          "name": "Sunday",
+          "date": "5",
           "am": {
-            "condition": "cloud",
+            "condition": "clear",
             "temperature": "-3.0",
             "feels_like": "-6.0",
             "snow": "0",
@@ -5918,20 +5750,48 @@
             "wind": "10.0 km/h E"
           },
           "pm": {
-            "condition": "light snow",
+            "condition": "part cloud",
             "temperature": "-3.0",
-            "feels_like": "-6.0",
+            "feels_like": "-7.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "10.0 km/h E"
+          },
+          "night": {
+            "condition": "part cloud",
+            "temperature": "-3.0",
+            "feels_like": "-7.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "5.0 km/h E"
+          }
+        },
+        {
+          "name": "Monday",
+          "date": "6",
+          "am": {
+            "condition": "snow showers",
+            "temperature": "-4.0",
+            "feels_like": "-4.0",
             "snow": "0",
             "rain": "0",
             "wind": "5.0 km/h NE"
           },
-          "night": {
+          "pm": {
             "condition": "snow showers",
             "temperature": "-3.0",
-            "feels_like": "-5.0",
-            "snow": "2",
+            "feels_like": "-4.0",
+            "snow": "0",
             "rain": "0",
-            "wind": "5.0 km/h N"
+            "wind": "5.0 km/h NW"
+          },
+          "night": {
+            "condition": "clear",
+            "temperature": "-3.0",
+            "feels_like": "-7.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "15.0 km/h N"
           }
         },
         {
@@ -5939,20 +5799,13 @@
           "date": "7",
           "am": {
             "condition": "clear",
-            "temperature": "-3.0",
-            "feels_like": "-7.0",
+            "temperature": "-4.0",
+            "feels_like": "-9.0",
             "snow": "0",
             "rain": "0",
-            "wind": "15.0 km/h N"
+            "wind": "10.0 km/h N"
           },
-          "pm": {
-            "condition": "clear",
-            "temperature": "-3.0",
-            "feels_like": "-8.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "15.0 km/h N"
-          },
+          "pm": null,
           "night": null
         },
         {
@@ -5984,7 +5837,7 @@
           }
         }
       ],
-      "last_updated": "2026-04-02T12:58:55.821332",
+      "last_updated": "2026-04-02T16:04:36.874717",
       "resort": "Alpe-d-Huez",
       "elevation": "top",
       "snow_conditions": {
@@ -5999,7 +5852,7 @@
           {
             "date": "2026-04-02",
             "day_name": "Thursday",
-            "temp_max": -7.9,
+            "temp_max": -7.4,
             "temp_min": -11.0,
             "precipitation": 0.0,
             "rain": 0.0,
@@ -6011,62 +5864,62 @@
           {
             "date": "2026-04-03",
             "day_name": "Friday",
-            "temp_max": -5.4,
-            "temp_min": -11.1,
+            "temp_max": -5.3,
+            "temp_min": -11.0,
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
-            "weather_code": 2,
+            "weather_code": 0,
             "freezing_level_min": 2760.0,
             "freezing_level_max": 2760.0
           },
           {
             "date": "2026-04-04",
             "day_name": "Saturday",
-            "temp_max": 0.1,
-            "temp_min": -6.5,
-            "precipitation": 0.1,
-            "rain": 0.0,
-            "snowfall": 0.0,
-            "weather_code": 3,
-            "freezing_level_min": 2725.0,
-            "freezing_level_max": 2890.0
-          },
-          {
-            "date": "2026-04-05",
-            "day_name": "Sunday",
-            "temp_max": 1.0,
-            "temp_min": -5.2,
+            "temp_max": -0.4,
+            "temp_min": -6.6,
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
             "weather_code": 3,
-            "freezing_level_min": 2790.0,
-            "freezing_level_max": 2980.0
+            "freezing_level_min": 2720.0,
+            "freezing_level_max": 2850.0
+          },
+          {
+            "date": "2026-04-05",
+            "day_name": "Sunday",
+            "temp_max": 1.1,
+            "temp_min": -5.5,
+            "precipitation": 0.0,
+            "rain": 0.0,
+            "snowfall": 0.0,
+            "weather_code": 2,
+            "freezing_level_min": 2830.0,
+            "freezing_level_max": 3020.0
           },
           {
             "date": "2026-04-06",
             "day_name": "Monday",
             "temp_max": 1.5,
-            "temp_min": -6.1,
+            "temp_min": -5.1,
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
-            "weather_code": 1,
-            "freezing_level_min": 2730.0,
-            "freezing_level_max": 3360.0
+            "weather_code": 3,
+            "freezing_level_min": 2790.0,
+            "freezing_level_max": 3030.0
           },
           {
             "date": "2026-04-07",
             "day_name": "Tuesday",
             "temp_max": 9.7,
-            "temp_min": -3.9,
+            "temp_min": -4.1,
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
             "weather_code": 3,
-            "freezing_level_min": 1760.0,
-            "freezing_level_max": 3377.5
+            "freezing_level_min": 1790.0,
+            "freezing_level_max": 3120.0
           },
           {
             "date": "2026-04-08",
@@ -6189,7 +6042,7 @@
             "freezing_level_max": 2060.0
           }
         ],
-        "last_updated": "2026-04-02T12:59:26.419952",
+        "last_updated": "2026-04-02T16:05:07.489192",
         "source": "OpenMeteo",
         "elevation": 3330.0,
         "elevation_used": 3330
@@ -6200,17 +6053,9 @@
     "bot": {
       "days": [
         {
-          "name": "Thursday",
+          "name": "Thu",
           "date": "2",
           "am": {
-            "condition": "light rain",
-            "temperature": "9.0",
-            "feels_like": "5.0",
-            "snow": "0",
-            "rain": "3",
-            "wind": "35.0 km/h N"
-          },
-          "pm": {
             "condition": "light rain",
             "temperature": "9.0",
             "feels_like": "5.0",
@@ -6218,13 +6063,21 @@
             "rain": "2",
             "wind": "30.0 km/h NE"
           },
-          "night": {
+          "pm": {
             "condition": "rain showers",
             "temperature": "9.0",
             "feels_like": "2.0",
             "snow": "0",
-            "rain": "2",
+            "rain": "1",
             "wind": "25.0 km/h E"
+          },
+          "night": {
+            "condition": "clear",
+            "temperature": "8.0",
+            "feels_like": "4.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "20.0 km/h E"
           }
         },
         {
@@ -6233,23 +6086,23 @@
           "am": {
             "condition": "clear",
             "temperature": "8.0",
-            "feels_like": "4.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "20.0 km/h E"
-          },
-          "pm": {
-            "condition": "clear",
-            "temperature": "8.0",
             "feels_like": "2.0",
             "snow": "0",
             "rain": "0",
             "wind": "25.0 km/h E"
           },
-          "night": {
+          "pm": {
             "condition": "clear",
             "temperature": "4.0",
-            "feels_like": "0.0",
+            "feels_like": "-2.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "20.0 km/h E"
+          },
+          "night": {
+            "condition": "clear",
+            "temperature": "7.0",
+            "feels_like": "2.0",
             "snow": "0",
             "rain": "0",
             "wind": "20.0 km/h E"
@@ -6264,23 +6117,23 @@
             "feels_like": "3.0",
             "snow": "0",
             "rain": "0",
-            "wind": "15.0 km/h SE"
+            "wind": "25.0 km/h E"
           },
           "pm": {
             "condition": "clear",
-            "temperature": "9.0",
-            "feels_like": "4.0",
+            "temperature": "4.0",
+            "feels_like": "-3.0",
             "snow": "0",
             "rain": "0",
             "wind": "20.0 km/h E"
           },
           "night": {
             "condition": "clear",
-            "temperature": "5.0",
-            "feels_like": "-2.0",
+            "temperature": "6.0",
+            "feels_like": "1.0",
             "snow": "0",
             "rain": "0",
-            "wind": "15.0 km/h E"
+            "wind": "10.0 km/h E"
           }
         },
         {
@@ -6289,26 +6142,26 @@
           "am": {
             "condition": "clear",
             "temperature": "7.0",
-            "feels_like": "1.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "15.0 km/h E"
-          },
-          "pm": {
-            "condition": "clear",
-            "temperature": "7.0",
-            "feels_like": "1.0",
+            "feels_like": "2.0",
             "snow": "0",
             "rain": "0",
             "wind": "20.0 km/h E"
           },
-          "night": {
+          "pm": {
             "condition": "clear",
             "temperature": "3.0",
             "feels_like": "-2.0",
             "snow": "0",
             "rain": "0",
-            "wind": "15.0 km/h SE"
+            "wind": "15.0 km/h E"
+          },
+          "night": {
+            "condition": "rain showers",
+            "temperature": "5.0",
+            "feels_like": "1.0",
+            "snow": "0",
+            "rain": "1",
+            "wind": "15.0 km/h E"
           }
         },
         {
@@ -6317,23 +6170,23 @@
           "am": {
             "condition": "rain showers",
             "temperature": "6.0",
-            "feels_like": "1.0",
-            "snow": "0",
-            "rain": "1",
-            "wind": "10.0 km/h E"
-          },
-          "pm": {
-            "condition": "rain showers",
-            "temperature": "7.0",
-            "feels_like": "2.0",
+            "feels_like": "3.0",
             "snow": "0",
             "rain": "1",
             "wind": "15.0 km/h E"
           },
-          "night": {
+          "pm": {
             "condition": "clear",
             "temperature": "4.0",
             "feels_like": "0.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "15.0 km/h E"
+          },
+          "night": {
+            "condition": "cloud",
+            "temperature": "7.0",
+            "feels_like": "4.0",
             "snow": "0",
             "rain": "0",
             "wind": "10.0 km/h E"
@@ -6343,25 +6196,18 @@
           "name": "Tuesday",
           "date": "7",
           "am": {
-            "condition": "part cloud",
-            "temperature": "6.0",
-            "feels_like": "0.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "15.0 km/h E"
-          },
-          "pm": {
             "condition": "rain showers",
             "temperature": "6.0",
             "feels_like": "1.0",
             "snow": "0",
-            "rain": "3",
-            "wind": "20.0 km/h E"
+            "rain": "2",
+            "wind": "25.0 km/h NE"
           },
+          "pm": null,
           "night": null
         }
       ],
-      "last_updated": "2026-04-02T12:59:27.261697",
+      "last_updated": "2026-04-02T16:05:08.331257",
       "resort": "mounthermon",
       "elevation": "bot",
       "snow_conditions": {
@@ -6375,31 +6221,31 @@
     "mid": {
       "days": [
         {
-          "name": "Thursday",
+          "name": "Thu",
           "date": "2",
           "am": {
             "condition": "light rain",
             "temperature": "9.0",
             "feels_like": "5.0",
             "snow": "0",
-            "rain": "3",
-            "wind": "40.0 km/h N"
+            "rain": "1",
+            "wind": "35.0 km/h NE"
           },
           "pm": {
-            "condition": "light rain",
-            "temperature": "9.0",
-            "feels_like": "5.0",
-            "snow": "0",
-            "rain": "2",
-            "wind": "40.0 km/h NE"
-          },
-          "night": {
-            "condition": "rain showers",
+            "condition": "part cloud",
             "temperature": "9.0",
             "feels_like": "2.0",
             "snow": "0",
-            "rain": "2",
+            "rain": "0",
             "wind": "30.0 km/h NE"
+          },
+          "night": {
+            "condition": "clear",
+            "temperature": "6.0",
+            "feels_like": "2.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "25.0 km/h E"
           }
         },
         {
@@ -6408,18 +6254,18 @@
           "am": {
             "condition": "clear",
             "temperature": "6.0",
-            "feels_like": "2.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "25.0 km/h E"
-          },
-          "pm": {
-            "condition": "clear",
-            "temperature": "6.0",
-            "feels_like": "0.0",
+            "feels_like": "-1.0",
             "snow": "0",
             "rain": "0",
             "wind": "30.0 km/h E"
+          },
+          "pm": {
+            "condition": "clear",
+            "temperature": "4.0",
+            "feels_like": "-1.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "25.0 km/h E"
           },
           "night": {
             "condition": "clear",
@@ -6427,7 +6273,7 @@
             "feels_like": "-1.0",
             "snow": "0",
             "rain": "0",
-            "wind": "30.0 km/h E"
+            "wind": "25.0 km/h E"
           }
         },
         {
@@ -6435,27 +6281,27 @@
           "date": "4",
           "am": {
             "condition": "clear",
-            "temperature": "6.0",
+            "temperature": "5.0",
             "feels_like": "0.0",
             "snow": "0",
             "rain": "0",
-            "wind": "20.0 km/h E"
+            "wind": "25.0 km/h E"
           },
           "pm": {
             "condition": "clear",
-            "temperature": "6.0",
-            "feels_like": "2.0",
+            "temperature": "4.0",
+            "feels_like": "-2.0",
             "snow": "0",
             "rain": "0",
             "wind": "20.0 km/h E"
           },
           "night": {
             "condition": "clear",
-            "temperature": "5.0",
-            "feels_like": "-2.0",
+            "temperature": "4.0",
+            "feels_like": "0.0",
             "snow": "0",
             "rain": "0",
-            "wind": "20.0 km/h E"
+            "wind": "15.0 km/h E"
           }
         },
         {
@@ -6464,40 +6310,32 @@
           "am": {
             "condition": "clear",
             "temperature": "4.0",
-            "feels_like": "0.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "15.0 km/h E"
-          },
-          "pm": {
-            "condition": "clear",
-            "temperature": "4.0",
             "feels_like": "-1.0",
             "snow": "0",
             "rain": "0",
             "wind": "20.0 km/h E"
           },
-          "night": {
+          "pm": {
             "condition": "clear",
             "temperature": "4.0",
-            "feels_like": "-1.0",
+            "feels_like": "-3.0",
             "snow": "0",
             "rain": "0",
-            "wind": "15.0 km/h SE"
+            "wind": "15.0 km/h E"
+          },
+          "night": {
+            "condition": "rain showers",
+            "temperature": "3.0",
+            "feels_like": "-2.0",
+            "snow": "0",
+            "rain": "1",
+            "wind": "15.0 km/h E"
           }
         },
         {
           "name": "Monday",
           "date": "6",
           "am": {
-            "condition": "part cloud",
-            "temperature": "4.0",
-            "feels_like": "0.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "15.0 km/h E"
-          },
-          "pm": {
             "condition": "rain showers",
             "temperature": "4.0",
             "feels_like": "0.0",
@@ -6505,10 +6343,18 @@
             "rain": "1",
             "wind": "15.0 km/h E"
           },
-          "night": {
+          "pm": {
             "condition": "clear",
+            "temperature": "5.0",
+            "feels_like": "0.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "15.0 km/h E"
+          },
+          "night": {
+            "condition": "cloud",
             "temperature": "4.0",
-            "feels_like": "1.0",
+            "feels_like": "0.0",
             "snow": "0",
             "rain": "0",
             "wind": "15.0 km/h E"
@@ -6518,21 +6364,14 @@
           "name": "Tuesday",
           "date": "7",
           "am": {
-            "condition": "clear",
-            "temperature": "3.0",
-            "feels_like": "-1.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "15.0 km/h E"
-          },
-          "pm": {
             "condition": "rain showers",
-            "temperature": "3.0",
+            "temperature": "4.0",
             "feels_like": "-2.0",
             "snow": "0",
-            "rain": "1",
-            "wind": "25.0 km/h E"
+            "rain": "2",
+            "wind": "25.0 km/h NE"
           },
+          "pm": null,
           "night": null
         },
         {
@@ -6564,7 +6403,7 @@
           }
         }
       ],
-      "last_updated": "2026-04-02T13:00:28.343433",
+      "last_updated": "2026-04-02T16:06:09.432904",
       "resort": "mounthermon",
       "elevation": "mid",
       "snow_conditions": {
@@ -6579,74 +6418,74 @@
           {
             "date": "2026-04-02",
             "day_name": "Thursday",
-            "temp_max": 12.0,
-            "temp_min": 7.1,
+            "temp_max": 12.2,
+            "temp_min": 8.1,
             "precipitation": 10.9,
             "rain": 3.2,
             "snowfall": 0.0,
             "weather_code": 95,
             "freezing_level_min": 3690.0,
-            "freezing_level_max": 3920.0
+            "freezing_level_max": 3940.0
           },
           {
             "date": "2026-04-03",
             "day_name": "Friday",
-            "temp_max": 7.2,
-            "temp_min": 1.4,
+            "temp_max": 7.7,
+            "temp_min": 1.2,
+            "precipitation": 0.0,
+            "rain": 0.0,
+            "snowfall": 0.0,
+            "weather_code": 3,
+            "freezing_level_min": 1700.0,
+            "freezing_level_max": 3680.0
+          },
+          {
+            "date": "2026-04-04",
+            "day_name": "Saturday",
+            "temp_max": 6.7,
+            "temp_min": 1.2,
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
             "weather_code": 2,
             "freezing_level_min": 1720.0,
-            "freezing_level_max": 3690.0
-          },
-          {
-            "date": "2026-04-04",
-            "day_name": "Saturday",
-            "temp_max": 6.8,
-            "temp_min": 1.3,
-            "precipitation": 0.0,
-            "rain": 0.0,
-            "snowfall": 0.0,
-            "weather_code": 2,
-            "freezing_level_min": 1730.0,
-            "freezing_level_max": 2280.0
+            "freezing_level_max": 2270.0
           },
           {
             "date": "2026-04-05",
             "day_name": "Sunday",
-            "temp_max": 6.5,
-            "temp_min": 1.0,
+            "temp_max": 6.2,
+            "temp_min": 0.9,
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
             "weather_code": 3,
-            "freezing_level_min": 1750.0,
+            "freezing_level_min": 1730.0,
             "freezing_level_max": 2450.0
           },
           {
             "date": "2026-04-06",
             "day_name": "Monday",
             "temp_max": 7.0,
-            "temp_min": 1.3,
+            "temp_min": 1.5,
             "precipitation": 0.0,
             "rain": 0.0,
             "snowfall": 0.0,
             "weather_code": 3,
-            "freezing_level_min": 1800.0,
-            "freezing_level_max": 2600.0
+            "freezing_level_min": 1820.0,
+            "freezing_level_max": 2610.0
           },
           {
             "date": "2026-04-07",
             "day_name": "Tuesday",
-            "temp_max": 7.2,
-            "temp_min": 1.5,
-            "precipitation": 1.5,
+            "temp_max": 6.3,
+            "temp_min": 1.6,
+            "precipitation": 1.35,
             "rain": 0.0,
             "snowfall": 0.0,
-            "weather_code": 45,
-            "freezing_level_min": 2285.0,
-            "freezing_level_max": 2430.0
+            "weather_code": 80,
+            "freezing_level_min": 2352.5,
+            "freezing_level_max": 2500.0
           },
           {
             "date": "2026-04-08",
@@ -6769,7 +6608,7 @@
             "freezing_level_max": 3440.0
           }
         ],
-        "last_updated": "2026-04-02T13:00:58.964988",
+        "last_updated": "2026-04-02T16:06:40.045402",
         "source": "OpenMeteo",
         "elevation": 2000.0,
         "elevation_used": 2000
@@ -6778,31 +6617,31 @@
     "top": {
       "days": [
         {
-          "name": "Thursday",
+          "name": "Thu",
           "date": "2",
           "am": {
             "condition": "light rain",
             "temperature": "8.0",
             "feels_like": "3.0",
             "snow": "0",
-            "rain": "3",
+            "rain": "1",
             "wind": "45.0 km/h NE"
           },
           "pm": {
-            "condition": "light rain",
-            "temperature": "8.0",
-            "feels_like": "3.0",
-            "snow": "0",
-            "rain": "2",
-            "wind": "45.0 km/h NE"
-          },
-          "night": {
-            "condition": "rain showers",
+            "condition": "part cloud",
             "temperature": "8.0",
             "feels_like": "0.0",
             "snow": "0",
-            "rain": "1",
+            "rain": "0",
             "wind": "35.0 km/h NE"
+          },
+          "night": {
+            "condition": "clear",
+            "temperature": "5.0",
+            "feels_like": "0.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "30.0 km/h E"
           }
         },
         {
@@ -6810,27 +6649,27 @@
           "date": "3",
           "am": {
             "condition": "clear",
-            "temperature": "5.0",
-            "feels_like": "0.0",
+            "temperature": "4.0",
+            "feels_like": "-3.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "35.0 km/h E"
+          },
+          "pm": {
+            "condition": "clear",
+            "temperature": "3.0",
+            "feels_like": "-4.0",
             "snow": "0",
             "rain": "0",
             "wind": "30.0 km/h E"
           },
-          "pm": {
-            "condition": "clear",
-            "temperature": "5.0",
-            "feels_like": "-3.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "35.0 km/h E"
-          },
           "night": {
             "condition": "clear",
             "temperature": "3.0",
-            "feels_like": "-3.0",
+            "feels_like": "-4.0",
             "snow": "0",
             "rain": "0",
-            "wind": "35.0 km/h E"
+            "wind": "30.0 km/h E"
           }
         },
         {
@@ -6838,16 +6677,16 @@
           "date": "4",
           "am": {
             "condition": "clear",
-            "temperature": "4.0",
+            "temperature": "3.0",
             "feels_like": "-2.0",
             "snow": "0",
             "rain": "0",
-            "wind": "25.0 km/h E"
+            "wind": "30.0 km/h E"
           },
           "pm": {
             "condition": "clear",
-            "temperature": "4.0",
-            "feels_like": "-1.0",
+            "temperature": "3.0",
+            "feels_like": "-3.0",
             "snow": "0",
             "rain": "0",
             "wind": "25.0 km/h E"
@@ -6855,10 +6694,10 @@
           "night": {
             "condition": "clear",
             "temperature": "3.0",
-            "feels_like": "-3.0",
+            "feels_like": "-2.0",
             "snow": "0",
             "rain": "0",
-            "wind": "25.0 km/h E"
+            "wind": "15.0 km/h E"
           }
         },
         {
@@ -6867,23 +6706,23 @@
           "am": {
             "condition": "clear",
             "temperature": "3.0",
-            "feels_like": "-2.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "15.0 km/h E"
-          },
-          "pm": {
-            "condition": "clear",
-            "temperature": "3.0",
             "feels_like": "-3.0",
             "snow": "0",
             "rain": "0",
             "wind": "20.0 km/h E"
           },
-          "night": {
+          "pm": {
             "condition": "clear",
             "temperature": "2.0",
-            "feels_like": "-2.0",
+            "feels_like": "-4.0",
+            "snow": "0",
+            "rain": "0",
+            "wind": "15.0 km/h E"
+          },
+          "night": {
+            "condition": "snow showers",
+            "temperature": "2.0",
+            "feels_like": "-4.0",
             "snow": "0",
             "rain": "0",
             "wind": "15.0 km/h E"
@@ -6893,53 +6732,46 @@
           "name": "Monday",
           "date": "6",
           "am": {
-            "condition": "clear",
-            "temperature": "2.0",
-            "feels_like": "-3.0",
+            "condition": "rain showers",
+            "temperature": "3.0",
+            "feels_like": "-2.0",
             "snow": "0",
-            "rain": "0",
-            "wind": "15.0 km/h E"
+            "rain": "1",
+            "wind": "20.0 km/h E"
           },
           "pm": {
             "condition": "clear",
-            "temperature": "3.0",
+            "temperature": "4.0",
             "feels_like": "-1.0",
             "snow": "0",
             "rain": "0",
             "wind": "15.0 km/h E"
           },
           "night": {
-            "condition": "clear",
+            "condition": "cloud",
             "temperature": "3.0",
             "feels_like": "-1.0",
             "snow": "0",
             "rain": "0",
-            "wind": "15.0 km/h E"
+            "wind": "20.0 km/h E"
           }
         },
         {
           "name": "Tuesday",
           "date": "7",
           "am": {
-            "condition": "clear",
-            "temperature": "1.0",
-            "feels_like": "-4.0",
-            "snow": "0",
-            "rain": "0",
-            "wind": "20.0 km/h E"
-          },
-          "pm": {
-            "condition": "clear",
+            "condition": "snow showers",
             "temperature": "2.0",
             "feels_like": "-4.0",
             "snow": "0",
-            "rain": "0",
-            "wind": "25.0 km/h E"
+            "rain": "1",
+            "wind": "30.0 km/h NE"
           },
+          "pm": null,
           "night": null
         }
       ],
-      "last_updated": "2026-04-02T13:00:59.724810",
+      "last_updated": "2026-04-02T16:06:40.802930",
       "resort": "mounthermon",
       "elevation": "top",
       "snow_conditions": {

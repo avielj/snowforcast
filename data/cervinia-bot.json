@@ -1,17 +1,9 @@
 {
   "days": [
     {
-      "name": "Thursday",
+      "name": "Thu",
       "date": "2",
       "am": {
-        "condition": "clear",
-        "temperature": "3.0",
-        "feels_like": "-7.0",
-        "snow": "0",
-        "rain": "0",
-        "wind": "5.0 km/h SE"
-      },
-      "pm": {
         "condition": "rain showers",
         "temperature": "4.0",
         "feels_like": "0.0",
@@ -19,13 +11,21 @@
         "rain": "1",
         "wind": "10.0 km/h SE"
       },
-      "night": {
+      "pm": {
         "condition": "snow showers",
         "temperature": "-1.0",
         "feels_like": "-9.0",
         "snow": "0",
         "rain": "0",
         "wind": "5.0 km/h SE"
+      },
+      "night": {
+        "condition": "clear",
+        "temperature": "4.0",
+        "feels_like": "-7.0",
+        "snow": "0",
+        "rain": "0",
+        "wind": "10.0 km/h SE"
       }
     },
     {
@@ -33,24 +33,24 @@
       "date": "3",
       "am": {
         "condition": "clear",
-        "temperature": "4.0",
-        "feels_like": "-7.0",
-        "snow": "0",
-        "rain": "0",
-        "wind": "10.0 km/h SE"
-      },
-      "pm": {
-        "condition": "clear",
         "temperature": "5.0",
         "feels_like": "3.0",
         "snow": "0",
         "rain": "0",
         "wind": "10.0 km/h SE"
       },
-      "night": {
+      "pm": {
         "condition": "clear",
         "temperature": "-1.0",
-        "feels_like": "-5.0",
+        "feels_like": "-6.0",
+        "snow": "0",
+        "rain": "0",
+        "wind": "5.0 km/h SE"
+      },
+      "night": {
+        "condition": "clear",
+        "temperature": "6.0",
+        "feels_like": "-2.0",
         "snow": "0",
         "rain": "0",
         "wind": "5.0 km/h SE"
@@ -60,14 +60,6 @@
       "name": "Saturday",
       "date": "4",
       "am": {
-        "condition": "clear",
-        "temperature": "6.0",
-        "feels_like": "-3.0",
-        "snow": "0",
-        "rain": "0",
-        "wind": "5.0 km/h SE"
-      },
-      "pm": {
         "condition": "part cloud",
         "temperature": "9.0",
         "feels_like": "8.0",
@@ -75,13 +67,21 @@
         "rain": "0",
         "wind": "0.0 km/h NW"
       },
-      "night": {
+      "pm": {
         "condition": "clear",
         "temperature": "4.0",
         "feels_like": "2.0",
         "snow": "0",
         "rain": "0",
-        "wind": "0.0 km/h E"
+        "wind": "0.0 km/h N"
+      },
+      "night": {
+        "condition": "part cloud",
+        "temperature": "9.0",
+        "feels_like": "3.0",
+        "snow": "0",
+        "rain": "0",
+        "wind": "5.0 km/h E"
       }
     },
     {
@@ -89,54 +89,54 @@
       "date": "5",
       "am": {
         "condition": "part cloud",
-        "temperature": "9.0",
-        "feels_like": "3.0",
-        "snow": "0",
-        "rain": "0",
-        "wind": "0.0 km/h E"
-      },
-      "pm": {
-        "condition": "clear",
         "temperature": "10.0",
         "feels_like": "10.0",
         "snow": "0",
         "rain": "0",
         "wind": "0.0 km/h S"
       },
-      "night": {
+      "pm": {
         "condition": "part cloud",
         "temperature": "5.0",
-        "feels_like": "3.0",
+        "feels_like": "2.0",
         "snow": "0",
         "rain": "0",
         "wind": "5.0 km/h SE"
+      },
+      "night": {
+        "condition": "clear",
+        "temperature": "9.0",
+        "feels_like": "4.0",
+        "snow": "0",
+        "rain": "0",
+        "wind": "0.0 km/h SE"
       }
     },
     {
       "name": "Monday",
       "date": "6",
       "am": {
-        "condition": "part cloud",
-        "temperature": "9.0",
-        "feels_like": "4.0",
-        "snow": "0",
-        "rain": "0",
-        "wind": "0.0 km/h E"
-      },
-      "pm": {
-        "condition": "rain showers",
+        "condition": "light rain",
         "temperature": "11.0",
         "feels_like": "11.0",
         "snow": "0",
         "rain": "1",
         "wind": "0.0 km/h NW"
       },
-      "night": {
+      "pm": {
         "condition": "rain showers",
         "temperature": "7.0",
-        "feels_like": "4.0",
+        "feels_like": "5.0",
         "snow": "0",
         "rain": "1",
+        "wind": "5.0 km/h NW"
+      },
+      "night": {
+        "condition": "part cloud",
+        "temperature": "8.0",
+        "feels_like": "4.0",
+        "snow": "0",
+        "rain": "0",
         "wind": "5.0 km/h NW"
       }
     },
@@ -144,25 +144,18 @@
       "name": "Tuesday",
       "date": "7",
       "am": {
-        "condition": "clear",
+        "condition": "light rain",
         "temperature": "10.0",
-        "feels_like": "4.0",
-        "snow": "0",
-        "rain": "0",
-        "wind": "5.0 km/h NW"
-      },
-      "pm": {
-        "condition": "rain showers",
-        "temperature": "11.0",
         "feels_like": "10.0",
         "snow": "0",
-        "rain": "1",
+        "rain": "3",
         "wind": "5.0 km/h N"
       },
+      "pm": null,
       "night": null
     }
   ],
-  "last_updated": "2026-04-02T12:45:26.723639",
+  "last_updated": "2026-04-02T15:51:14.082915",
   "resort": "Cervinia",
   "elevation": "bot",
   "snow_conditions": {

@@ -141,34 +141,6 @@
       }
     },
     {
-      "name": "Tuesday",
-      "date": "5",
-      "am": {
-        "condition": "cloud",
-        "temperature": "2.5",
-        "feels_like": "-0.5",
-        "snow": "0",
-        "rain": "0.0",
-        "wind": "10.0 km/h W"
-      },
-      "pm": {
-        "condition": "cloud",
-        "temperature": "7.3",
-        "feels_like": "5.3",
-        "snow": "0",
-        "rain": "0.0",
-        "wind": "10.0 km/h W"
-      },
-      "night": {
-        "condition": "cloud",
-        "temperature": "4.9",
-        "feels_like": "0.9",
-        "snow": "0",
-        "rain": "0.0",
-        "wind": "5.0 km/h W"
-      }
-    },
-    {
       "name": "Monday",
       "date": "11",
       "am": {
@@ -195,9 +167,37 @@
         "rain": "0.0",
         "wind": "5.0 km/h W"
       }
+    },
+    {
+      "name": "Tuesday",
+      "date": "12",
+      "am": {
+        "condition": "thunderstorm",
+        "temperature": "-2.6",
+        "feels_like": "-5.6",
+        "snow": "0.6",
+        "rain": "3.4",
+        "wind": "10.0 km/h W"
+      },
+      "pm": {
+        "condition": "thunderstorm",
+        "temperature": "6.4",
+        "feels_like": "4.4",
+        "snow": "0.4",
+        "rain": "4.5",
+        "wind": "10.0 km/h W"
+      },
+      "night": {
+        "condition": "thunderstorm",
+        "temperature": "1.9",
+        "feels_like": "-2.1",
+        "snow": "1.0",
+        "rain": "3.4",
+        "wind": "5.0 km/h W"
+      }
     }
   ],
-  "last_updated": "2026-05-05T19:14:33.528824",
+  "last_updated": "2026-05-05T22:03:33.436678",
   "resort": "St-Anton",
   "elevation": "mid",
   "snow_conditions": {
@@ -210,40 +210,28 @@
   "extended": {
     "extended_forecast": [
       {
-        "date": "2026-05-05",
-        "day_name": "Tuesday",
-        "temp_max": 7.3,
-        "temp_min": 2.5,
-        "precipitation": 0.0,
-        "rain": 0.0,
-        "snowfall": 0.0,
-        "weather_code": 3,
-        "freezing_level_min": 2590.0,
-        "freezing_level_max": 2900.0
-      },
-      {
         "date": "2026-05-06",
         "day_name": "Wednesday",
-        "temp_max": 6.3,
-        "temp_min": 0.6,
-        "precipitation": 2.4,
-        "rain": 0.6,
-        "snowfall": 1.19,
-        "weather_code": 73,
-        "freezing_level_min": 2260.0,
-        "freezing_level_max": 2740.0
+        "temp_max": 6.6,
+        "temp_min": 0.0,
+        "precipitation": 4.9,
+        "rain": 2.3,
+        "snowfall": 1.61,
+        "weather_code": 95,
+        "freezing_level_min": 2140.0,
+        "freezing_level_max": 2770.0
       },
       {
         "date": "2026-05-07",
         "day_name": "Thursday",
-        "temp_max": 4.7,
-        "temp_min": -0.5,
-        "precipitation": 6.92,
-        "rain": 0.15,
-        "snowfall": 1.82,
+        "temp_max": 4.8,
+        "temp_min": -0.4,
+        "precipitation": 2.9,
+        "rain": 0.0,
+        "snowfall": 1.33,
         "weather_code": 85,
-        "freezing_level_min": 2110.0,
-        "freezing_level_max": 2520.0
+        "freezing_level_min": 2120.0,
+        "freezing_level_max": 2560.0
       },
       {
         "date": "2026-05-08",
@@ -400,9 +388,21 @@
         "weather_code": 73,
         "freezing_level_min": 1710.0,
         "freezing_level_max": 1890.0
+      },
+      {
+        "date": "2026-05-21",
+        "day_name": "Thursday",
+        "temp_max": null,
+        "temp_min": null,
+        "precipitation": null,
+        "rain": null,
+        "snowfall": null,
+        "weather_code": null,
+        "freezing_level_min": 1970.0,
+        "freezing_level_max": 2530.0
       }
     ],
-    "last_updated": "2026-05-05T19:15:04.757356",
+    "last_updated": "2026-05-05T22:04:04.051312",
     "source": "OpenMeteo",
     "elevation": 2150.0,
     "elevation_used": 2150

@@ -3,2496 +3,765 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Snow Forecast — Ski Resort Weather Dashboard</title>
+    <title>Snow Forecast — Mountain Dashboard</title>
+    <meta name="description" content="A clean snow forecast dashboard for ski resorts, elevation comparison, daily snowfall, and mountain links.">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            color-scheme: dark;
+            --bg: #07111f;
+            --bg-soft: #0d1d31;
+            --panel: rgba(255,255,255,0.09);
+            --panel-strong: rgba(255,255,255,0.14);
+            --line: rgba(255,255,255,0.15);
+            --text: #f6fbff;
+            --muted: #9fb3c8;
+            --muted-2: #6f8499;
+            --accent: #7dd3fc;
+            --accent-2: #38bdf8;
+            --good: #8ef7bd;
+            --warn: #facc15;
+            --danger: #fb7185;
+            --card-shadow: 0 24px 80px rgba(0,0,0,0.35);
+            --radius-xl: 32px;
+            --radius-lg: 22px;
+            --radius-md: 16px;
         }
-        
+
+        * { box-sizing: border-box; }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #333;
+            margin: 0;
             min-height: 100vh;
-            padding: 20px;
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(56,189,248,0.28), transparent 32rem),
+                radial-gradient(circle at 80% 10%, rgba(129,140,248,0.22), transparent 30rem),
+                linear-gradient(135deg, #06101d 0%, #081827 45%, #10121e 100%);
+            color: var(--text);
         }
-        
-        .container {
-            max-width: 1400px;
+
+        a { color: inherit; }
+
+        button, a, select { -webkit-tap-highlight-color: transparent; }
+
+        .app-shell {
+            width: min(1480px, calc(100% - 32px));
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 24px 0 56px;
         }
-        
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-            border-bottom: 4px solid #4a90e2;
-            padding-bottom: 25px;
-        }
-        
-        .header h1 {
-            color: #2c3e50;
-            font-size: 3em;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        
-        .header .subtitle {
-            color: #7f8c8d;
-            font-size: 1.3em;
-        }
-        
-        .elevation-links {
-            text-align: center;
-            margin: 20px 0;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 10px;
-        }
-        
-        .elevation-links a {
-            display: inline-block;
-            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 20px;
-            text-decoration: none;
-            margin: 5px;
-            font-size: 0.9em;
-            transition: all 0.3s;
-        }
-        
-        .elevation-links a:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-        
-        .elevation-links a.active {
-            background: linear-gradient(135deg, #4a90e2, #357abd);
-        }
-        
-        .webcam-button {
-            display: inline-block;
-            background: linear-gradient(135deg, #e74c3c, #c0392b);
-            color: white;
-            padding: 12px 25px;
-            border-radius: 25px;
-            text-decoration: none;
-            margin: 10px;
-            font-size: 1em;
-            transition: all 0.3s;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-        }
-        
-        .webcam-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
-        }
-        
-        .resort-links {
-            text-align: center;
-            margin: 15px 0;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 10px;
-        }
-        
-        .resort-links a {
-            display: inline-block;
-            background: linear-gradient(135deg, #16a085, #138d75);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 15px;
-            text-decoration: none;
-            margin: 5px;
-            font-size: 0.85em;
-            transition: all 0.3s;
-        }
-        
-        .resort-links a:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(22, 160, 133, 0.3);
-        }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-        }
-        
-        .modal.active {
+
+        .topbar {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
+            gap: 16px;
+            margin-bottom: 18px;
         }
-        
-        .modal-content {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            max-width: 90%;
-            max-height: 90vh;
-            position: relative;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-        }
-        
-        .modal-close {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            font-size: 2em;
-            color: #333;
-            cursor: pointer;
-            background: none;
-            border: none;
-            z-index: 1001;
-        }
-        
-        .modal-close:hover {
-            color: #e74c3c;
-        }
-        
-        .modal-content iframe {
-            width: 100%;
-            height: 70vh;
-            border: none;
-            border-radius: 10px;
-        }
-        
-        .current-conditions {
-            background: linear-gradient(135deg, #e8f4fd, #ffffff);
-            border: 3px solid #4a90e2;
-            border-radius: 15px;
-            padding: 20px;
-            margin: 20px 0;
-            text-align: center;
-        }
-        
-        .current-conditions h2 {
-            color: #2c3e50;
-            margin-bottom: 15px;
-            font-size: 1.3em;
-        }
-        
-        .conditions-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        
-        .condition-card {
-            background: #ffffff;
-            border-radius: 8px;
-            padding: 10px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            border-left: 3px solid #4a90e2;
-        }
-        
-        .condition-label {
-            display: block;
-            font-size: 0.7em;
-            color: #7f8c8d;
-            margin-bottom: 4px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-        
-        .condition-value {
-            font-size: 1.1em;
-            font-weight: 700;
-            color: #2c3e50;
-        }
-        
-        .condition-value.highlight {
-            color: #3498db;
-        }
-        
-        .no-conditions {
-            color: #7f8c8d;
-            font-style: italic;
-            margin-bottom: 15px;
-        }
-        
-        .section-subtitle {
-            font-size: 0.95em;
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 10px;
-        }
-        
-        .summary-metrics {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            flex-wrap: wrap;
-            margin-bottom: 15px;
-        }
-        
-        .summary-metric {
-            background: #f0f8ff;
-            border-radius: 8px;
-            padding: 8px 14px;
-            display: flex;
+
+        .brand {
+            display: inline-flex;
             align-items: center;
-            gap: 8px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-            font-weight: 600;
-            font-size: 0.85em;
-            color: #2c3e50;
+            gap: 12px;
+            font-weight: 800;
+            letter-spacing: -0.04em;
+            font-size: clamp(1.1rem, 1.8vw, 1.45rem);
         }
-        
-        .summary-metric span {
-            color: #3498db;
-            font-size: 1.1em;
-            font-weight: 700;
-        }
-        
-        .elevation-boxes {
+
+        .brand-mark {
+            width: 44px;
+            height: 44px;
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
+            place-items: center;
+            border-radius: 16px;
+            background: linear-gradient(135deg, rgba(125,211,252,0.95), rgba(14,165,233,0.55));
+            box-shadow: 0 16px 40px rgba(14,165,233,0.25);
         }
-        
-        .elevation-box {
-            padding: 15px;
-            border-radius: 8px;
-            background: white;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: 2px solid transparent;
+
+        .updated-pill {
+            color: var(--muted);
+            border: 1px solid var(--line);
+            background: rgba(255,255,255,0.07);
+            border-radius: 999px;
+            padding: 10px 14px;
+            font-size: 0.88rem;
+            white-space: nowrap;
         }
-        
-        .elevation-box:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
-        
-        .elevation-box.active {
-            border: 3px solid #4a90e2;
-            background: #f0f8ff;
-        }
-        
-        .elevation-box h3 {
-            color: #2c3e50;
-            margin-bottom: 6px;
-            font-size: 0.95em;
-        }
-        
-        .elevation-box .height {
-            font-size: 0.75em;
-            color: #7f8c8d;
-            margin-bottom: 8px;
-        }
-        
-        .elevation-box .snow-amount {
-            font-size: 1.8em;
-            font-weight: bold;
-            color: #3498db;
-        }
-        
-        .elevation-box .snow-label {
-            font-size: 0.7em;
-            color: #95a5a6;
-            margin-top: 4px;
-        }
-        
-        .loading {
-            text-align: center;
-            font-size: 1.2em;
-            color: #7f8c8d;
-            padding: 40px;
-        }
-        
-        .error {
-            background: #fee;
-            border: 2px solid #e74c3c;
-            color: #c0392b;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            margin: 20px 0;
-        }
-        
-        .snowfall-chart-container {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            margin: 30px 0;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        
-        .snowfall-chart-container:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-        }
-        
-        .snowfall-chart-container h3 {
-            color: #2c3e50;
-            margin-bottom: 20px;
-            text-align: center;
-            font-size: 1.5em;
-        }
-        
-        /* Chart Modal Styles */
-        .chart-modal {
-            display: none;
-            position: fixed;
-            z-index: 9999;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
-            overflow: auto;
-            animation: fadeIn 0.3s;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        .chart-modal-content {
+
+        .hero {
             position: relative;
-            background-color: white;
-            margin: 2% auto;
-            padding: 30px;
-            width: 95%;
-            max-width: 1400px;
-            border-radius: 20px;
-            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.3);
-            animation: slideIn 0.3s;
-        }
-        
-        @keyframes slideIn {
-            from {
-                transform: translateY(-50px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-        
-        .chart-modal-close {
-            position: absolute;
-            top: 15px;
-            right: 25px;
-            color: #2c3e50;
-            font-size: 40px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: color 0.3s;
-            z-index: 10000;
-        }
-        
-        .chart-modal-close:hover,
-        .chart-modal-close:focus {
-            color: #e74c3c;
-        }
-        
-        .modal-chart-wrapper {
-            position: relative;
-            height: 600px;
-            margin-top: 20px;
-        }
-        
-        @media (max-width: 768px) {
-            .modal-chart-wrapper {
-                height: 500px;
-            }
-            .chart-modal-content {
-                width: 98%;
-                margin: 5% auto;
-                padding: 20px;
-            }
-        }
-        
-        .chart-wrapper {
-            position: relative;
-            height: 400px;
-            margin-top: 20px;
-        }
-        
-        .forecast-grid {
-            display: none; /* Hidden by default, shown when elevation box is clicked */
-            grid-template-columns: repeat(7, 1fr);
-            gap: 15px;
-            margin-bottom: 30px;
-            margin-top: 20px;
-        }
-        
-        .forecast-grid.visible {
-            display: grid;
-        }
-        
-        .day-card {
-            background: white;
-            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s, box-shadow 0.3s;
+            border-radius: var(--radius-xl);
+            padding: clamp(24px, 4vw, 46px);
+            background:
+                linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.06)),
+                radial-gradient(circle at 78% 18%, rgba(125,211,252,0.22), transparent 18rem);
+            border: 1px solid rgba(255,255,255,0.18);
+            box-shadow: var(--card-shadow);
+            isolation: isolate;
         }
-        
-        .day-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-        }
-        
-        .day-header {
-            background: linear-gradient(135deg, #4a90e2, #357abd);
-            color: white;
-            padding: 12px;
-            text-align: center;
-        }
-        
-        .day-header h2 {
-            font-size: 1.1em;
-            margin-bottom: 3px;
-        }
-        
-        .day-header .date {
-            font-size: 0.9em;
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            inset: auto -10% -1px -10%;
+            height: 38%;
+            background:
+                linear-gradient(135deg, transparent 18%, rgba(255,255,255,0.16) 18% 31%, transparent 31% 47%, rgba(255,255,255,0.12) 47% 62%, transparent 62%),
+                linear-gradient(to top, rgba(255,255,255,0.10), transparent);
+            clip-path: polygon(0 80%, 12% 48%, 24% 70%, 40% 32%, 56% 72%, 72% 38%, 88% 64%, 100% 24%, 100% 100%, 0 100%);
+            z-index: -1;
             opacity: 0.9;
         }
-        
-        .day-summary {
-            background: #f0f8ff;
-            padding: 8px;
-            border-bottom: 2px solid #4a90e2;
-            text-align: center;
-        }
-        
-        .snow-total {
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #3498db;
-            margin-bottom: 3px;
-        }
-        
-        .snow-total.heavy {
-            color: #2980b9;
-            font-size: 1.4em;
-        }
-        
-        .day-info {
-            font-size: 0.7em;
-            color: #7f8c8d;
-            margin-top: 3px;
-        }
-        
-        .period-section {
-            padding: 8px 6px;
-            border-bottom: 1px solid #ecf0f1;
-        }
-        
-        .period-section:last-child {
-            border-bottom: none;
-        }
-        
-        .period-section.am {
-            background: linear-gradient(to right, #fff9e6, #ffffff);
-        }
-        
-        .period-section.pm {
-            background: linear-gradient(to right, #fff4e6, #ffffff);
-        }
-        
-        .period-section.night {
-            background: linear-gradient(to right, #e8f4fd, #ffffff);
-        }
-        
-        .period-header {
-            font-size: 0.75em;
-            font-weight: bold;
-            color: #2c3e50;
-            margin-bottom: 5px;
-            text-align: center;
-            padding: 3px;
-            background: rgba(74, 144, 226, 0.1);
-            border-radius: 5px;
-        }
-        
-        .weather-condition {
-            text-align: center;
-            margin-bottom: 5px;
-            padding: 3px;
-        }
-        
-        .weather-icon {
-            font-size: 1.1em;
-            margin-bottom: 2px;
-        }
-        
-        .condition-text {
-            font-size: 0.7em;
-            color: #34495e;
-            font-weight: 500;
-            line-height: 1.1;
-        }
-        
-        .weather-details {
+
+        .hero-layout {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4px;
+            grid-template-columns: minmax(0, 1.25fr) minmax(300px, 0.75fr);
+            gap: 28px;
+            align-items: stretch;
         }
-        
-        .detail-item {
-            background: #f8f9fa;
-            padding: 4px 3px;
-            border-radius: 4px;
-            text-align: center;
-        }
-        
-        .detail-label {
-            font-size: 0.6em;
-            color: #7f8c8d;
-            margin-bottom: 1px;
-            text-transform: uppercase;
-            font-weight: 600;
-        }
-        
-        .detail-value {
-            font-size: 0.75em;
-            font-weight: bold;
-            color: #2c3e50;
-        }
-        
-        .detail-value.snow {
-            color: #3498db;
-        }
-        
-        .detail-value.temp {
-            color: #e74c3c;
-        }
-        
-        .detail-value.rain {
-            color: #9b59b6;
-        }
-        
-        .detail-value.wind {
-            color: #16a085;
-        }
-        
-        .last-updated {
-            text-align: center;
-            color: #7f8c8d;
-            font-size: 0.95em;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 2px solid #ecf0f1;
-        }
-        
-        .data-sources {
-            background: linear-gradient(135deg, #f8f9fa, #ffffff);
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 20px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-        
-        .data-sources h3 {
-            color: #2c3e50;
-            font-size: 1.1em;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-        
-        .source-indicators {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .source-indicator {
-            display: flex;
+
+        .eyebrow {
+            display: inline-flex;
             align-items: center;
-            background: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-            font-size: 0.95em;
+            gap: 8px;
+            color: #dff6ff;
+            background: rgba(125,211,252,0.14);
+            border: 1px solid rgba(125,211,252,0.28);
+            border-radius: 999px;
+            padding: 8px 12px;
+            font-size: 0.86rem;
+            font-weight: 700;
+            margin-bottom: 18px;
         }
-        
-        .source-status {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            margin-right: 10px;
-            box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+
+        h1 {
+            font-size: clamp(2.4rem, 6vw, 5.8rem);
+            line-height: 0.92;
+            letter-spacing: -0.08em;
+            margin: 0 0 18px;
         }
-        
-        .source-status.active {
-            background: #27ae60;
-            box-shadow: 0 0 12px rgba(39, 174, 96, 0.6);
+
+        .hero-copy {
+            max-width: 720px;
+            color: #c9d8e8;
+            font-size: clamp(1rem, 1.6vw, 1.25rem);
+            line-height: 1.55;
+            margin: 0 0 24px;
         }
-        
-        .source-status.inactive {
-            background: #e74c3c;
-            box-shadow: 0 0 12px rgba(231, 76, 60, 0.6);
+
+        .hero-actions, .resort-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
         }
-        
-        .source-name {
-            font-weight: 600;
-            color: #2c3e50;
-        }
-        
-        /* Source Comparison Styles */
-        .source-compare {
-            background: rgba(74, 144, 226, 0.1);
-            border-left: 3px solid #4a90e2;
-            padding: 6px 10px;
-            border-radius: 4px;
-            margin-top: 8px;
-        }
-        
-        .source-compare div {
-            margin: 2px 0;
-            font-size: 0.85em;
-            color: #2c3e50;
-        }
-        
-        .detail-value small {
-            display: block;
-            margin-top: 4px;
-            font-weight: normal;
-        }
-        
-        /* Version Link Styles */
-        .version-link {
-            text-align: center;
-            margin-top: 20px;
-            padding: 15px;
-            background: linear-gradient(135deg, #f8f9fa, #ffffff);
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-        
-        .version-link a {
-            display: inline-block;
-            background: linear-gradient(135deg, #4a90e2, #357abd);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 20px;
+
+        .btn {
+            border: 0;
+            cursor: pointer;
             text-decoration: none;
-            font-size: 0.95em;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-        
-        .version-link a:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.4);
-        }
-        
-        /* Extended Forecast Styles */
-        .extended-forecast {
-            margin-top: 40px;
-            padding: 25px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 44px;
+            padding: 12px 16px;
+            border-radius: 999px;
+            font-weight: 800;
+            color: #06111f;
+            background: linear-gradient(135deg, #e0f7ff, var(--accent));
+            box-shadow: 0 14px 35px rgba(56,189,248,0.22);
+            transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
         }
 
-        .extended-forecast h3 {
-            color: white;
-            margin: 0 0 10px 0;
-            font-size: 1.4em;
-        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 18px 42px rgba(56,189,248,0.32); }
+        .btn.secondary { color: var(--text); background: rgba(255,255,255,0.09); border: 1px solid var(--line); box-shadow: none; }
+        .btn.secondary:hover { background: rgba(255,255,255,0.14); }
 
-        .extended-note {
-            color: rgba(255,255,255,0.8);
-            font-size: 0.9em;
-            margin-bottom: 20px;
-        }
-
-        .extended-grid {
+        .hero-card {
+            border-radius: 28px;
+            padding: 20px;
+            background: rgba(5,16,30,0.58);
+            border: 1px solid rgba(255,255,255,0.14);
+            backdrop-filter: blur(18px);
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 15px;
+            gap: 14px;
+            align-content: start;
         }
 
-        .extended-day {
-            background: rgba(255,255,255,0.95);
+        .hero-stat {
+            padding: 18px;
+            border-radius: 22px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+        }
+
+        .hero-stat .label { color: var(--muted); font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 800; }
+        .hero-stat .value { margin-top: 6px; font-size: clamp(1.8rem, 4vw, 3.6rem); font-weight: 900; letter-spacing: -0.06em; }
+        .hero-stat .note { color: var(--muted); font-size: 0.92rem; margin-top: 4px; }
+
+        .resort-scroller {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            margin: 18px 0;
+            padding: 10px;
+            border: 1px solid rgba(255,255,255,0.13);
+            background: rgba(7,17,31,0.76);
+            backdrop-filter: blur(18px);
+            border-radius: 999px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .resort-scroller::-webkit-scrollbar { display: none; }
+        .resort-nav { display: flex; gap: 8px; min-width: max-content; }
+
+        .resort-tab {
+            border: 1px solid transparent;
+            color: #c7d8e8;
+            background: transparent;
+            padding: 11px 14px;
+            border-radius: 999px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: background 180ms ease, color 180ms ease, border 180ms ease;
+        }
+
+        .resort-tab:hover { background: rgba(255,255,255,0.08); color: #fff; }
+        .resort-tab.active { background: rgba(125,211,252,0.18); color: #f8fdff; border-color: rgba(125,211,252,0.32); }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 360px minmax(0, 1fr);
+            gap: 18px;
+            margin-top: 18px;
+            align-items: start;
+        }
+
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 18px 55px rgba(0,0,0,0.18);
+            overflow: hidden;
+        }
+
+        .panel-pad { padding: 18px; }
+
+        .panel-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .panel-title h2, .panel-title h3 {
+            margin: 0;
+            font-size: 1rem;
+            letter-spacing: -0.03em;
+        }
+
+        .caption { color: var(--muted); font-size: 0.86rem; }
+
+        .elevation-stack { display: grid; gap: 10px; }
+
+        .elevation-card {
+            width: 100%;
+            text-align: left;
+            border: 1px solid rgba(255,255,255,0.12);
+            color: var(--text);
+            background: rgba(255,255,255,0.07);
+            border-radius: 18px;
             padding: 15px;
-            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 180ms ease, background 180ms ease, border 180ms ease;
+        }
+
+        .elevation-card:hover { transform: translateY(-2px); background: rgba(255,255,255,0.1); }
+        .elevation-card.active { background: linear-gradient(135deg, rgba(125,211,252,0.2), rgba(255,255,255,0.08)); border-color: rgba(125,211,252,0.42); }
+
+        .elevation-topline { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .elevation-name { font-size: 1.06rem; font-weight: 900; }
+        .elevation-height { color: var(--muted); font-size: 0.86rem; }
+        .elevation-snow { margin-top: 12px; font-size: 2rem; font-weight: 950; letter-spacing: -0.06em; }
+        .elevation-sub { color: var(--muted); font-size: 0.85rem; margin-top: 2px; }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .metric {
+            padding: 16px;
+            border-radius: 18px;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.11);
+            min-height: 112px;
+        }
+
+        .metric-label { color: var(--muted); font-weight: 800; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; }
+        .metric-value { font-size: clamp(1.6rem, 3vw, 2.5rem); font-weight: 950; letter-spacing: -0.06em; margin-top: 10px; }
+        .metric-note { color: var(--muted); font-size: 0.85rem; margin-top: 5px; }
+
+        .chart-wrap {
+            height: 340px;
+            padding: 6px 8px 0;
+        }
+
+        .forecast-grid {
+            display: grid;
+            grid-template-columns: repeat(7, minmax(160px, 1fr));
+            gap: 12px;
+            margin-top: 18px;
+        }
+
+        .day-card {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.12);
+            background: rgba(255,255,255,0.075);
+        }
+
+        .day-head {
+            padding: 14px;
+            background: rgba(255,255,255,0.08);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .day-name { font-weight: 950; letter-spacing: -0.03em; }
+        .day-date { color: var(--muted); font-size: 0.82rem; margin-top: 3px; }
+        .day-total { font-size: 1.8rem; font-weight: 950; letter-spacing: -0.06em; margin-top: 12px; color: #dff8ff; }
+        .day-total.zero { color: var(--muted); }
+
+        .periods { display: grid; gap: 8px; padding: 12px; }
+
+        .period {
+            border-radius: 14px;
+            background: rgba(4,14,26,0.42);
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 10px;
+        }
+
+        .period-top { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 7px; }
+        .period-name { font-weight: 900; font-size: 0.8rem; color: #e8f7ff; }
+        .period-condition { color: var(--muted); font-size: 0.78rem; text-align: right; }
+        .period-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+        .period-stat { color: var(--muted); font-size: 0.76rem; }
+        .period-stat strong { display: block; color: var(--text); font-size: 0.86rem; margin-bottom: 2px; }
+
+        .source-list { display: grid; gap: 10px; }
+        .source-chip { display: flex; align-items: center; gap: 10px; color: #dbeafe; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 12px; font-weight: 800; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--good); box-shadow: 0 0 20px rgba(142,247,189,0.65); flex: 0 0 auto; }
+
+        .loading, .error {
             text-align: center;
-            transition: all 0.3s ease;
+            padding: 38px;
+            border-radius: var(--radius-lg);
+            background: rgba(255,255,255,0.08);
+            border: 1px solid var(--line);
         }
 
-        .extended-day:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        .error { color: #fecdd3; border-color: rgba(251,113,133,0.34); background: rgba(251,113,133,0.12); }
+
+        .modal {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+            background: rgba(3,8,16,0.84);
+            backdrop-filter: blur(14px);
+            z-index: 80;
         }
 
-        .extended-day-name {
-            font-weight: 600;
-            color: #667eea;
-            margin-bottom: 5px;
+        .modal.active { display: flex; }
+        .modal-card { width: min(1100px, 100%); height: min(760px, 90vh); background: #081625; border: 1px solid rgba(255,255,255,0.16); border-radius: 24px; overflow: hidden; box-shadow: var(--card-shadow); }
+        .modal-head { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,0.12); }
+        .modal-title { font-weight: 900; }
+        .modal-close { border: 0; background: rgba(255,255,255,0.1); color: var(--text); border-radius: 999px; width: 38px; height: 38px; cursor: pointer; font-size: 1.3rem; }
+        .modal iframe { width: 100%; height: calc(100% - 67px); border: 0; background: white; }
+
+        @media (max-width: 1180px) {
+            .hero-layout, .main-grid { grid-template-columns: 1fr; }
+            .forecast-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+            .metrics-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         }
 
-        .extended-date {
-            font-size: 0.85em;
-            color: #666;
-            margin-bottom: 10px;
-        }
-
-        .extended-weather {
-            font-size: 2em;
-            margin: 10px 0;
-        }
-        
-        .extended-condition {
-            font-size: 0.85em;
-            color: #555;
-            margin-bottom: 8px;
-            font-style: italic;
-        }
-        
-        .extended-description {
-            font-size: 0.8em;
-            color: #666;
-            margin: 5px 0;
-            line-height: 1.3;
-        }
-
-        .extended-temp {
-            font-weight: 500;
-            color: #333;
-            margin: 5px 0;
-        }
-
-        .extended-snow {
-            color: #2196F3;
-            font-weight: 600;
-            margin-top: 5px;
-            font-size: 0.9em;
-        }
-        
-        .extended-snow-range {
-            font-size: 0.75em;
-            opacity: 0.65;
-            margin-top: 2px;
-        }
-
-        .extended-snow-line {
-            color: #9C27B0;
-            font-size: 0.75em;
-            margin-top: 3px;
-            font-style: italic;
-        }
-        
-        @media (max-width: 1400px) {
-            .forecast-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-        }
-        
-        @media (max-width: 1024px) {
-            .forecast-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .forecast-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .header h1 {
-                font-size: 2em;
-            }
-            
-            .extended-grid {
-                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-                gap: 10px;
-            }
-            
-            .extended-day {
-                padding: 10px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .forecast-grid {
-                grid-template-columns: 1fr;
-            }
+        @media (max-width: 760px) {
+            .app-shell { width: min(100% - 20px, 1480px); padding-top: 12px; }
+            .topbar { align-items: flex-start; flex-direction: column; }
+            .updated-pill { white-space: normal; }
+            .hero { padding: 22px; border-radius: 24px; }
+            .forecast-grid { grid-template-columns: 1fr; }
+            .metrics-grid { grid-template-columns: 1fr; }
+            .chart-wrap { height: 300px; }
+            .resort-scroller { border-radius: 20px; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>❄️ <span id="resort-name">Val Thorens</span> Snow Forecast</h1>
-            <div class="subtitle">7-Day Weather Forecast</div>
+    <main class="app-shell">
+        <div class="topbar">
+            <div class="brand"><span class="brand-mark">❄️</span><span>Snow Forecast</span></div>
+            <div class="updated-pill" id="updated-pill">Loading fresh mountain data…</div>
         </div>
-        
-        <div class="elevation-links">
-            <div style="text-align: center;">
-                <strong style="color: #2c3e50; margin-right: 10px;">Resort:</strong>
-                <a href="#" class="active" data-resort="Val-Thorens" onclick="switchResort('Val-Thorens'); return false;">⛷️ Val Thorens</a>
-                <a href="#" data-resort="Cervinia" onclick="switchResort('Cervinia'); return false;">🏔️ Cervinia</a>
-                <a href="#" data-resort="Via-Lattea" onclick="switchResort('Via-Lattea'); return false;">⛷️ Via Lattea</a>
-                <a href="#" data-resort="Monterosa-Ski" onclick="switchResort('Monterosa-Ski'); return false;">🏔️ Monterosa Ski</a>
-                <a href="#" data-resort="Gudauri" onclick="switchResort('Gudauri'); return false;">🇬🇪 Gudauri</a>
-                <a href="#" data-resort="St-Anton" onclick="switchResort('St-Anton'); return false;">🇦🇹 St. Anton</a>
-                <a href="#" data-resort="Alpe-d-Huez" onclick="switchResort('Alpe-d-Huez'); return false;">🇫🇷 Alpe d'Huez</a>
-                <a href="#" data-resort="La-Plagne" onclick="switchResort('La-Plagne'); return false;">🇫🇷 La Plagne</a>
-                <a href="#" data-resort="Mount-Hermon" onclick="switchResort('Mount-Hermon'); return false;">🇮🇱 Mount Hermon</a>
-            </div>
-        </div>
-        
-        <div style="text-align: center; margin: 15px 0;">
-            <button class="webcam-button" onclick="openWebcam()">📹 View Live Webcam</button>
-        </div>
-        
-        <div class="resort-links" id="resort-links">
-            <!-- Resort-specific links will be loaded here -->
-        </div>
-        
-        <div id="current-conditions" class="current-conditions">
-            <!-- Current snow conditions will be loaded here -->
-        </div>
-        
-        <div id="loading" class="loading" style="display: none;">
-            ⏳ Loading forecast data...
-        </div>
-        
-        <div id="error" class="error" style="display: none;">
-            ❌ Error loading forecast data. Please try again.
-        </div>
-        
-        <!-- Snowfall Chart -->
-        <div id="snowfall-chart-container" class="snowfall-chart-container" style="display: none;" onclick="openChartModal()">
-            <h3>❄️ 16-Day Snowfall Forecast <span style="font-size: 0.7em; opacity: 0.7;">(Click to zoom)</span></h3>
-            <div class="chart-wrapper">
-                <canvas id="snowfallChart"></canvas>
-            </div>
-        </div>
-        
-        <!-- Chart Modal -->
-        <div id="chartModal" class="chart-modal">
-            <div class="chart-modal-content">
-                <span class="chart-modal-close" onclick="closeChartModal()">&times;</span>
-                <h3 style="text-align: center; color: #2c3e50; margin-bottom: 20px;">❄️ 16-Day Snowfall Forecast</h3>
-                <div class="modal-chart-wrapper">
-                    <canvas id="modalSnowfallChart"></canvas>
+
+        <section class="hero">
+            <div class="hero-layout">
+                <div>
+                    <div class="eyebrow">Mountain command center</div>
+                    <h1><span id="resort-name">Val Thorens</span></h1>
+                    <p class="hero-copy" id="hero-copy">A cleaner, faster forecast view focused on the decisions that matter: where to ride, which elevation looks best, and when the snow arrives.</p>
+                    <div class="hero-actions" id="hero-actions"></div>
                 </div>
+                <aside class="hero-card" aria-label="Forecast summary">
+                    <div class="hero-stat">
+                        <div class="label">7 day snowfall</div>
+                        <div class="value" id="hero-snow">—</div>
+                        <div class="note" id="hero-snow-note">Across selected elevation</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="label">Best window</div>
+                        <div class="value" id="hero-best">—</div>
+                        <div class="note" id="hero-best-note">Most snow in forecast</div>
+                    </div>
+                </aside>
             </div>
-        </div>
-        
-        <div id="forecast-content">
-            <!-- Forecast will be loaded here -->
-        </div>
-        
-        <div id="last-updated" class="last-updated"></div>
-        
-        <!-- Webcam Modal -->
-        <div id="webcam-modal" class="modal">
-            <div class="modal-content">
-                <button class="modal-close" onclick="closeWebcam()">&times;</button>
-                <iframe id="webcam-frame" src=""></iframe>
+        </section>
+
+        <nav class="resort-scroller" aria-label="Select resort">
+            <div class="resort-nav" id="resort-nav"></div>
+        </nav>
+
+        <div id="loading" class="loading">Loading forecast data…</div>
+        <div id="error" class="error" style="display:none;">Could not load forecast data. Please refresh and try again.</div>
+
+        <section class="main-grid" id="dashboard" style="display:none;">
+            <aside class="panel">
+                <div class="panel-pad">
+                    <div class="panel-title">
+                        <h2>Elevation</h2>
+                        <span class="caption">Tap to compare</span>
+                    </div>
+                    <div class="elevation-stack" id="elevation-stack"></div>
+                </div>
+                <div class="panel-pad" style="border-top:1px solid var(--line);">
+                    <div class="panel-title">
+                        <h3>Data blend</h3>
+                    </div>
+                    <div class="source-list">
+                        <div class="source-chip"><span class="dot"></span>Snow-Forecast.com primary</div>
+                        <div class="source-chip"><span class="dot"></span>OpenWeatherMap</div>
+                        <div class="source-chip"><span class="dot"></span>Open-Meteo multi-model</div>
+                        <div class="source-chip"><span class="dot"></span>Ensemble + MET Norway</div>
+                    </div>
+                </div>
+            </aside>
+
+            <section>
+                <div class="metrics-grid" id="metrics-grid"></div>
+
+                <div class="panel">
+                    <div class="panel-pad">
+                        <div class="panel-title">
+                            <div>
+                                <h2>Snowfall trend</h2>
+                                <div class="caption">Daily total by elevation</div>
+                            </div>
+                            <span class="caption" id="selected-elevation-label">Bottom</span>
+                        </div>
+                        <div class="chart-wrap"><canvas id="snowChart"></canvas></div>
+                    </div>
+                </div>
+
+                <div class="forecast-grid" id="forecast-grid"></div>
+            </section>
+        </section>
+    </main>
+
+    <div class="modal" id="webcam-modal" role="dialog" aria-modal="true" aria-label="Live webcam">
+        <div class="modal-card">
+            <div class="modal-head">
+                <div class="modal-title" id="webcam-title">Live webcam</div>
+                <button class="modal-close" onclick="closeWebcam()" aria-label="Close">×</button>
             </div>
-        </div>
-        
-        <div class="data-sources">
-            <h3>📊 Data Sources</h3>
-            <div class="source-indicators" id="source-indicators">
-                <div class="source-indicator">
-                    <span class="source-status active" id="source-snow-forecast"></span>
-                    <span class="source-name">Snow-Forecast.com (Primary)</span>
-                </div>
-                <div class="source-indicator">
-                    <span class="source-status active" id="source-openweather"></span>
-                    <span class="source-name">OpenWeatherMap</span>
-                </div>
-                <div class="source-indicator">
-                    <span class="source-status active" id="source-openmeteo"></span>
-                    <span class="source-name">Open-Meteo Multi-Model (AROME · ICON · ECMWF · GFS)</span>
-                </div>
-                <div class="source-indicator">
-                    <span class="source-status active" id="source-ensemble"></span>
-                    <span class="source-name">Open-Meteo Ensemble (~30 members)</span>
-                </div>
-                <div class="source-indicator">
-                    <span class="source-status active" id="source-metnorway"></span>
-                    <span class="source-name">MET Norway</span>
-                </div>
-            </div>
-            <div style="margin-top: 10px; font-size: 0.85em; opacity: 0.7;">
-                <em>💡 Extended snowfall is the median of up to 7 independent models — the range shows model disagreement</em>
-            </div>
-        </div>
-        
-        <div class="version-link">
-            <a href="/forecast_new.html">✨ Try the New Dark Design →</a>
+            <iframe id="webcam-frame" src=""></iframe>
         </div>
     </div>
 
     <script>
-        // Chart date label fix - Updated: 2025-12-01
-        let currentElevation = 'bot';
-        let currentResort = 'Val-Thorens';
-        let allElevationData = {}; // Store data for all elevations
-        let forecastVisible = false; // Track if forecast table is visible
-        let allForecastsData = null; // Cache for all forecasts from GitHub
-        
-        // Always use GitHub as the data source (public URL)
-        const GITHUB_DATA_URL = 'https://raw.githubusercontent.com/avielj/snowforcast/refs/heads/main/data/all-forecasts.json';
-        
-        console.log('Fetching data from GitHub:', GITHUB_DATA_URL);
-        
-        // Helper function to get correct weekday from date string or day number
-        function getWeekdayFromDate(dateStr) {
-            // If dateStr is just a number (like "1", "2"), assume it's a day in current month
-            if (dateStr && /^\d+$/.test(dateStr)) {
-                const today = new Date();
-                const year = today.getFullYear();
-                const month = today.getMonth(); // 0-indexed
-                const date = new Date(year, month, parseInt(dateStr));
-                return date.toLocaleString('en-US', { weekday: 'long' });
-            }
-            // Otherwise, parse as full date
-            const date = new Date(dateStr);
-            return date.toLocaleString('en-US', { weekday: 'long' });
-        }
-        
-        // Helper function to get short date format
-        function getShortDate(dateStr) {
-            // If dateStr is just a number (like "1", "2"), assume it's a day in current month
-            if (dateStr && /^\d+$/.test(dateStr)) {
-                const today = new Date();
-                const year = today.getFullYear();
-                const month = today.getMonth(); // 0-indexed
-                const date = new Date(year, month, parseInt(dateStr));
-                return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
-            }
-            // Otherwise, parse as full date
-            const date = new Date(dateStr);
-            return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
-        }
-        
+        const DATA_URL = 'https://raw.githubusercontent.com/avielj/snowforcast/refs/heads/main/data/all-forecasts.json';
+        const ELEVATIONS = ['bot', 'mid', 'top'];
+        const PERIODS = ['am', 'pm', 'night'];
+
         const resortInfo = {
-            'Val-Thorens': {
-                name: 'Val Thorens',
-                webcam: 'https://www.valthorens.com/en/webcams/',
-                pisteMap: 'https://www.valthorens.com/en/ski/plan/',
-                website: 'https://www.valthorens.com/en/',
-                liftStatus: 'https://www.valthorens.com/en/infos-neige/',
-                elevations: {
-                    'bot': { name: 'Bottom', height: '2300m', emoji: '🏔️' },
-                    'mid': { name: 'Mid', height: '2800m', emoji: '⛰️' },
-                    'top': { name: 'Top', height: '3230m', emoji: '🗻' }
-                }
-            },
-            'Cervinia': {
-                name: 'Cervinia',
-                webcam: 'https://www.cervinia.it/en/webcam',
-                pisteMap: 'https://www.cervinia.it/en',
-                website: 'https://www.cervinia.it/en',
-                liftStatus: 'https://www.cervinia.it/en/impianti',
-                elevations: {
-                    'bot': { name: 'Bottom', height: '2050m', emoji: '🏔️' },
-                    'mid': { name: 'Mid', height: '2700m', emoji: '⛰️' },
-                    'top': { name: 'Top', height: '3480m', emoji: '🗻' }
-                }
-            },
-            'Via-Lattea': {
-                name: 'Via Lattea (Sestriere)',
-                webcam: 'https://www.vialattea.it/en/webcam/',
-                pisteMap: 'https://www.vialattea.it/en/piste-map/',
-                website: 'https://www.vialattea.it/en/',
-                liftStatus: 'https://www.vialattea.it/en/lifts/',
-                elevations: {
-                    'bot': { name: 'Bottom', height: '1350m', emoji: '🏔️' },
-                    'mid': { name: 'Mid', height: '2100m', emoji: '⛰️' },
-                    'top': { name: 'Top', height: '2823m', emoji: '🗻' }
-                }
-            },
-            'Monterosa-Ski': {
-                name: 'Monterosa Ski (Champoluc)',
-                webcam: 'https://www.monterosa-ski.com/en/webcam/',
-                pisteMap: 'https://www.monterosa-ski.com/en/ski-area/piste-map/',
-                website: 'https://www.monterosa-ski.com/en/',
-                liftStatus: 'https://www.monterosa-ski.com/en/lifts-slopes/',
-                elevations: {
-                    'bot': { name: 'Bottom', height: '1212m', emoji: '🏔️' },
-                    'mid': { name: 'Mid', height: '2200m', emoji: '⛰️' },
-                    'top': { name: 'Top', height: '3275m', emoji: '🗻' }
-                }
-            },
-            'Gudauri': {
-                name: 'Gudauri',
-                webcam: 'https://www.gudauri.info/webcams/',
-                pisteMap: 'https://www.gudauri.info/ski-area/',
-                website: 'https://www.gudauri.info/',
-                liftStatus: 'https://www.gudauri.info/lifts/',
-                elevations: {
-                    'bot': { name: 'Bottom', height: '1990m', emoji: '🏔️' },
-                    'mid': { name: 'Mid', height: '2350m', emoji: '⛰️' },
-                    'top': { name: 'Top', height: '3279m', emoji: '🗻' }
-                }
-            },
-            'St-Anton': {
-                name: 'St. Anton am Arlberg',
-                webcam: 'https://www.stantonamarlberg.com/en/service-contact/webcams',
-                pisteMap: 'https://www.stantonamarlberg.com/en/ski-area/piste-map',
-                website: 'https://www.stantonamarlberg.com/en',
-                liftStatus: 'https://www.stantonamarlberg.com/en/ski-area/lifts-pistes',
-                elevations: {
-                    'bot': { name: 'Bottom', height: '1304m', emoji: '🏔️' },
-                    'mid': { name: 'Mid', height: '2150m', emoji: '⛰️' },
-                    'top': { name: 'Top', height: '2811m', emoji: '🗻' }
-                }
-            },
-            'Alpe-d-Huez': {
-                name: 'Alpe d\'Huez',
-                webcam: 'https://www.alpedhuez.com/en/webcams/',
-                pisteMap: 'https://www.alpedhuez.com/en/ski-area/ski-map/',
-                website: 'https://www.alpedhuez.com/en/',
-                liftStatus: 'https://www.alpedhuez.com/en/ski-area/lifts-slopes/',
-                elevations: {
-                    'bot': { name: 'Bottom', height: '1250m', emoji: '🏔️' },
-                    'mid': { name: 'Mid', height: '2350m', emoji: '⛰️' },
-                    'top': { name: 'Top', height: '3330m', emoji: '🗻' }
-                }
-            },
-            'La-Plagne': {
-                name: 'La Plagne',
-                webcam: 'https://en.la-plagne.com/discover/ski-area/webcams',
-                pisteMap: 'https://en.la-plagne.com/discover/ski-area',
-                website: 'https://en.la-plagne.com/',
-                liftStatus: 'https://en.la-plagne.com/discover/ski-area',
-                elevations: {
-                    'bot': { name: 'Bottom', height: '1250m', emoji: '🏔️' },
-                    'mid': { name: 'Mid', height: '2250m', emoji: '⛰️' },
-                    'top': { name: 'Top', height: '3250m', emoji: '🗻' }
-                }
-            },
-            'Mount-Hermon': {
-                name: 'Mount Hermon',
-                webcam: 'https://www.skihermon.co.il/en/webcams',
-                pisteMap: 'https://www.skihermon.co.il/en/ski-map',
-                website: 'https://www.skihermon.co.il/en/',
-                liftStatus: 'https://www.skihermon.co.il/en/lifts',
-                elevations: {
-                    'bot': { name: 'Bottom', height: '1600m', emoji: '🏔️' },
-                    'mid': { name: 'Mid', height: '2000m', emoji: '⛰️' },
-                    'top': { name: 'Top', height: '2236m', emoji: '🗻' }
-                }
-            }
+            'Val-Thorens': { flag: '🇫🇷', name: 'Val Thorens', webcam: 'https://www.valthorens.com/en/webcams/', pisteMap: 'https://www.valthorens.com/en/ski/plan/', website: 'https://www.valthorens.com/en/', liftStatus: 'https://www.valthorens.com/en/infos-neige/', elevations: { bot: { name: 'Bottom', height: '2300m' }, mid: { name: 'Mid', height: '2800m' }, top: { name: 'Top', height: '3230m' } } },
+            'Cervinia': { flag: '🇮🇹', name: 'Cervinia', webcam: 'https://www.cervinia.it/en/webcam', pisteMap: 'https://www.cervinia.it/en', website: 'https://www.cervinia.it/en', liftStatus: 'https://www.cervinia.it/en/impianti', elevations: { bot: { name: 'Bottom', height: '2050m' }, mid: { name: 'Mid', height: '2700m' }, top: { name: 'Top', height: '3480m' } } },
+            'Via-Lattea': { flag: '🇮🇹', name: 'Via Lattea', webcam: 'https://www.vialattea.it/en/webcam/', pisteMap: 'https://www.vialattea.it/en/piste-map/', website: 'https://www.vialattea.it/en/', liftStatus: 'https://www.vialattea.it/en/lifts/', elevations: { bot: { name: 'Bottom', height: '1350m' }, mid: { name: 'Mid', height: '2100m' }, top: { name: 'Top', height: '2823m' } } },
+            'Monterosa-Ski': { flag: '🇮🇹', name: 'Monterosa Ski', webcam: 'https://www.monterosa-ski.com/en/webcam/', pisteMap: 'https://www.monterosa-ski.com/en/ski-area/piste-map/', website: 'https://www.monterosa-ski.com/en/', liftStatus: 'https://www.monterosa-ski.com/en/lifts-slopes/', elevations: { bot: { name: 'Bottom', height: '1212m' }, mid: { name: 'Mid', height: '2200m' }, top: { name: 'Top', height: '3275m' } } },
+            'Gudauri': { flag: '🇬🇪', name: 'Gudauri', webcam: 'https://www.gudauri.info/webcams/', pisteMap: 'https://www.gudauri.info/ski-area/', website: 'https://www.gudauri.info/', liftStatus: 'https://www.gudauri.info/lifts/', elevations: { bot: { name: 'Bottom', height: '1990m' }, mid: { name: 'Mid', height: '2350m' }, top: { name: 'Top', height: '3279m' } } },
+            'St-Anton': { flag: '🇦🇹', name: 'St. Anton', webcam: 'https://www.stantonamarlberg.com/en/service-contact/webcams', pisteMap: 'https://www.stantonamarlberg.com/en/ski-area/piste-map', website: 'https://www.stantonamarlberg.com/en', liftStatus: 'https://www.stantonamarlberg.com/en/ski-area/lifts-pistes', elevations: { bot: { name: 'Bottom', height: '1304m' }, mid: { name: 'Mid', height: '2150m' }, top: { name: 'Top', height: '2811m' } } },
+            'Alpe-d-Huez': { flag: '🇫🇷', name: 'Alpe d’Huez', webcam: 'https://www.alpedhuez.com/en/webcams/', pisteMap: 'https://www.alpedhuez.com/en/ski-area/ski-map/', website: 'https://www.alpedhuez.com/en/', liftStatus: 'https://www.alpedhuez.com/en/ski-area/lifts-slopes/', elevations: { bot: { name: 'Bottom', height: '1250m' }, mid: { name: 'Mid', height: '2350m' }, top: { name: 'Top', height: '3330m' } } },
+            'La-Plagne': { flag: '🇫🇷', name: 'La Plagne', webcam: 'https://en.la-plagne.com/discover/ski-area/webcams', pisteMap: 'https://en.la-plagne.com/discover/ski-area', website: 'https://en.la-plagne.com/', liftStatus: 'https://en.la-plagne.com/discover/ski-area', elevations: { bot: { name: 'Bottom', height: '1250m' }, mid: { name: 'Mid', height: '2250m' }, top: { name: 'Top', height: '3250m' } } },
+            'Mount-Hermon': { flag: '🇮🇱', name: 'Mount Hermon', webcam: 'https://www.skihermon.co.il/en/webcams', pisteMap: 'https://www.skihermon.co.il/en/ski-map', website: 'https://www.skihermon.co.il/en/', liftStatus: 'https://www.skihermon.co.il/en/lifts', elevations: { bot: { name: 'Bottom', height: '1600m' }, mid: { name: 'Mid', height: '2000m' }, top: { name: 'Top', height: '2236m' } } }
         };
-        
-        // Weather condition emoji mapping
-        const weatherEmoji = {
-            'clear': '☀️',
-            'part cloud': '⛅',
-            'cloud': '☁️',
-            'light snow': '🌨️',
-            'mod snow': '❄️',
-            'heavy snow': '🌨️❄️',
-            'snow showers': '🌨️',
-            'rain': '🌧️',
-            'rain showers': '🌦️',
-            'light rain': '🌦️',
-            'sleet': '🌨️💧'
-        };
-        
+
+        let forecasts = {};
+        let currentResort = 'Val-Thorens';
+        let currentElevation = 'bot';
+        let snowChart;
+
+        function numberFrom(value) {
+            if (value === null || value === undefined) return 0;
+            const match = String(value).replace(',', '.').match(/-?\d+(\.\d+)?/);
+            return match ? Number(match[0]) : 0;
+        }
+
+        function daysFor(resort = currentResort, elevation = currentElevation) {
+            return forecasts?.[resort]?.[elevation]?.days || [];
+        }
+
+        function daySnow(day) {
+            return PERIODS.reduce((total, period) => total + numberFrom(day?.[period]?.snow), 0);
+        }
+
+        function elevationSnow(resort, elevation) {
+            return daysFor(resort, elevation).reduce((total, day) => total + daySnow(day), 0);
+        }
+
+        function formatCm(value) {
+            const safe = Number.isFinite(value) ? value : 0;
+            return `${Math.round(safe * 10) / 10} cm`;
+        }
+
+        function formatTemp(value) {
+            if (value === undefined || value === null || value === '') return '—';
+            return `${Math.round(numberFrom(value))}°`;
+        }
+
+        function conditionIcon(condition = '') {
+            const text = condition.toLowerCase();
+            if (text.includes('heavy snow')) return '🌨️';
+            if (text.includes('snow')) return '❄️';
+            if (text.includes('rain')) return '🌧️';
+            if (text.includes('clear')) return '☀️';
+            if (text.includes('cloud')) return '☁️';
+            return '⛅';
+        }
+
+        function hashToResort() {
+            const hash = decodeURIComponent(window.location.hash.replace('#', '')).toLowerCase();
+            return Object.keys(resortInfo).find(key => key.toLowerCase() === hash) || 'Val-Thorens';
+        }
+
+        function renderResortNav() {
+            const nav = document.getElementById('resort-nav');
+            nav.innerHTML = Object.entries(resortInfo).map(([key, resort]) => `
+                <button class="resort-tab ${key === currentResort ? 'active' : ''}" onclick="switchResort('${key}')">
+                    ${resort.flag} ${resort.name}
+                </button>
+            `).join('');
+        }
+
+        function renderHeroActions() {
+            const resort = resortInfo[currentResort];
+            document.getElementById('hero-actions').innerHTML = `
+                <button class="btn" onclick="openWebcam()">📹 Live webcam</button>
+                <a class="btn secondary" href="${resort.pisteMap}" target="_blank" rel="noopener">🗺️ Piste map</a>
+                <a class="btn secondary" href="${resort.liftStatus}" target="_blank" rel="noopener">🚡 Lift status</a>
+                <a class="btn secondary" href="${resort.website}" target="_blank" rel="noopener">↗ Resort site</a>
+            `;
+        }
+
+        function renderElevationCards() {
+            const stack = document.getElementById('elevation-stack');
+            stack.innerHTML = ELEVATIONS.map(elevation => {
+                const meta = resortInfo[currentResort].elevations[elevation];
+                const total = elevationSnow(currentResort, elevation);
+                return `
+                    <button class="elevation-card ${elevation === currentElevation ? 'active' : ''}" onclick="switchElevation('${elevation}')">
+                        <div class="elevation-topline">
+                            <div>
+                                <div class="elevation-name">${meta.name}</div>
+                                <div class="elevation-height">${meta.height}</div>
+                            </div>
+                            <div>${elevation === 'top' ? '🗻' : elevation === 'mid' ? '⛰️' : '🏔️'}</div>
+                        </div>
+                        <div class="elevation-snow">${formatCm(total)}</div>
+                        <div class="elevation-sub">forecast total</div>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function collectStats(days) {
+            const allPeriods = days.flatMap(day => PERIODS.map(period => day?.[period]).filter(Boolean));
+            const snow = days.reduce((total, day) => total + daySnow(day), 0);
+            const temps = allPeriods.map(period => numberFrom(period.temperature)).filter(Number.isFinite);
+            const winds = allPeriods.map(period => numberFrom(period.wind)).filter(Number.isFinite);
+            const best = days.reduce((winner, day) => daySnow(day) > daySnow(winner) ? day : winner, days[0] || {});
+            const first = allPeriods[0] || {};
+            return {
+                snow,
+                minTemp: temps.length ? Math.min(...temps) : null,
+                maxTemp: temps.length ? Math.max(...temps) : null,
+                maxWind: winds.length ? Math.max(...winds) : null,
+                bestDay: best,
+                firstCondition: first.condition || '—'
+            };
+        }
+
+        function renderMetrics() {
+            const days = daysFor();
+            const stats = collectStats(days);
+            const bestSnow = daySnow(stats.bestDay || {});
+            document.getElementById('hero-snow').textContent = formatCm(stats.snow);
+            document.getElementById('hero-best').textContent = stats.bestDay?.name || '—';
+            document.getElementById('hero-best-note').textContent = bestSnow ? `${formatCm(bestSnow)} expected` : 'No major snow window';
+            document.getElementById('selected-elevation-label').textContent = resortInfo[currentResort].elevations[currentElevation].name;
+            document.getElementById('metrics-grid').innerHTML = `
+                <div class="metric"><div class="metric-label">Condition now</div><div class="metric-value">${conditionIcon(stats.firstCondition)} ${stats.firstCondition}</div><div class="metric-note">first forecast period</div></div>
+                <div class="metric"><div class="metric-label">Temperature range</div><div class="metric-value">${stats.minTemp === null ? '—' : `${Math.round(stats.minTemp)}°/${Math.round(stats.maxTemp)}°`}</div><div class="metric-note">min / max across 7 days</div></div>
+                <div class="metric"><div class="metric-label">Peak wind</div><div class="metric-value">${stats.maxWind === null ? '—' : `${Math.round(stats.maxWind)} km/h`}</div><div class="metric-note">strongest forecast period</div></div>
+                <div class="metric"><div class="metric-label">Powder signal</div><div class="metric-value">${stats.snow >= 20 ? 'Strong' : stats.snow >= 8 ? 'Watch' : 'Low'}</div><div class="metric-note">based on selected elevation</div></div>
+            `;
+        }
+
+        function renderChart() {
+            const labels = daysFor(currentResort, 'bot').map(day => `${day.name?.slice(0, 3) || ''} ${day.date || ''}`.trim());
+            const datasets = ELEVATIONS.map(elevation => ({
+                label: resortInfo[currentResort].elevations[elevation].name,
+                data: daysFor(currentResort, elevation).map(daySnow),
+                tension: 0.42,
+                borderWidth: elevation === currentElevation ? 4 : 2,
+                pointRadius: elevation === currentElevation ? 5 : 3,
+                fill: false
+            }));
+
+            const ctx = document.getElementById('snowChart');
+            if (snowChart) snowChart.destroy();
+            snowChart = new Chart(ctx, {
+                type: 'line',
+                data: { labels, datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#dbeafe', boxWidth: 14, usePointStyle: true } },
+                        tooltip: { callbacks: { label: item => `${item.dataset.label}: ${formatCm(item.raw)}` } }
+                    },
+                    scales: {
+                        x: { ticks: { color: '#9fb3c8' }, grid: { color: 'rgba(255,255,255,0.06)' } },
+                        y: { ticks: { color: '#9fb3c8', callback: value => `${value} cm` }, grid: { color: 'rgba(255,255,255,0.08)' }, beginAtZero: true }
+                    }
+                }
+            });
+        }
+
+        function renderForecastCards() {
+            document.getElementById('forecast-grid').innerHTML = daysFor().map(day => {
+                const total = daySnow(day);
+                return `
+                    <article class="day-card">
+                        <div class="day-head">
+                            <div class="day-name">${day.name || 'Day'}</div>
+                            <div class="day-date">${day.date ? `Day ${day.date}` : ''}</div>
+                            <div class="day-total ${total ? '' : 'zero'}">${formatCm(total)}</div>
+                        </div>
+                        <div class="periods">
+                            ${PERIODS.map(period => renderPeriod(period, day?.[period] || {})).join('')}
+                        </div>
+                    </article>
+                `;
+            }).join('');
+        }
+
+        function renderPeriod(name, data) {
+            return `
+                <div class="period">
+                    <div class="period-top">
+                        <div class="period-name">${name.toUpperCase()}</div>
+                        <div class="period-condition">${conditionIcon(data.condition)} ${data.condition || '—'}</div>
+                    </div>
+                    <div class="period-stats">
+                        <div class="period-stat"><strong>${formatTemp(data.temperature)}</strong>Temp</div>
+                        <div class="period-stat"><strong>${formatCm(numberFrom(data.snow))}</strong>Snow</div>
+                        <div class="period-stat"><strong>${data.wind || '—'}</strong>Wind</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderDashboard() {
+            const resort = resortInfo[currentResort];
+            document.title = `${resort.name} Snow Forecast`;
+            document.getElementById('resort-name').textContent = resort.name;
+            document.getElementById('hero-copy').textContent = `${resort.name} forecast across bottom, mid, and top elevations. Built for quick resort comparison on mobile and desktop.`;
+            renderResortNav();
+            renderHeroActions();
+            renderElevationCards();
+            renderMetrics();
+            renderChart();
+            renderForecastCards();
+            document.getElementById('updated-pill').textContent = `Updated view · ${new Date().toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}`;
+        }
+
         function switchResort(resort) {
             currentResort = resort;
-            
-            // Update URL hash (e.g., #gudauri)
+            currentElevation = forecasts?.[resort]?.[currentElevation] ? currentElevation : 'bot';
             window.location.hash = resort.toLowerCase();
-            
-            // Update active link
-            document.querySelectorAll('.elevation-links a[data-resort]').forEach(link => {
-                link.classList.remove('active');
-                if (link.getAttribute('data-resort') === resort) {
-                    link.classList.add('active');
-                }
-            });
-            
-            // Update header
-            document.getElementById('resort-name').textContent = resortInfo[resort].name;
-            document.title = `${resortInfo[resort].name} Snow Forecast`;
-            
-            // Update resort links
-            updateResortLinks();
-            
-            // Reload forecast for new resort (will use cached data)
-            loadForecast();
+            renderDashboard();
         }
-        
-        // Load resort from URL hash on page load
-        function loadResortFromHash() {
-            const hash = window.location.hash.substring(1); // Remove the '#'
-            if (hash) {
-                // Convert hash to proper resort key format (e.g., 'valthorens' -> 'Val-Thorens')
-                const resortKey = Object.keys(resortInfo).find(key => 
-                    key.toLowerCase().replace('-', '') === hash.toLowerCase().replace('-', '')
-                );
-                if (resortKey) {
-                    switchResort(resortKey);
-                    return;
-                }
-            }
-            // Default to Val-Thorens if no valid hash
-            loadForecast();
+
+        function switchElevation(elevation) {
+            currentElevation = elevation;
+            renderElevationCards();
+            renderMetrics();
+            renderChart();
+            renderForecastCards();
         }
-        
-        // Listen for hash changes (back/forward navigation)
-        window.addEventListener('hashchange', function() {
-            loadResortFromHash();
-        });
-        
-        function updateResortLinks() {
-            const info = resortInfo[currentResort];
-            const linksContainer = document.getElementById('resort-links');
-            
-            linksContainer.innerHTML = `
-                <a href="${info.pisteMap}" target="_blank">🗺️ Piste Map</a>
-                <a href="${info.website}" target="_blank">🏔️ Resort Website</a>
-                <a href="${info.liftStatus}" target="_blank">🚡 Lift Status</a>
-            `;
-        }
-        
-        let snowfallChart = null;
-        
-        function createSnowfallChart() {
-            const resortData = allForecastsData[currentResort];
-            if (!resortData) return;
-            
-            const elevationData = resortData[currentElevation];
-            if (!elevationData || !elevationData.extended || !elevationData.extended.extended_forecast) {
-                return;
-            }
-            
-            // Combine 7-day forecast and extended forecast
-            const sevenDayData = elevationData.days || [];
-            const extendedData = elevationData.extended.extended_forecast || [];
-            
-            // Get the last date from 7-day forecast to filter extended forecast
-            let lastSevenDayDate = null;
-            if (sevenDayData.length > 0) {
-                const lastDay = sevenDayData[sevenDayData.length - 1];
-                if (lastDay.date) {
-                    const today = new Date();
-                    const currentYear = today.getFullYear();
-                    const currentMonth = today.getMonth();
-                    const dayNum = parseInt(lastDay.date);
-                    lastSevenDayDate = new Date(currentYear, currentMonth, dayNum);
-                    lastSevenDayDate.setHours(23, 59, 59, 999); // End of day
-                }
-            }
-            
-            // Prepare data for chart
-            const labels = [];
-            const snowfallData = [];
-            const snowfallRanges = [];
-            const temperatureData = [];
-            const weatherEmojis = [];
-            const colors = [];
-            
-            // Add 7-day forecast data (BLUE)
-            sevenDayData.forEach(day => {
-                let totalSnow = 0;
-                let maxTemp = null;
-                let conditions = [];
-                
-                ['am', 'pm', 'night'].forEach(period => {
-                    if (day[period]) {
-                        totalSnow += parseFloat(day[period].snow) || 0;
-                        const temp = parseFloat(day[period].temperature);
-                        if (!isNaN(temp) && (maxTemp === null || temp > maxTemp)) {
-                            maxTemp = temp;
-                        }
-                        if (day[period].condition) {
-                            conditions.push(day[period].condition.toLowerCase());
-                        }
-                    }
-                });
-                
-                // Determine emoji from conditions
-                const conditionsStr = conditions.join(' ');
-                let emoji = '☁️'; // default cloudy
-                if (conditionsStr.includes('clear') || conditionsStr.includes('sunny')) {
-                    emoji = '☀️';
-                } else if (conditionsStr.includes('snow')) {
-                    emoji = '❄️';
-                } else if (conditionsStr.includes('rain')) {
-                    emoji = '🌧️';
-                } else if (conditionsStr.includes('fog')) {
-                    emoji = '🌫️';
-                } else if (conditionsStr.includes('part') || conditionsStr.includes('partly')) {
-                    emoji = '⛅';
-                }
-                
-                // Use computed weekday and date from actual date
-                const weekday = day.date ? getWeekdayFromDate(day.date) : day.name;
-                const shortDate = day.date ? getShortDate(day.date) : '';
-                const label = shortDate ? `${weekday} ${shortDate}` : weekday;
-                
-                labels.push(label);
-                snowfallData.push(totalSnow);
-                snowfallRanges.push(null);
-                temperatureData.push(maxTemp);
-                weatherEmojis.push(emoji);
-                colors.push('rgba(74, 144, 226, 0.8)'); // Blue for 7-day forecast
-            });
-            
-            // Add extended forecast data (PURPLE) - only days AFTER the 7-day forecast
-            extendedData.forEach(day => {
-                // Filter: only include days after the last 7-day forecast date
-                if (lastSevenDayDate) {
-                    const extDate = new Date(day.date);
-                    if (extDate <= lastSevenDayDate) {
-                        return; // Skip this day - it's already in the 7-day forecast
-                    }
-                }
-                
-                let snowfall = day.snowfall || 0;
-                let rain = day.rain || 0;
-                
-                // Convert rain to snow if temp is below 0°C
-                const avgTemp = (day.temp_min + day.temp_max) / 2;
-                if (avgTemp < 0 && rain > 0) {
-                    snowfall += rain / 10;
-                }
-                
-                const weekday = getWeekdayFromDate(day.date);
-                const shortDate = getShortDate(day.date);
-                const label = `${weekday} ${shortDate}`;
-                const emoji = getWeatherCodeEmoji(day.weather_code);
-                
-                labels.push(label);
-                snowfallData.push(snowfall);
-                snowfallRanges.push(day.snowfall_range || null);
-                temperatureData.push(day.temp_max);
-                weatherEmojis.push(emoji);
-                colors.push('rgba(147, 112, 219, 0.7)'); // Purple for extended forecast
-            });
-            
-            // Show chart container
-            document.getElementById('snowfall-chart-container').style.display = 'block';
-            
-            // Destroy existing chart if it exists
-            if (snowfallChart) {
-                snowfallChart.destroy();
-            }
-            
-            // Create new chart
-            const ctx = document.getElementById('snowfallChart').getContext('2d');
-            snowfallChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Snowfall (cm)',
-                        data: snowfallData,
-                        backgroundColor: colors,
-                        borderColor: colors.map(c => c.replace('0.8', '1').replace('0.7', '1')),
-                        borderWidth: 2,
-                        yAxisID: 'y',
-                        order: 2
-                    }, {
-                        label: 'Max Temp (°C)',
-                        data: temperatureData,
-                        type: 'line',
-                        borderColor: 'rgba(255, 99, 132, 1)',
-                        backgroundColor: 'rgba(255, 99, 132, 0.1)',
-                        borderWidth: 3,
-                        pointRadius: 6,
-                        pointHoverRadius: 8,
-                        pointBackgroundColor: 'rgba(255, 99, 132, 1)',
-                        pointBorderColor: '#fff',
-                        pointBorderWidth: 2,
-                        yAxisID: 'y1',
-                        order: 1,
-                        tension: 0.3
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'top',
-                            labels: {
-                                font: {
-                                    size: 12,
-                                    weight: 'bold'
-                                },
-                                usePointStyle: true,
-                                padding: 15
-                            }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    if (context.dataset.label === 'Snowfall (cm)') {
-                                        const range = snowfallRanges[context.dataIndex];
-                                        let label = '❄️ ' + context.parsed.y.toFixed(1) + ' cm';
-                                        if (range && range[1] - range[0] >= 1) {
-                                            label += ' (models: ' + range[0] + '–' + range[1] + ' cm)';
-                                        }
-                                        return label;
-                                    } else {
-                                        return '🌡️ ' + context.parsed.y.toFixed(1) + '°C';
-                                    }
-                                },
-                                title: function(context) {
-                                    const index = context[0].dataIndex;
-                                    return weatherEmojis[index] + ' ' + context[0].label;
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            position: 'left',
-                            title: {
-                                display: true,
-                                text: 'Snowfall (cm)',
-                                font: {
-                                    size: 14,
-                                    weight: 'bold'
-                                },
-                                color: 'rgba(74, 144, 226, 1)'
-                            },
-                            ticks: {
-                                callback: function(value) {
-                                    return value + ' cm';
-                                },
-                                color: 'rgba(74, 144, 226, 1)'
-                            },
-                            grid: {
-                                color: 'rgba(0, 0, 0, 0.05)'
-                            }
-                        },
-                        y1: {
-                            position: 'right',
-                            title: {
-                                display: true,
-                                text: 'Max Temperature (°C)',
-                                font: {
-                                    size: 14,
-                                    weight: 'bold'
-                                },
-                                color: 'rgba(255, 99, 132, 1)'
-                            },
-                            ticks: {
-                                callback: function(value) {
-                                    return value + '°C';
-                                },
-                                color: 'rgba(255, 99, 132, 1)'
-                            },
-                            grid: {
-                                drawOnChartArea: false
-                            }
-                        },
-                        x: {
-                            ticks: {
-                                callback: function(value, index) {
-                                    return weatherEmojis[index] + '\n' + this.getLabelForValue(value);
-                                },
-                                font: {
-                                    size: 11
-                                },
-                                maxRotation: 0,
-                                minRotation: 0
-                            },
-                            title: {
-                                display: true,
-                                text: 'Date',
-                                font: {
-                                    size: 14,
-                                    weight: 'bold'
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        }
-        
-        let modalChart = null;
-        
-        function openChartModal() {
-            const modal = document.getElementById('chartModal');
-            modal.style.display = 'block';
-            
-            // Prevent event from bubbling
-            event.stopPropagation();
-            
-            // Create the chart in the modal
-            setTimeout(() => {
-                createModalChart();
-            }, 100);
-            
-            // Close modal on ESC key
-            document.addEventListener('keydown', handleEscKey);
-        }
-        
-        function closeChartModal() {
-            const modal = document.getElementById('chartModal');
-            modal.style.display = 'none';
-            
-            // Destroy modal chart
-            if (modalChart) {
-                modalChart.destroy();
-                modalChart = null;
-            }
-            
-            // Remove ESC key listener
-            document.removeEventListener('keydown', handleEscKey);
-        }
-        
-        function handleEscKey(event) {
-            if (event.key === 'Escape') {
-                closeChartModal();
-            }
-        }
-        
-        // Close modal when clicking outside the chart
-        window.onclick = function(event) {
-            const modal = document.getElementById('chartModal');
-            if (event.target === modal) {
-                closeChartModal();
-            }
-        }
-        
-        function createModalChart() {
-            const resortData = allForecastsData[currentResort];
-            if (!resortData) return;
-            
-            const elevationData = resortData[currentElevation];
-            if (!elevationData || !elevationData.extended || !elevationData.extended.extended_forecast) {
-                return;
-            }
-            
-            // Combine 7-day forecast and extended forecast
-            const sevenDayData = elevationData.days || [];
-            const extendedData = elevationData.extended.extended_forecast || [];
-            
-            // Get the last date from 7-day forecast to filter extended forecast
-            let lastSevenDayDate = null;
-            if (sevenDayData.length > 0) {
-                const lastDay = sevenDayData[sevenDayData.length - 1];
-                if (lastDay.date) {
-                    const today = new Date();
-                    const currentYear = today.getFullYear();
-                    const currentMonth = today.getMonth();
-                    const dayNum = parseInt(lastDay.date);
-                    lastSevenDayDate = new Date(currentYear, currentMonth, dayNum);
-                    lastSevenDayDate.setHours(23, 59, 59, 999); // End of day
-                }
-            }
-            
-            // Prepare data for chart
-            const labels = [];
-            const snowfallData = [];
-            const snowfallRanges = [];
-            const temperatureData = [];
-            const weatherEmojis = [];
-            const colors = [];
-            
-            // Add 7-day forecast data (BLUE)
-            sevenDayData.forEach(day => {
-                let totalSnow = 0;
-                let maxTemp = null;
-                let conditions = [];
-                
-                ['am', 'pm', 'night'].forEach(period => {
-                    if (day[period]) {
-                        totalSnow += parseFloat(day[period].snow) || 0;
-                        const temp = parseFloat(day[period].temperature);
-                        if (!isNaN(temp) && (maxTemp === null || temp > maxTemp)) {
-                            maxTemp = temp;
-                        }
-                        if (day[period].condition) {
-                            conditions.push(day[period].condition.toLowerCase());
-                        }
-                    }
-                });
-                
-                // Determine emoji from conditions
-                const conditionsStr = conditions.join(' ');
-                let emoji = '☁️'; // default cloudy
-                if (conditionsStr.includes('clear') || conditionsStr.includes('sunny')) {
-                    emoji = '☀️';
-                } else if (conditionsStr.includes('snow')) {
-                    emoji = '❄️';
-                } else if (conditionsStr.includes('rain')) {
-                    emoji = '🌧️';
-                } else if (conditionsStr.includes('fog')) {
-                    emoji = '🌫️';
-                } else if (conditionsStr.includes('part') || conditionsStr.includes('partly')) {
-                    emoji = '⛅';
-                }
-                
-                // Use computed weekday and date from actual date
-                const weekday = day.date ? getWeekdayFromDate(day.date) : day.name;
-                const shortDate = day.date ? getShortDate(day.date) : '';
-                const label = shortDate ? `${weekday} ${shortDate}` : weekday;
-                
-                labels.push(label);
-                snowfallData.push(totalSnow);
-                snowfallRanges.push(null);
-                temperatureData.push(maxTemp);
-                weatherEmojis.push(emoji);
-                colors.push('rgba(74, 144, 226, 0.8)'); // Blue for 7-day forecast
-            });
-            
-            // Add extended forecast data (PURPLE) - only days AFTER the 7-day forecast
-            extendedData.forEach(day => {
-                // Filter: only include days after the last 7-day forecast date
-                if (lastSevenDayDate) {
-                    const extDate = new Date(day.date);
-                    if (extDate <= lastSevenDayDate) {
-                        return; // Skip this day - it's already in the 7-day forecast
-                    }
-                }
-                
-                let snowfall = day.snowfall || 0;
-                let rain = day.rain || 0;
-                
-                // Convert rain to snow if temp is below 0°C
-                const avgTemp = (day.temp_min + day.temp_max) / 2;
-                if (avgTemp < 0 && rain > 0) {
-                    snowfall += rain / 10;
-                }
-                
-                const weekday = getWeekdayFromDate(day.date);
-                const shortDate = getShortDate(day.date);
-                const label = `${weekday} ${shortDate}`;
-                const emoji = getWeatherCodeEmoji(day.weather_code);
-                
-                labels.push(label);
-                snowfallData.push(snowfall);
-                snowfallRanges.push(day.snowfall_range || null);
-                temperatureData.push(day.temp_max);
-                weatherEmojis.push(emoji);
-                colors.push('rgba(147, 112, 219, 0.7)'); // Purple for extended forecast
-            });
-            
-            // Destroy existing modal chart if it exists
-            if (modalChart) {
-                modalChart.destroy();
-            }
-            
-            // Create new chart in modal
-            const ctx = document.getElementById('modalSnowfallChart').getContext('2d');
-            modalChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Snowfall (cm)',
-                        data: snowfallData,
-                        backgroundColor: colors,
-                        borderColor: colors.map(c => c.replace('0.8', '1').replace('0.7', '1')),
-                        borderWidth: 2,
-                        yAxisID: 'y',
-                    }, {
-                        label: 'Max Temperature (°C)',
-                        data: temperatureData,
-                        type: 'line',
-                        borderColor: 'rgba(255, 99, 132, 1)',
-                        backgroundColor: 'rgba(255, 99, 132, 0.1)',
-                        borderWidth: 3,
-                        pointRadius: 5,
-                        pointBackgroundColor: 'rgba(255, 99, 132, 1)',
-                        yAxisID: 'y1',
-                        tension: 0.4,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    interaction: {
-                        mode: 'index',
-                        intersect: false,
-                    },
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'top',
-                            labels: {
-                                font: {
-                                    size: 16,
-                                    weight: 'bold'
-                                },
-                                usePointStyle: true,
-                                padding: 20
-                            }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    if (context.dataset.label === 'Snowfall (cm)') {
-                                        const range = snowfallRanges[context.dataIndex];
-                                        let label = '❄️ ' + context.parsed.y.toFixed(1) + ' cm';
-                                        if (range && range[1] - range[0] >= 1) {
-                                            label += ' (models: ' + range[0] + '–' + range[1] + ' cm)';
-                                        }
-                                        return label;
-                                    } else {
-                                        return '🌡️ ' + context.parsed.y.toFixed(1) + '°C';
-                                    }
-                                },
-                                title: function(context) {
-                                    const index = context[0].dataIndex;
-                                    return weatherEmojis[index] + ' ' + context[0].label;
-                                }
-                            },
-                            titleFont: {
-                                size: 16
-                            },
-                            bodyFont: {
-                                size: 14
-                            },
-                            padding: 12
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            position: 'left',
-                            title: {
-                                display: true,
-                                text: 'Snowfall (cm)',
-                                font: {
-                                    size: 18,
-                                    weight: 'bold'
-                                },
-                                color: 'rgba(74, 144, 226, 1)'
-                            },
-                            ticks: {
-                                callback: function(value) {
-                                    return value + ' cm';
-                                },
-                                color: 'rgba(74, 144, 226, 1)',
-                                font: {
-                                    size: 14
-                                }
-                            },
-                            grid: {
-                                color: 'rgba(0, 0, 0, 0.05)'
-                            }
-                        },
-                        y1: {
-                            position: 'right',
-                            title: {
-                                display: true,
-                                text: 'Max Temperature (°C)',
-                                font: {
-                                    size: 18,
-                                    weight: 'bold'
-                                },
-                                color: 'rgba(255, 99, 132, 1)'
-                            },
-                            ticks: {
-                                callback: function(value) {
-                                    return value + '°C';
-                                },
-                                color: 'rgba(255, 99, 132, 1)',
-                                font: {
-                                    size: 14
-                                }
-                            },
-                            grid: {
-                                drawOnChartArea: false
-                            }
-                        },
-                        x: {
-                            ticks: {
-                                callback: function(value, index) {
-                                    return weatherEmojis[index] + '\n' + this.getLabelForValue(value);
-                                },
-                                font: {
-                                    size: 13
-                                },
-                                maxRotation: 0,
-                                minRotation: 0
-                            },
-                            title: {
-                                display: true,
-                                text: 'Date',
-                                font: {
-                                    size: 18,
-                                    weight: 'bold'
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        }
-        
+
         function openWebcam() {
-            const info = resortInfo[currentResort];
-            const modal = document.getElementById('webcam-modal');
-            const frame = document.getElementById('webcam-frame');
-            
-            frame.src = info.webcam;
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
+            const resort = resortInfo[currentResort];
+            document.getElementById('webcam-title').textContent = `${resort.name} live webcam`;
+            document.getElementById('webcam-frame').src = resort.webcam;
+            document.getElementById('webcam-modal').classList.add('active');
         }
-        
+
         function closeWebcam() {
-            const modal = document.getElementById('webcam-modal');
-            const frame = document.getElementById('webcam-frame');
-            
-            modal.classList.remove('active');
-            frame.src = '';
-            document.body.style.overflow = 'auto';
+            document.getElementById('webcam-modal').classList.remove('active');
+            document.getElementById('webcam-frame').src = '';
         }
-        
-        // Close modal on escape key or click outside
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeWebcam();
-            }
+
+        document.getElementById('webcam-modal').addEventListener('click', event => {
+            if (event.target.id === 'webcam-modal') closeWebcam();
         });
-        
-        document.getElementById('webcam-modal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeWebcam();
-            }
-        });
-        
-        function getWeatherEmoji(condition) {
-            const lower = condition.toLowerCase();
-            for (const [key, emoji] of Object.entries(weatherEmoji)) {
-                if (lower.includes(key)) {
-                    return emoji;
-                }
-            }
-            return '🌤️';
-        }
-        
-        async function loadForecast() {
-            const loading = document.getElementById('loading');
-            const error = document.getElementById('error');
-            const content = document.getElementById('forecast-content');
-            
-            loading.style.display = 'block';
-            error.style.display = 'none';
-            content.innerHTML = '';
-            
+
+        async function init() {
             try {
-                // Fetch all forecasts from GitHub (only once, then cache)
-                if (!allForecastsData) {
-                    const response = await fetch(GITHUB_DATA_URL);
-                    
-                    if (!response.ok) {
-                        throw new Error('Failed to fetch forecast data from GitHub');
-                    }
-                    
-                    allForecastsData = await response.json();
-                    console.log('✓ Loaded all forecasts from GitHub');
-                }
-                
-                // Extract data for current resort
-                const resortData = allForecastsData[currentResort];
-                if (!resortData) {
-                    throw new Error(`No data available for ${currentResort}`);
-                }
-                
-                // Get current elevation data
-                const data = resortData[currentElevation];
-                if (!data) {
-                    throw new Error(`No data available for elevation ${currentElevation}`);
-                }
-                
-                // Get all elevations for this resort
-                const allData = {
-                    'bot': resortData['bot'],
-                    'mid': resortData['mid'],
-                    'top': resortData['top']
-                };
-                
-                displayForecast(data, allData);
-                
-                loading.style.display = 'none';
-            } catch (err) {
-                console.error('Error:', err);
-                loading.style.display = 'none';
-                error.style.display = 'block';
-                error.textContent = '❌ ' + err.message;
+                currentResort = hashToResort();
+                renderResortNav();
+                const response = await fetch(DATA_URL, { cache: 'no-store' });
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                forecasts = await response.json();
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'grid';
+                renderDashboard();
+            } catch (error) {
+                console.error(error);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error').style.display = 'block';
+                document.getElementById('updated-pill').textContent = 'Data unavailable';
             }
         }
-        
-        function displayForecast(data, allData) {
-            const content = document.getElementById('forecast-content');
-            const lastUpdated = document.getElementById('last-updated');
-            const currentConditions = document.getElementById('current-conditions');
-            
-            // Store all elevation data for toggling
-            allElevationData = allData;
-            
-            if (!data.days || data.days.length === 0) {
-                content.innerHTML = '<p style="text-align: center; color: #7f8c8d;">No forecast data available.</p>';
-                return;
-            }
-            
-            // Calculate weekly totals for all elevations
-            const elevationStats = {};
-            const elevations = ['bot', 'mid', 'top'];
-            
-            // Get mid elevation stats for best day, snow days, and lowest temp
-            let midBestDay = '';
-            let midSnowDays = 0;
-            let midLowestTemp = null;
-            let midLowestFeels = null;
-            
-            for (const elev of elevations) {
-                const elevData = allData && allData[elev] ? allData[elev] : (elev === currentElevation ? data : null);
-                if (!elevData || !elevData.days) continue;
-                
-                let totalSnow = 0;
-                let snowDays = 0;
-                let maxSnowDay = { name: '', amount: 0 };
-                let lowestTemp = null;
-                let lowestFeels = null;
-                
-                for (const day of elevData.days) {
-                    let daySnow = 0;
-                    
-                    ['am', 'pm', 'night'].forEach(period => {
-                        if (day[period]) {
-                            const snow = parseFloat(day[period].snow) || 0;
-                            daySnow += snow;
-                            totalSnow += snow;
-                            
-                            // Track lowest temperature
-                            const temp = parseFloat(day[period].temperature);
-                            if (!isNaN(temp)) {
-                                if (lowestTemp === null || temp < lowestTemp) {
-                                    lowestTemp = temp;
-                                }
-                            }
-                            
-                            // Track lowest feels like temperature
-                            const feels = parseFloat(day[period].feels_like);
-                            if (!isNaN(feels)) {
-                                if (lowestFeels === null || feels < lowestFeels) {
-                                    lowestFeels = feels;
-                                }
-                            }
-                        }
-                    });
-                    
-                    if (daySnow > 0) snowDays++;
-                    if (daySnow > maxSnowDay.amount) {
-                        maxSnowDay = { name: day.name, date: day.date, amount: daySnow };
-                    }
-                }
-                
-                // Store mid elevation data for best day and lowest temp
-                if (elev === 'mid') {
-                    midBestDay = maxSnowDay.date ? getWeekdayFromDate(maxSnowDay.date) : (maxSnowDay.name || 'N/A');
-                    midSnowDays = snowDays;
-                    midLowestTemp = lowestTemp;
-                    midLowestFeels = lowestFeels;
-                }
-                
-                elevationStats[elev] = {
-                    totalSnow: totalSnow.toFixed(0),
-                    snowDays,
-                    maxSnowDay,
-                    lowestTemp,
-                    lowestFeels
-                };
-            }
-            
-            // Display current snow conditions with clickable elevation boxes
-            const snowConditions = data.snow_conditions || null;
-            const bestDayLabel = midBestDay || 'N/A';
-            const snowDaysLabel = typeof midSnowDays === 'number' ? midSnowDays : '0';
-            // Show feels like if it's different from actual temp, otherwise show actual
-            const lowestTempLabel = midLowestFeels !== null && midLowestTemp !== null && midLowestFeels < midLowestTemp 
-                ? `${midLowestFeels}°C (feels like)` 
-                : midLowestTemp !== null ? `${midLowestTemp}°C` : 'N/A';
-            let conditionsHtml = `
-                <h2>❄️ Current Snow Conditions - ${resortInfo[currentResort].name}</h2>
-            `;
-            
-            if (snowConditions) {
-                const conditionFields = [
-                    { key: 'Fresh snowfall depth', label: 'Fresh Snow', highlight: true },
-                    { key: 'Top snow depth', label: 'Top Snow Depth' },
-                    { key: 'Bottom snow depth', label: 'Bottom Snow Depth' },
-                    { key: 'Last snowfall', label: 'Last Snowfall' }
-                ];
-                
-                conditionsHtml += '<div class="conditions-grid">';
-                conditionFields.forEach(field => {
-                    const value = snowConditions[field.key];
-                    if (value !== undefined && value !== null) {
-                        const highlightClass = field.highlight ? 'highlight' : '';
-                        conditionsHtml += `
-                            <div class="condition-card">
-                                <span class="condition-label">${field.label}</span>
-                                <span class="condition-value ${highlightClass}">${value}</span>
-                            </div>
-                        `;
-                    }
-                });
 
-                // Include snow alert info if it contains meaningful text
-                const alertInfo = snowConditions['Snow Alerts'];
-                if (alertInfo && alertInfo !== 'Create Alert') {
-                    conditionsHtml += `
-                        <div class="condition-card">
-                            <span class="condition-label">Snow Alerts</span>
-                            <span class="condition-value">${alertInfo}</span>
-                        </div>
-                    `;
-                }
-                conditionsHtml += '</div>';
-            } else {
-                conditionsHtml += '<p class="no-conditions">Live snow conditions are not available right now.</p>';
-            }
-
-            conditionsHtml += `
-                <div class="section-subtitle">7-Day Snow Outlook</div>
-                <div class="summary-metrics">
-                    <div class="summary-metric">Snow Days: <span>${snowDaysLabel}</span></div>
-                    <div class="summary-metric">Best Day: <span>${bestDayLabel}</span></div>
-                    <div class="summary-metric">Lowest Temp: <span>${lowestTempLabel}</span></div>
-                </div>
-                <div class="elevation-boxes">
-            `;
-            
-            for (const elev of elevations) {
-                if (!elevationStats[elev]) continue;
-                const stats = elevationStats[elev];
-                const info = resortInfo[currentResort].elevations[elev];
-                const isActive = elev === currentElevation ? 'active' : '';
-                
-                conditionsHtml += `
-                    <div class="elevation-box ${isActive}" onclick="toggleElevationForecast(event, '${elev}')">
-                        <h3>${info.emoji} ${info.name}</h3>
-                        <div class="height">${info.height}</div>
-                        <div class="snow-amount">${stats.totalSnow} cm</div>
-                        <div class="snow-label">Total snowfall</div>
-                    </div>
-                `;
-            }
-            
-            conditionsHtml += '</div>';
-            currentConditions.innerHTML = conditionsHtml;
-            
-            // Display detailed forecast for current elevation
-            displayDetailedForecast(data);
-            
-            // Display extended 16-day forecast
-            displayExtendedForecast();
-            
-            // Create snowfall chart
-            createSnowfallChart();
-            
-            // Update last updated time - use the most recent update from any elevation
-            let mostRecentUpdate = data.last_updated;
-            if (allData) {
-                for (const elev of ['bot', 'mid', 'top']) {
-                    if (allData[elev] && allData[elev].last_updated) {
-                        const elevTime = new Date(allData[elev].last_updated);
-                        const currentTime = new Date(mostRecentUpdate);
-                        if (elevTime > currentTime) {
-                            mostRecentUpdate = allData[elev].last_updated;
-                        }
-                    }
-                }
-            }
-            
-            if (mostRecentUpdate) {
-                const updateDate = new Date(mostRecentUpdate);
-                // Format as GMT+2 (or user's timezone with GMT+2 preference)
-                const options = { 
-                    year: 'numeric', 
-                    month: 'numeric', 
-                    day: 'numeric', 
-                    hour: 'numeric', 
-                    minute: 'numeric', 
-                    second: 'numeric',
-                    timeZone: 'Europe/Paris', // GMT+2 (CET/CEST)
-                    timeZoneName: 'short'
-                };
-                const formattedDate = updateDate.toLocaleString('en-US', options);
-                lastUpdated.innerHTML = `📅 Last updated: ${formattedDate}`;
-            } else {
-                lastUpdated.innerHTML = `📅 Last updated: ${new Date().toLocaleString()}`;
-            }
-            
-            // Update data source indicator
-            const snowForecastIndicator = document.getElementById('source-snow-forecast');
-            
-            // Always show snow-forecast as active since that's our only source
-            snowForecastIndicator.classList.remove('inactive');
-            snowForecastIndicator.classList.add('active');
-        }
-        
-        function toggleElevationForecast(event, elevation) {
-            const content = document.getElementById('forecast-content');
-            
-            // Update active elevation box
-            document.querySelectorAll('.elevation-box').forEach(box => {
-                box.classList.remove('active');
-            });
-            event.currentTarget.classList.add('active');
-            
-            // If clicking the same elevation, toggle visibility
-            if (currentElevation === elevation) {
-                forecastVisible = !forecastVisible;
-                const forecastGrid = content.querySelector('.forecast-grid');
-                if (forecastGrid) {
-                    forecastGrid.classList.toggle('visible', forecastVisible);
-                }
-            } else {
-                // Switching to different elevation
-                currentElevation = elevation;
-                forecastVisible = true;
-                
-                // Load and display forecast for this elevation
-                const elevData = allElevationData[elevation];
-                if (elevData) {
-                    displayDetailedForecast(elevData);
-                    // Also update extended forecast for this elevation
-                    displayExtendedForecast();
-                    // Update snowfall chart for this elevation
-                    createSnowfallChart();
-                }
-            }
-        }
-        
-        function displayDetailedForecast(data) {
-            const content = document.getElementById('forecast-content');
-            
-            let html = `<div class="forecast-grid ${forecastVisible ? 'visible' : ''}">`;
-            
-            // Get today's date for filtering
-            const today = new Date();
-            today.setHours(0, 0, 0, 0); // Reset to start of day
-            const currentMonth = today.getMonth();
-            const currentYear = today.getFullYear();
-            
-            for (const day of data.days) {
-                // Skip past days - only show today and future
-                if (day.date) {
-                    const dayNum = parseInt(day.date);
-                    const dayDate = new Date(currentYear, currentMonth, dayNum);
-                    dayDate.setHours(0, 0, 0, 0);
-                    
-                    if (dayDate < today) {
-                        continue; // Skip this day - it's in the past
-                    }
-                }
-                
-                // Calculate total snow for the day
-                let totalSnow = 0;
-                let maxTemp = null;
-                let minTemp = null;
-                let hasRain = false;
-                
-                ['am', 'pm', 'night'].forEach(period => {
-                    if (day[period]) {
-                        const snow = parseFloat(day[period].snow) || 0;
-                        totalSnow += snow;
-                        
-                        const temp = parseFloat(day[period].temperature);
-                        if (!isNaN(temp)) {
-                            if (maxTemp === null || temp > maxTemp) maxTemp = temp;
-                            if (minTemp === null || temp < minTemp) minTemp = temp;
-                        }
-                        
-                        const rain = parseFloat(day[period].rain) || 0;
-                        if (rain > 0) hasRain = true;
-                    }
-                });
-                
-                const snowClass = totalSnow >= 10 ? 'heavy' : '';
-                const snowIcon = totalSnow > 0 ? '❄️' : '';
-                const weekday = day.date ? getWeekdayFromDate(day.date) : day.name;
-                const dateDisplay = day.date ? getShortDate(day.date) : day.date;
-                
-                html += `
-                    <div class="day-card">
-                        <div class="day-header">
-                            <h2>${weekday}</h2>
-                            <div class="date">${dateDisplay}</div>
-                        </div>
-                        <div class="day-summary">
-                            <div class="snow-total ${snowClass}">
-                                ${snowIcon} ${totalSnow.toFixed(0)} cm
-                            </div>
-                            <div class="day-info">
-                                ${minTemp !== null && maxTemp !== null ? `${minTemp}° to ${maxTemp}°C` : ''}
-                                ${hasRain ? ' • Rain' : ''}
-                            </div>
-                        </div>
-                `;
-                
-                // AM period
-                if (day.am) {
-                    html += createPeriodSection('AM', day.am);
-                }
-                
-                // PM period
-                if (day.pm) {
-                    html += createPeriodSection('PM', day.pm);
-                }
-                
-                // Night period
-                if (day.night) {
-                    html += createPeriodSection('night', day.night);
-                }
-                
-                html += '</div>';
-            }
-            
-            html += '</div>';
-            content.innerHTML = html;
-        }
-        
-        function displayExtendedForecast() {
-            // Get extended forecast from current elevation data
-            const resortData = allForecastsData[currentResort];
-            
-            if (!resortData) return;
-            
-            const elevationData = resortData[currentElevation];
-            if (!elevationData || !elevationData.extended || !elevationData.extended.extended_forecast) {
-                return;
-            }
-            
-            const forecasts = elevationData.extended.extended_forecast;
-            const today = new Date();
-            today.setHours(0, 0, 0, 0); // Start of today
-            const day7 = new Date(today.getTime() + 6 * 24 * 60 * 60 * 1000); // Day 7 is 6 days from today (inclusive)
-            
-            // Filter to show days 8-16 (starting from day after the 7-day forecast)
-            const longRange = forecasts.filter(day => {
-                const dayDate = new Date(day.date);
-                dayDate.setHours(0, 0, 0, 0);
-                return dayDate > day7;
-            });
-            
-            if (longRange.length === 0) return;
-            
-            const content = document.getElementById('forecast-content');
-            
-            let html = `
-                <div class="extended-forecast">
-                    <h3>📅 Extended Outlook (Days 8-16)</h3>
-                    <div class="extended-note">
-                        <em>Long-range forecast from OpenMeteo - trends only, subject to change</em>
-                    </div>
-                    <div class="extended-grid">
-            `;
-            
-            longRange.forEach(day => {
-                let snowfall = day.snowfall || 0;
-                let rain = day.rain || 0;
-                
-                // If temp is below 0°C and there's rain, convert it to snow
-                const avgTemp = (day.temp_min + day.temp_max) / 2;
-                if (avgTemp < 0 && rain > 0) {
-                    // Convert rain to snow (rough estimate: 10mm rain ≈ 1cm snow)
-                    snowfall += rain / 10;
-                    rain = 0;
-                }
-                
-                const hasSnow = snowfall > 0;
-                const hasRain = rain > 0;
-                
-                const weatherEmoji = getWeatherCodeEmoji(day.weather_code);
-                let weatherCondition = getWeatherConditionText(day.weather_code);
-                
-                // Get current elevation info for snow line calculation
-                const elevationHeights = {
-                    'Val-Thorens': { bot: 2300, mid: 2800, top: 3230 },
-                    'Cervinia': { bot: 2050, mid: 2900, top: 3480 },
-                    'Via-Lattea': { bot: 1350, mid: 2100, top: 2823 },
-                    'Monterosa-Ski': { bot: 1212, mid: 2200, top: 3275 },
-                    'Gudauri': { bot: 1990, mid: 2350, top: 3279 },
-                    'St-Anton': { bot: 1304, mid: 2150, top: 2811 },
-                    'Alpe-d-Huez': { bot: 1250, mid: 2350, top: 3330 },
-                    'La-Plagne': { bot: 1250, mid: 2250, top: 3250 },
-                    'Mount-Hermon': { bot: 1600, mid: 2000, top: 2236 }
-                };
-                const resortElevation = elevationHeights[currentResort]?.[currentElevation] || 2300;
-                
-                // Better weather condition for mixed rain/snow
-                if (hasSnow && hasRain) {
-                    if (day.weather_code >= 85 && day.weather_code <= 86) {
-                        weatherCondition = 'Shwrs';
-                    } else {
-                        weatherCondition = 'Lt Snow Shwrs';
-                    }
-                }
-                
-                // Determine snow line message and description
-                let snowLineMsg = '';
-                let weatherDesc = '';
-                
-                if (hasSnow && hasRain) {
-                    if (day.weather_code >= 85 && day.weather_code <= 86) {
-                        weatherDesc = 'Snow showers at altitude, rain showers below.';
-                    } else {
-                        weatherDesc = 'Light snow at altitude, light rain showers below.';
-                    }
-                    
-                    if (day.freezing_level_min && day.freezing_level_max) {
-                        const minFreeze = Math.round(day.freezing_level_min);
-                        const maxFreeze = Math.round(day.freezing_level_max);
-                        
-                        if (minFreeze < resortElevation) {
-                            snowLineMsg = `Snow Line from ${maxFreeze}m to resort level.`;
-                        } else {
-                            snowLineMsg = `Snow Line from ${maxFreeze}m to ${minFreeze}m, with rain below.`;
-                        }
-                    }
-                } else if (hasSnow) {
-                    if (day.freezing_level_min && day.freezing_level_min < resortElevation) {
-                        snowLineMsg = 'Snow falling to resort level.';
-                    }
-                } else if (hasRain) {
-                    snowLineMsg = 'Rain';
-                }
-                
-                // Format snow amount like J2Ski
-                let snowDisplay = '';
-                if (hasSnow) {
-                    const snowCm = Math.round(snowfall);
-                    if (snowfall < 1) {
-                        snowDisplay = `up to 1cm New Snow`;
-                    } else if (snowfall < 2) {
-                        snowDisplay = `up to ${snowCm + 1}cm New Snow`;
-                    } else {
-                        snowDisplay = `${snowCm}cm New Snow`;
-                    }
-                }
-                
-                const weekday = getWeekdayFromDate(day.date);
-                const shortDate = getShortDate(day.date);
-
-                // Model disagreement range from the multi-model consensus
-                let rangeDisplay = '';
-                if (day.snowfall_range && (day.snowfall_range[1] - day.snowfall_range[0]) >= 1) {
-                    const sources = day.snowfall_sources ? ` · ${day.snowfall_sources} models` : '';
-                    rangeDisplay = `${day.snowfall_range[0]}–${day.snowfall_range[1]}cm spread${sources}`;
-                }
-
-                html += `
-                    <div class="extended-day">
-                        <div class="extended-day-name">${weekday}</div>
-                        <div class="extended-date">${shortDate}</div>
-                        <div class="extended-weather">${weatherEmoji}</div>
-                        <div class="extended-condition">${weatherCondition}</div>
-                        ${snowDisplay ? `<div class="extended-snow">${snowDisplay}</div>` : ''}
-                        ${rangeDisplay ? `<div class="extended-snow-range">${rangeDisplay}</div>` : ''}
-                        ${weatherDesc ? `<div class="extended-description">${weatherDesc}</div>` : ''}
-                        ${snowLineMsg ? `<div class="extended-snow-line">${snowLineMsg}</div>` : ''}
-                        <div class="extended-temp">Max ${Math.round(day.temp_max)}℃<br>Min ${Math.round(day.temp_min)}℃</div>
-                    </div>
-                `;
-            });
-            
-            html += `
-                    </div>
-                </div>
-            `;
-            
-            content.insertAdjacentHTML('beforeend', html);
-        }
-        
-        function getWeatherCodeEmoji(code) {
-            // WMO Weather codes to emojis
-            const weatherCodes = {
-                0: '☀️',      // Clear sky
-                1: '🌤️',     // Mainly clear
-                2: '⛅',     // Partly cloudy
-                3: '☁️',     // Overcast
-                45: '🌫️',    // Fog
-                48: '🌫️',    // Depositing rime fog
-                51: '🌧️',    // Light drizzle
-                53: '🌧️',    // Moderate drizzle
-                55: '🌧️',    // Dense drizzle
-                61: '🌧️',    // Slight rain
-                63: '🌧️',    // Moderate rain
-                65: '🌧️',    // Heavy rain
-                71: '🌨️',    // Slight snow
-                73: '🌨️',    // Moderate snow
-                75: '❄️',    // Heavy snow
-                77: '❄️',    // Snow grains
-                80: '🌦️',    // Slight rain showers
-                81: '🌧️',    // Moderate rain showers
-                82: '🌧️',    // Violent rain showers
-                85: '🌨️',    // Slight snow showers
-                86: '❄️',    // Heavy snow showers
-                95: '⛈️',    // Thunderstorm
-                96: '⛈️',    // Thunderstorm with hail
-                99: '⛈️'     // Thunderstorm with heavy hail
-            };
-            
-            return weatherCodes[code] || '🌤️';
-        }
-        
-        function getWeatherConditionText(code) {
-            // WMO Weather codes to condition descriptions
-            const conditions = {
-                0: 'clear',
-                1: 'mostly clear',
-                2: 'part cloud',
-                3: 'cloud',
-                45: 'fog',
-                48: 'fog',
-                51: 'light drizzle',
-                53: 'drizzle',
-                55: 'drizzle',
-                61: 'light rain',
-                63: 'rain',
-                65: 'heavy rain',
-                71: 'light snow',
-                73: 'snow',
-                75: 'heavy snow',
-                77: 'snow',
-                80: 'light rain showers',
-                81: 'rain showers',
-                82: 'heavy rain',
-                85: 'light snow showers',
-                86: 'snow showers',
-                95: 'thunderstorm',
-                96: 'thunderstorm',
-                99: 'thunderstorm'
-            };
-            
-            return conditions[code] || 'cloudy';
-        }
-        
-        function createPeriodSection(period, data) {
-            const periodClass = period.toLowerCase();
-            const emoji = getWeatherEmoji(data.condition || '');
-            
-            // Check if we have multi-source data
-            const hasOW = data.ow_temp !== undefined && data.ow_temp !== null;
-
-            // Calculate consensus values (median is robust to a single outlier source)
-            const median = arr => {
-                const s = [...arr].sort((a, b) => a - b);
-                const m = Math.floor(s.length / 2);
-                return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
-            };
-            let temps = [parseFloat(data.temperature)].filter(t => !isNaN(t));
-            let snows = [parseFloat(data.snow)].filter(s => !isNaN(s));
-
-            if (hasOW) {
-                const owTemp = parseFloat(data.ow_temp);
-                if (!isNaN(owTemp)) temps.push(owTemp);
-            }
-
-            const avgTemp = temps.length > 1 ? median(temps).toFixed(1) : null;
-            const avgSnow = snows.length > 1 ? median(snows).toFixed(1) : null;
-            const tempRange = temps.length > 1 ? `${Math.min(...temps).toFixed(1)} - ${Math.max(...temps).toFixed(1)}` : null;
-            const snowRange = snows.length > 1 ? `${Math.min(...snows).toFixed(1)} - ${Math.max(...snows).toFixed(1)}` : null;
-            
-            // Format temperature display with feels like
-            let tempDisplay = 'N/A';
-            if (data.temperature !== null && data.temperature !== 'N/A') {
-                tempDisplay = `${data.temperature}°C`;
-                if (data.feels_like !== null && data.feels_like !== 'N/A' && data.feels_like !== data.temperature) {
-                    tempDisplay += ` (${data.feels_like}°)`;
-                }
-                
-                // Add consensus if multiple sources
-                if (avgTemp && temps.length > 1) {
-                    tempDisplay += `<br><small style="opacity: 0.7;">📊 Median: ${avgTemp}°C (${temps.length} sources)</small>`;
-                }
-            }
-
-            // Snow display with multi-source info
-            let snowDisplay = `${data.snow || '0'} cm`;
-            if (avgSnow && snows.length > 1) {
-                snowDisplay += `<br><small style="opacity: 0.7;">📊 Median: ${avgSnow} cm (Range: ${snowRange} cm)</small>`;
-            }
-            
-            // Build HTML with comparison popover
-            let html = `
-                <div class="period-section ${periodClass}">
-                    <div class="period-header">${period.toUpperCase()}</div>
-                    
-                    <div class="weather-condition">
-                        <div class="weather-icon">${emoji}</div>
-                        <div class="condition-text">${data.condition || 'N/A'}</div>
-                    </div>
-                    
-                    <div class="weather-details">
-                        <div class="detail-item">
-                            <div class="detail-label">🌡️ Temperature</div>
-                            <div class="detail-value temp">${tempDisplay}</div>`;
-            
-            // Add comparison tooltip if multiple sources
-            if (hasOW) {
-                html += `<div class="source-compare" style="font-size: 0.75em; opacity: 0.6; margin-top: 4px;">
-                            <div>☁️ OW: ${data.ow_temp}°C</div>
-                         </div>`;
-            }
-
-            html += `
-                        </div>
-
-                        <div class="detail-item">
-                            <div class="detail-label">❄️ Snow</div>
-                            <div class="detail-value snow">${snowDisplay}</div>`;
-
-            html += `
-                        </div>
-                        
-                        <div class="detail-item">
-                            <div class="detail-label">🌧️ Rain</div>
-                            <div class="detail-value rain">${data.rain || '0'} mm</div>
-                        </div>
-                        
-                        <div class="detail-item">
-                            <div class="detail-label">💨 Wind</div>
-                            <div class="detail-value wind">${data.wind || 'N/A'}</div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            return html;
-        }
-        
-        // Load forecast when page loads
-        window.addEventListener('DOMContentLoaded', function() {
-            updateResortLinks();
-            loadResortFromHash(); // Load from URL hash or default resort
-        });
+        init();
     </script>
 </body>
 </html>

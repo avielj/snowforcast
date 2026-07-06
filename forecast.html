@@ -4,27 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Snow Forecast — Mountain Dashboard</title>
-    <meta name="description" content="A clean snow forecast dashboard for ski resorts, elevation comparison, daily snowfall, and mountain links.">
+    <meta name="description" content="Multi-resort snow forecast dashboard with elevation comparison, current conditions, data sources, and extended model forecasts.">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         :root {
             color-scheme: dark;
-            --bg: #07111f;
-            --bg-soft: #0d1d31;
-            --panel: rgba(255,255,255,0.09);
-            --panel-strong: rgba(255,255,255,0.14);
-            --line: rgba(255,255,255,0.15);
+            --bg: #06111f;
+            --bg-soft: #0b1d31;
+            --card: rgba(16, 38, 61, 0.72);
+            --card-strong: rgba(24, 50, 77, 0.92);
+            --line: rgba(255,255,255,0.14);
             --text: #f6fbff;
             --muted: #9fb3c8;
             --muted-2: #6f8499;
             --accent: #7dd3fc;
-            --accent-2: #38bdf8;
-            --good: #8ef7bd;
-            --warn: #facc15;
-            --danger: #fb7185;
-            --card-shadow: 0 24px 80px rgba(0,0,0,0.35);
+            --accent-strong: #38bdf8;
+            --green: #8ef7bd;
+            --yellow: #facc15;
+            --red: #fb7185;
+            --purple: #a78bfa;
+            --shadow: 0 24px 80px rgba(0,0,0,0.36);
             --radius-xl: 32px;
-            --radius-lg: 22px;
+            --radius-lg: 24px;
             --radius-md: 16px;
         }
 
@@ -35,15 +36,14 @@
             min-height: 100vh;
             font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             background:
-                radial-gradient(circle at top left, rgba(56,189,248,0.28), transparent 32rem),
-                radial-gradient(circle at 80% 10%, rgba(129,140,248,0.22), transparent 30rem),
-                linear-gradient(135deg, #06101d 0%, #081827 45%, #10121e 100%);
+                radial-gradient(circle at 0% 0%, rgba(56,189,248,0.26), transparent 34rem),
+                radial-gradient(circle at 85% 5%, rgba(167,139,250,0.18), transparent 30rem),
+                linear-gradient(135deg, #06111f 0%, #081827 48%, #10121e 100%);
             color: var(--text);
         }
 
         a { color: inherit; }
-
-        button, a, select { -webkit-tap-highlight-color: transparent; }
+        button, a { -webkit-tap-highlight-color: transparent; }
 
         .app-shell {
             width: min(1480px, calc(100% - 32px));
@@ -63,9 +63,9 @@
             display: inline-flex;
             align-items: center;
             gap: 12px;
-            font-weight: 800;
+            font-size: clamp(1.1rem, 2vw, 1.45rem);
+            font-weight: 900;
             letter-spacing: -0.04em;
-            font-size: clamp(1.1rem, 1.8vw, 1.45rem);
         }
 
         .brand-mark {
@@ -75,16 +75,22 @@
             place-items: center;
             border-radius: 16px;
             background: linear-gradient(135deg, rgba(125,211,252,0.95), rgba(14,165,233,0.55));
-            box-shadow: 0 16px 40px rgba(14,165,233,0.25);
+            box-shadow: 0 16px 42px rgba(14,165,233,0.24);
         }
 
-        .updated-pill {
-            color: var(--muted);
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 38px;
+            padding: 9px 14px;
+            border-radius: 999px;
             border: 1px solid var(--line);
             background: rgba(255,255,255,0.07);
-            border-radius: 999px;
-            padding: 10px 14px;
+            color: var(--muted);
             font-size: 0.88rem;
+            font-weight: 700;
             white-space: nowrap;
         }
 
@@ -94,29 +100,31 @@
             border-radius: var(--radius-xl);
             padding: clamp(24px, 4vw, 46px);
             background:
-                linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.06)),
-                radial-gradient(circle at 78% 18%, rgba(125,211,252,0.22), transparent 18rem);
+                linear-gradient(135deg, rgba(255,255,255,0.14), rgba(255,255,255,0.055)),
+                radial-gradient(circle at 78% 18%, rgba(125,211,252,0.24), transparent 20rem);
             border: 1px solid rgba(255,255,255,0.18);
-            box-shadow: var(--card-shadow);
+            box-shadow: var(--shadow);
             isolation: isolate;
         }
 
         .hero::before {
             content: "";
             position: absolute;
-            inset: auto -10% -1px -10%;
+            left: -6%;
+            right: -6%;
+            bottom: -1px;
             height: 38%;
             background:
                 linear-gradient(135deg, transparent 18%, rgba(255,255,255,0.16) 18% 31%, transparent 31% 47%, rgba(255,255,255,0.12) 47% 62%, transparent 62%),
                 linear-gradient(to top, rgba(255,255,255,0.10), transparent);
-            clip-path: polygon(0 80%, 12% 48%, 24% 70%, 40% 32%, 56% 72%, 72% 38%, 88% 64%, 100% 24%, 100% 100%, 0 100%);
+            clip-path: polygon(0 82%, 12% 48%, 24% 70%, 40% 32%, 56% 72%, 72% 38%, 88% 64%, 100% 24%, 100% 100%, 0 100%);
             z-index: -1;
-            opacity: 0.9;
+            opacity: 0.95;
         }
 
         .hero-layout {
             display: grid;
-            grid-template-columns: minmax(0, 1.25fr) minmax(300px, 0.75fr);
+            grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr);
             gap: 28px;
             align-items: stretch;
         }
@@ -125,38 +133,34 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            color: #dff6ff;
+            color: #e0f7ff;
             background: rgba(125,211,252,0.14);
             border: 1px solid rgba(125,211,252,0.28);
             border-radius: 999px;
             padding: 8px 12px;
             font-size: 0.86rem;
-            font-weight: 700;
+            font-weight: 900;
             margin-bottom: 18px;
         }
 
         h1 {
-            font-size: clamp(2.4rem, 6vw, 5.8rem);
-            line-height: 0.92;
+            font-size: clamp(2.45rem, 6vw, 5.75rem);
+            line-height: 0.94;
             letter-spacing: -0.08em;
             margin: 0 0 18px;
         }
 
         .hero-copy {
-            max-width: 720px;
+            max-width: 740px;
             color: #c9d8e8;
-            font-size: clamp(1rem, 1.6vw, 1.25rem);
+            font-size: clamp(1rem, 1.6vw, 1.2rem);
             line-height: 1.55;
             margin: 0 0 24px;
         }
 
-        .hero-actions, .resort-links {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
+        .hero-actions, .resort-actions, .tabs, .quick-links { display: flex; flex-wrap: wrap; gap: 10px; }
 
-        .btn {
+        .btn, .tab {
             border: 0;
             cursor: pointer;
             text-decoration: none;
@@ -167,16 +171,19 @@
             min-height: 44px;
             padding: 12px 16px;
             border-radius: 999px;
-            font-weight: 800;
+            font-weight: 900;
+            transition: transform 180ms ease, background 180ms ease, border 180ms ease, box-shadow 180ms ease;
+        }
+
+        .btn {
             color: #06111f;
             background: linear-gradient(135deg, #e0f7ff, var(--accent));
             box-shadow: 0 14px 35px rgba(56,189,248,0.22);
-            transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
         }
 
-        .btn:hover { transform: translateY(-2px); box-shadow: 0 18px 42px rgba(56,189,248,0.32); }
+        .btn:hover, .tab:hover { transform: translateY(-2px); }
         .btn.secondary { color: var(--text); background: rgba(255,255,255,0.09); border: 1px solid var(--line); box-shadow: none; }
-        .btn.secondary:hover { background: rgba(255,255,255,0.14); }
+        .btn.secondary:hover, .tab:hover { background: rgba(255,255,255,0.14); }
 
         .hero-card {
             border-radius: 28px;
@@ -185,8 +192,8 @@
             border: 1px solid rgba(255,255,255,0.14);
             backdrop-filter: blur(18px);
             display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 14px;
-            align-content: start;
         }
 
         .hero-stat {
@@ -196,9 +203,10 @@
             border: 1px solid rgba(255,255,255,0.12);
         }
 
-        .hero-stat .label { color: var(--muted); font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 800; }
-        .hero-stat .value { margin-top: 6px; font-size: clamp(1.8rem, 4vw, 3.6rem); font-weight: 900; letter-spacing: -0.06em; }
-        .hero-stat .note { color: var(--muted); font-size: 0.92rem; margin-top: 4px; }
+        .hero-stat.wide { grid-column: 1 / -1; }
+        .label { color: var(--muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 900; }
+        .value { margin-top: 7px; font-size: clamp(1.65rem, 3.5vw, 3.35rem); font-weight: 950; letter-spacing: -0.06em; }
+        .note { color: var(--muted); font-size: 0.9rem; margin-top: 4px; }
 
         .resort-scroller {
             position: sticky;
@@ -207,7 +215,7 @@
             margin: 18px 0;
             padding: 10px;
             border: 1px solid rgba(255,255,255,0.13);
-            background: rgba(7,17,31,0.76);
+            background: rgba(7,17,31,0.78);
             backdrop-filter: blur(18px);
             border-radius: 999px;
             overflow-x: auto;
@@ -215,32 +223,19 @@
         }
 
         .resort-scroller::-webkit-scrollbar { display: none; }
-        .resort-nav { display: flex; gap: 8px; min-width: max-content; }
-
-        .resort-tab {
-            border: 1px solid transparent;
-            color: #c7d8e8;
-            background: transparent;
-            padding: 11px 14px;
-            border-radius: 999px;
-            font-weight: 800;
-            cursor: pointer;
-            transition: background 180ms ease, color 180ms ease, border 180ms ease;
-        }
-
-        .resort-tab:hover { background: rgba(255,255,255,0.08); color: #fff; }
-        .resort-tab.active { background: rgba(125,211,252,0.18); color: #f8fdff; border-color: rgba(125,211,252,0.32); }
+        .tabs { min-width: max-content; }
+        .tab { color: #c7d8e8; background: transparent; border: 1px solid transparent; }
+        .tab.active { background: rgba(125,211,252,0.18); color: #f8fdff; border-color: rgba(125,211,252,0.36); }
 
         .main-grid {
             display: grid;
             grid-template-columns: 360px minmax(0, 1fr);
             gap: 18px;
-            margin-top: 18px;
             align-items: start;
         }
 
         .panel {
-            background: var(--panel);
+            background: var(--card);
             border: 1px solid var(--line);
             border-radius: var(--radius-lg);
             box-shadow: 0 18px 55px rgba(0,0,0,0.18);
@@ -248,25 +243,20 @@
         }
 
         .panel-pad { padding: 18px; }
+        .panel + .panel { margin-top: 18px; }
 
         .panel-title {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
             gap: 12px;
             margin-bottom: 14px;
         }
 
-        .panel-title h2, .panel-title h3 {
-            margin: 0;
-            font-size: 1rem;
-            letter-spacing: -0.03em;
-        }
-
+        .panel-title h2, .panel-title h3 { margin: 0; font-size: 1.05rem; letter-spacing: -0.03em; }
         .caption { color: var(--muted); font-size: 0.86rem; }
 
         .elevation-stack { display: grid; gap: 10px; }
-
         .elevation-card {
             width: 100%;
             text-align: left;
@@ -278,15 +268,12 @@
             cursor: pointer;
             transition: transform 180ms ease, background 180ms ease, border 180ms ease;
         }
-
-        .elevation-card:hover { transform: translateY(-2px); background: rgba(255,255,255,0.1); }
-        .elevation-card.active { background: linear-gradient(135deg, rgba(125,211,252,0.2), rgba(255,255,255,0.08)); border-color: rgba(125,211,252,0.42); }
-
-        .elevation-topline { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-        .elevation-name { font-size: 1.06rem; font-weight: 900; }
-        .elevation-height { color: var(--muted); font-size: 0.86rem; }
+        .elevation-card:hover { transform: translateY(-2px); background: rgba(255,255,255,0.10); }
+        .elevation-card.active { background: linear-gradient(135deg, rgba(125,211,252,0.20), rgba(255,255,255,0.08)); border-color: rgba(125,211,252,0.46); }
+        .elevation-topline, .condition-row, .source-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .elevation-name { font-size: 1.06rem; font-weight: 950; }
+        .elevation-height, .small-muted { color: var(--muted); font-size: 0.86rem; }
         .elevation-snow { margin-top: 12px; font-size: 2rem; font-weight: 950; letter-spacing: -0.06em; }
-        .elevation-sub { color: var(--muted); font-size: 0.85rem; margin-top: 2px; }
 
         .metrics-grid {
             display: grid;
@@ -300,106 +287,77 @@
             border-radius: 18px;
             background: rgba(255,255,255,0.07);
             border: 1px solid rgba(255,255,255,0.11);
-            min-height: 112px;
+            min-height: 118px;
         }
+        .metric-value { font-size: clamp(1.55rem, 3vw, 2.45rem); font-weight: 950; letter-spacing: -0.06em; margin-top: 10px; }
+        .metric-note { color: var(--muted); font-size: 0.84rem; margin-top: 5px; }
 
-        .metric-label { color: var(--muted); font-weight: 800; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; }
-        .metric-value { font-size: clamp(1.6rem, 3vw, 2.5rem); font-weight: 950; letter-spacing: -0.06em; margin-top: 10px; }
-        .metric-note { color: var(--muted); font-size: 0.85rem; margin-top: 5px; }
-
-        .chart-wrap {
-            height: 340px;
-            padding: 6px 8px 0;
-        }
-
-        .forecast-grid {
-            display: grid;
-            grid-template-columns: repeat(7, minmax(160px, 1fr));
-            gap: 12px;
-            margin-top: 18px;
-        }
-
-        .day-card {
-            position: relative;
-            border-radius: 20px;
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.12);
-            background: rgba(255,255,255,0.075);
-        }
-
-        .day-head {
-            padding: 14px;
-            background: rgba(255,255,255,0.08);
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-
+        .chart-wrap { height: 340px; padding-top: 6px; }
+        .forecast-grid { display: grid; grid-template-columns: repeat(7, minmax(150px, 1fr)); gap: 12px; margin-top: 18px; }
+        .day-card { border-radius: 20px; overflow: hidden; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.075); }
+        .day-head { padding: 14px; background: rgba(255,255,255,0.08); border-bottom: 1px solid rgba(255,255,255,0.1); }
         .day-name { font-weight: 950; letter-spacing: -0.03em; }
         .day-date { color: var(--muted); font-size: 0.82rem; margin-top: 3px; }
         .day-total { font-size: 1.8rem; font-weight: 950; letter-spacing: -0.06em; margin-top: 12px; color: #dff8ff; }
         .day-total.zero { color: var(--muted); }
-
         .periods { display: grid; gap: 8px; padding: 12px; }
-
-        .period {
-            border-radius: 14px;
-            background: rgba(4,14,26,0.42);
-            border: 1px solid rgba(255,255,255,0.08);
-            padding: 10px;
-        }
-
-        .period-top { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 7px; }
+        .period { border-radius: 14px; background: rgba(4,14,26,0.42); border: 1px solid rgba(255,255,255,0.08); padding: 10px; }
+        .period-top { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
         .period-name { font-weight: 900; font-size: 0.8rem; color: #e8f7ff; }
         .period-condition { color: var(--muted); font-size: 0.78rem; text-align: right; }
         .period-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-        .period-stat { color: var(--muted); font-size: 0.76rem; }
+        .period-stat { color: var(--muted); font-size: 0.75rem; overflow-wrap: anywhere; }
         .period-stat strong { display: block; color: var(--text); font-size: 0.86rem; margin-bottom: 2px; }
 
-        .source-list { display: grid; gap: 10px; }
-        .source-chip { display: flex; align-items: center; gap: 10px; color: #dbeafe; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 12px; font-weight: 800; }
-        .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--good); box-shadow: 0 0 20px rgba(142,247,189,0.65); flex: 0 0 auto; }
+        .condition-list, .source-list, .extended-grid { display: grid; gap: 10px; }
+        .condition-item, .source-chip, .extended-day {
+            border-radius: 14px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.10);
+            padding: 12px;
+        }
+        .condition-key { color: var(--muted); font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; }
+        .condition-value { font-weight: 900; margin-top: 4px; }
+        .source-chip { display: flex; align-items: center; gap: 10px; font-weight: 850; color: #dbeafe; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; flex: 0 0 auto; background: var(--green); box-shadow: 0 0 18px rgba(142,247,189,0.65); }
+        .dot.off { background: var(--muted-2); box-shadow: none; opacity: .7; }
 
-        .loading, .error {
+        .extended-grid { grid-template-columns: repeat(8, minmax(120px, 1fr)); }
+        .extended-day { text-align: center; }
+        .extended-date { color: var(--muted); font-size: 0.8rem; margin-top: 3px; }
+        .extended-weather { font-size: 1.8rem; margin: 8px 0; }
+        .extended-snow { color: var(--accent); font-size: 1.3rem; font-weight: 950; }
+        .extended-range { color: var(--muted); font-size: 0.75rem; margin-top: 4px; }
+
+        .loading, .error, .empty-state {
             text-align: center;
             padding: 38px;
             border-radius: var(--radius-lg);
             background: rgba(255,255,255,0.08);
             border: 1px solid var(--line);
         }
-
         .error { color: #fecdd3; border-color: rgba(251,113,133,0.34); background: rgba(251,113,133,0.12); }
 
-        .modal {
-            position: fixed;
-            inset: 0;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 18px;
-            background: rgba(3,8,16,0.84);
-            backdrop-filter: blur(14px);
-            z-index: 80;
-        }
-
+        .modal { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; padding: 18px; background: rgba(3,8,16,0.84); backdrop-filter: blur(14px); z-index: 80; }
         .modal.active { display: flex; }
-        .modal-card { width: min(1100px, 100%); height: min(760px, 90vh); background: #081625; border: 1px solid rgba(255,255,255,0.16); border-radius: 24px; overflow: hidden; box-shadow: var(--card-shadow); }
+        .modal-card { width: min(1100px, 100%); height: min(760px, 90vh); background: #081625; border: 1px solid rgba(255,255,255,0.16); border-radius: 24px; overflow: hidden; box-shadow: var(--shadow); }
         .modal-head { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,0.12); }
-        .modal-title { font-weight: 900; }
-        .modal-close { border: 0; background: rgba(255,255,255,0.1); color: var(--text); border-radius: 999px; width: 38px; height: 38px; cursor: pointer; font-size: 1.3rem; }
+        .modal-title { font-weight: 950; }
+        .modal-close { border: 0; background: rgba(255,255,255,0.10); color: var(--text); border-radius: 999px; width: 38px; height: 38px; cursor: pointer; font-size: 1.3rem; }
         .modal iframe { width: 100%; height: calc(100% - 67px); border: 0; background: white; }
 
-        @media (max-width: 1180px) {
+        @media (max-width: 1240px) {
             .hero-layout, .main-grid { grid-template-columns: 1fr; }
             .forecast-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+            .extended-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
             .metrics-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         }
-
         @media (max-width: 760px) {
             .app-shell { width: min(100% - 20px, 1480px); padding-top: 12px; }
             .topbar { align-items: flex-start; flex-direction: column; }
-            .updated-pill { white-space: normal; }
+            .pill { white-space: normal; }
             .hero { padding: 22px; border-radius: 24px; }
-            .forecast-grid { grid-template-columns: 1fr; }
-            .metrics-grid { grid-template-columns: 1fr; }
+            .hero-card, .metrics-grid, .forecast-grid, .extended-grid { grid-template-columns: 1fr; }
             .chart-wrap { height: 300px; }
             .resort-scroller { border-radius: 20px; }
         }
@@ -409,57 +367,48 @@
     <main class="app-shell">
         <div class="topbar">
             <div class="brand"><span class="brand-mark">❄️</span><span>Snow Forecast</span></div>
-            <div class="updated-pill" id="updated-pill">Loading fresh mountain data…</div>
+            <div class="pill" id="updated-pill">Loading mountain data…</div>
         </div>
 
         <section class="hero">
             <div class="hero-layout">
                 <div>
-                    <div class="eyebrow">Mountain command center</div>
-                    <h1><span id="resort-name">Val Thorens</span></h1>
-                    <p class="hero-copy" id="hero-copy">A cleaner, faster forecast view focused on the decisions that matter: where to ride, which elevation looks best, and when the snow arrives.</p>
+                    <div class="eyebrow" id="hero-eyebrow">Multi-resort mountain command center</div>
+                    <h1><span id="resort-name">Loading…</span></h1>
+                    <p class="hero-copy" id="hero-copy">Compare resort, elevation, forecast period, current snow conditions, and extended model signals in one responsive dashboard.</p>
                     <div class="hero-actions" id="hero-actions"></div>
                 </div>
                 <aside class="hero-card" aria-label="Forecast summary">
-                    <div class="hero-stat">
-                        <div class="label">7 day snowfall</div>
-                        <div class="value" id="hero-snow">—</div>
-                        <div class="note" id="hero-snow-note">Across selected elevation</div>
-                    </div>
-                    <div class="hero-stat">
-                        <div class="label">Best window</div>
-                        <div class="value" id="hero-best">—</div>
-                        <div class="note" id="hero-best-note">Most snow in forecast</div>
-                    </div>
+                    <div class="hero-stat"><div class="label">Selected elevation</div><div class="value" id="hero-elevation">—</div><div class="note" id="hero-elevation-note">—</div></div>
+                    <div class="hero-stat"><div class="label">7 day snowfall</div><div class="value" id="hero-snow">—</div><div class="note">selected elevation total</div></div>
+                    <div class="hero-stat wide"><div class="label">Best snow window</div><div class="value" id="hero-best">—</div><div class="note" id="hero-best-note">—</div></div>
                 </aside>
             </div>
         </section>
 
-        <nav class="resort-scroller" aria-label="Select resort">
-            <div class="resort-nav" id="resort-nav"></div>
-        </nav>
+        <nav class="resort-scroller" aria-label="Select resort"><div class="tabs" id="resort-tabs"></div></nav>
 
-        <div id="loading" class="loading">Loading forecast data…</div>
-        <div id="error" class="error" style="display:none;">Could not load forecast data. Please refresh and try again.</div>
+        <div id="loading" class="loading">Loading all resort forecasts…</div>
+        <div id="error" class="error" style="display:none;">Could not load forecast data. Please refresh or check the data files.</div>
 
         <section class="main-grid" id="dashboard" style="display:none;">
-            <aside class="panel">
-                <div class="panel-pad">
-                    <div class="panel-title">
-                        <h2>Elevation</h2>
-                        <span class="caption">Tap to compare</span>
+            <aside>
+                <div class="panel">
+                    <div class="panel-pad">
+                        <div class="panel-title"><div><h2>Elevation</h2><div class="caption">Uses existing bot/mid/top data</div></div></div>
+                        <div class="elevation-stack" id="elevation-stack"></div>
                     </div>
-                    <div class="elevation-stack" id="elevation-stack"></div>
                 </div>
-                <div class="panel-pad" style="border-top:1px solid var(--line);">
-                    <div class="panel-title">
-                        <h3>Data blend</h3>
+                <div class="panel">
+                    <div class="panel-pad">
+                        <div class="panel-title"><div><h3>Current conditions</h3><div class="caption">From `snow_conditions` when available</div></div></div>
+                        <div class="condition-list" id="current-conditions"></div>
                     </div>
-                    <div class="source-list">
-                        <div class="source-chip"><span class="dot"></span>Snow-Forecast.com primary</div>
-                        <div class="source-chip"><span class="dot"></span>OpenWeatherMap</div>
-                        <div class="source-chip"><span class="dot"></span>Open-Meteo multi-model</div>
-                        <div class="source-chip"><span class="dot"></span>Ensemble + MET Norway</div>
+                </div>
+                <div class="panel">
+                    <div class="panel-pad">
+                        <div class="panel-title"><div><h3>Data sources</h3><div class="caption">Detected per selected resort/elevation</div></div></div>
+                        <div class="source-list" id="source-list"></div>
                     </div>
                 </div>
             </aside>
@@ -470,69 +419,111 @@
                 <div class="panel">
                     <div class="panel-pad">
                         <div class="panel-title">
-                            <div>
-                                <h2>Snowfall trend</h2>
-                                <div class="caption">Daily total by elevation</div>
-                            </div>
-                            <span class="caption" id="selected-elevation-label">Bottom</span>
+                            <div><h2>Snowfall trend</h2><div class="caption">Daily total across every available elevation</div></div>
+                            <span class="pill" id="selected-elevation-label">—</span>
                         </div>
                         <div class="chart-wrap"><canvas id="snowChart"></canvas></div>
                     </div>
                 </div>
 
                 <div class="forecast-grid" id="forecast-grid"></div>
+
+                <div class="panel" id="extended-panel" style="display:none; margin-top:18px;">
+                    <div class="panel-pad">
+                        <div class="panel-title">
+                            <div><h2>Extended forecast</h2><div class="caption" id="extended-caption">Open-Meteo and model consensus data when available</div></div>
+                            <span class="pill" id="extended-count">—</span>
+                        </div>
+                        <div class="extended-grid" id="extended-grid"></div>
+                    </div>
+                </div>
             </section>
         </section>
     </main>
 
     <div class="modal" id="webcam-modal" role="dialog" aria-modal="true" aria-label="Live webcam">
         <div class="modal-card">
-            <div class="modal-head">
-                <div class="modal-title" id="webcam-title">Live webcam</div>
-                <button class="modal-close" onclick="closeWebcam()" aria-label="Close">×</button>
-            </div>
+            <div class="modal-head"><div class="modal-title" id="webcam-title">Live webcam</div><button class="modal-close" onclick="closeWebcam()" aria-label="Close">×</button></div>
             <iframe id="webcam-frame" src=""></iframe>
         </div>
     </div>
 
     <script>
         const DATA_URL = 'https://raw.githubusercontent.com/avielj/snowforcast/refs/heads/main/data/all-forecasts.json';
-        const ELEVATIONS = ['bot', 'mid', 'top'];
+        const META_URL = 'https://raw.githubusercontent.com/avielj/snowforcast/refs/heads/main/data/metadata.json';
         const PERIODS = ['am', 'pm', 'night'];
+        const DEFAULT_ELEVATIONS = ['bot', 'mid', 'top'];
 
-        const resortInfo = {
-            'Val-Thorens': { flag: '🇫🇷', name: 'Val Thorens', webcam: 'https://www.valthorens.com/en/webcams/', pisteMap: 'https://www.valthorens.com/en/ski/plan/', website: 'https://www.valthorens.com/en/', liftStatus: 'https://www.valthorens.com/en/infos-neige/', elevations: { bot: { name: 'Bottom', height: '2300m' }, mid: { name: 'Mid', height: '2800m' }, top: { name: 'Top', height: '3230m' } } },
-            'Cervinia': { flag: '🇮🇹', name: 'Cervinia', webcam: 'https://www.cervinia.it/en/webcam', pisteMap: 'https://www.cervinia.it/en', website: 'https://www.cervinia.it/en', liftStatus: 'https://www.cervinia.it/en/impianti', elevations: { bot: { name: 'Bottom', height: '2050m' }, mid: { name: 'Mid', height: '2700m' }, top: { name: 'Top', height: '3480m' } } },
-            'Via-Lattea': { flag: '🇮🇹', name: 'Via Lattea', webcam: 'https://www.vialattea.it/en/webcam/', pisteMap: 'https://www.vialattea.it/en/piste-map/', website: 'https://www.vialattea.it/en/', liftStatus: 'https://www.vialattea.it/en/lifts/', elevations: { bot: { name: 'Bottom', height: '1350m' }, mid: { name: 'Mid', height: '2100m' }, top: { name: 'Top', height: '2823m' } } },
-            'Monterosa-Ski': { flag: '🇮🇹', name: 'Monterosa Ski', webcam: 'https://www.monterosa-ski.com/en/webcam/', pisteMap: 'https://www.monterosa-ski.com/en/ski-area/piste-map/', website: 'https://www.monterosa-ski.com/en/', liftStatus: 'https://www.monterosa-ski.com/en/lifts-slopes/', elevations: { bot: { name: 'Bottom', height: '1212m' }, mid: { name: 'Mid', height: '2200m' }, top: { name: 'Top', height: '3275m' } } },
-            'Gudauri': { flag: '🇬🇪', name: 'Gudauri', webcam: 'https://www.gudauri.info/webcams/', pisteMap: 'https://www.gudauri.info/ski-area/', website: 'https://www.gudauri.info/', liftStatus: 'https://www.gudauri.info/lifts/', elevations: { bot: { name: 'Bottom', height: '1990m' }, mid: { name: 'Mid', height: '2350m' }, top: { name: 'Top', height: '3279m' } } },
-            'St-Anton': { flag: '🇦🇹', name: 'St. Anton', webcam: 'https://www.stantonamarlberg.com/en/service-contact/webcams', pisteMap: 'https://www.stantonamarlberg.com/en/ski-area/piste-map', website: 'https://www.stantonamarlberg.com/en', liftStatus: 'https://www.stantonamarlberg.com/en/ski-area/lifts-pistes', elevations: { bot: { name: 'Bottom', height: '1304m' }, mid: { name: 'Mid', height: '2150m' }, top: { name: 'Top', height: '2811m' } } },
-            'Alpe-d-Huez': { flag: '🇫🇷', name: 'Alpe d’Huez', webcam: 'https://www.alpedhuez.com/en/webcams/', pisteMap: 'https://www.alpedhuez.com/en/ski-area/ski-map/', website: 'https://www.alpedhuez.com/en/', liftStatus: 'https://www.alpedhuez.com/en/ski-area/lifts-slopes/', elevations: { bot: { name: 'Bottom', height: '1250m' }, mid: { name: 'Mid', height: '2350m' }, top: { name: 'Top', height: '3330m' } } },
-            'La-Plagne': { flag: '🇫🇷', name: 'La Plagne', webcam: 'https://en.la-plagne.com/discover/ski-area/webcams', pisteMap: 'https://en.la-plagne.com/discover/ski-area', website: 'https://en.la-plagne.com/', liftStatus: 'https://en.la-plagne.com/discover/ski-area', elevations: { bot: { name: 'Bottom', height: '1250m' }, mid: { name: 'Mid', height: '2250m' }, top: { name: 'Top', height: '3250m' } } },
-            'Mount-Hermon': { flag: '🇮🇱', name: 'Mount Hermon', webcam: 'https://www.skihermon.co.il/en/webcams', pisteMap: 'https://www.skihermon.co.il/en/ski-map', website: 'https://www.skihermon.co.il/en/', liftStatus: 'https://www.skihermon.co.il/en/lifts', elevations: { bot: { name: 'Bottom', height: '1600m' }, mid: { name: 'Mid', height: '2000m' }, top: { name: 'Top', height: '2236m' } } }
+        const RESORT_INFO = {
+            'Val-Thorens': { flag: '🇫🇷', name: 'Val Thorens', webcam: 'https://www.valthorens.com/en/webcams/', pisteMap: 'https://www.valthorens.com/en/ski/plan/', website: 'https://www.valthorens.com/en/', liftStatus: 'https://www.valthorens.com/en/infos-neige/', elevations: { bot: '2300m', mid: '2800m', top: '3230m' } },
+            'Cervinia': { flag: '🇮🇹', name: 'Cervinia', webcam: 'https://www.cervinia.it/en/webcam', pisteMap: 'https://www.cervinia.it/en', website: 'https://www.cervinia.it/en', liftStatus: 'https://www.cervinia.it/en/impianti', elevations: { bot: '2050m', mid: '2900m', top: '3480m' } },
+            'Via-Lattea': { flag: '🇮🇹', name: 'Via Lattea', webcam: 'https://www.vialattea.it/en/webcam/', pisteMap: 'https://www.vialattea.it/en/piste-map/', website: 'https://www.vialattea.it/en/', liftStatus: 'https://www.vialattea.it/en/lifts/', elevations: { bot: '1350m', mid: '2100m', top: '2823m' } },
+            'Monterosa-Ski': { flag: '🇮🇹', name: 'Monterosa Ski', webcam: 'https://www.monterosa-ski.com/en/webcam/', pisteMap: 'https://www.monterosa-ski.com/en/ski-area/piste-map/', website: 'https://www.monterosa-ski.com/en/', liftStatus: 'https://www.monterosa-ski.com/en/lifts-slopes/', elevations: { bot: '1212m', mid: '2200m', top: '3275m' } },
+            'Gudauri': { flag: '🇬🇪', name: 'Gudauri', webcam: 'https://www.gudauri.info/webcams/', pisteMap: 'https://www.gudauri.info/ski-area/', website: 'https://www.gudauri.info/', liftStatus: 'https://www.gudauri.info/lifts/', elevations: { bot: '1990m', mid: '2350m', top: '3279m' } },
+            'St-Anton': { flag: '🇦🇹', name: 'St. Anton', webcam: 'https://www.stantonamarlberg.com/en/service-contact/webcams', pisteMap: 'https://www.stantonamarlberg.com/en/ski-area/piste-map', website: 'https://www.stantonamarlberg.com/en', liftStatus: 'https://www.stantonamarlberg.com/en/ski-area/lifts-pistes', elevations: { bot: '1304m', mid: '2150m', top: '2811m' } },
+            'Alpe-d-Huez': { flag: '🇫🇷', name: 'Alpe d’Huez', webcam: 'https://www.alpedhuez.com/en/webcams/', pisteMap: 'https://www.alpedhuez.com/en/ski-area/ski-map/', website: 'https://www.alpedhuez.com/en/', liftStatus: 'https://www.alpedhuez.com/en/ski-area/lifts-slopes/', elevations: { bot: '1250m', mid: '2350m', top: '3330m' } },
+            'La-Plagne': { flag: '🇫🇷', name: 'La Plagne', webcam: 'https://en.la-plagne.com/discover/ski-area/webcams', pisteMap: 'https://en.la-plagne.com/discover/ski-area', website: 'https://en.la-plagne.com/', liftStatus: 'https://en.la-plagne.com/discover/ski-area', elevations: { bot: '1250m', mid: '2250m', top: '3250m' } },
+            'Mount-Hermon': { flag: '🇮🇱', name: 'Mount Hermon', webcam: 'https://www.skihermon.co.il/en/webcams', pisteMap: 'https://www.skihermon.co.il/en/ski-map', website: 'https://www.skihermon.co.il/en/', liftStatus: 'https://www.skihermon.co.il/en/lifts', elevations: { bot: '1600m', mid: '2000m', top: '2236m' } }
         };
 
-        let forecasts = {};
+        let allForecasts = {};
+        let metadata = {};
         let currentResort = 'Val-Thorens';
         let currentElevation = 'bot';
         let snowChart;
+
+        const $ = id => document.getElementById(id);
+
+        async function fetchJson(url) {
+            const response = await fetch(url, { cache: 'no-store' });
+            if (!response.ok) throw new Error(`${url} returned ${response.status}`);
+            return response.json();
+        }
+
+        function normalizeKey(value) {
+            return String(value || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+        }
+
+        function metaForResort(key) {
+            return RESORT_INFO[key] || {
+                flag: '🏔️',
+                name: String(key || '').replace(/-/g, ' '),
+                webcam: null,
+                pisteMap: null,
+                website: null,
+                liftStatus: null,
+                elevations: {}
+            };
+        }
+
+        function elevationLabel(elevation) {
+            return ({ bot: 'Bottom', mid: 'Mid', top: 'Top' })[elevation] || String(elevation).toUpperCase();
+        }
+
+        function elevationHeight(resort, elevation) {
+            return metaForResort(resort).elevations?.[elevation] || selectedData(resort, elevation)?.elevation || elevationLabel(elevation);
+        }
+
+        function resortKeys() {
+            const fromMetadata = Array.isArray(metadata.resorts) ? metadata.resorts : [];
+            const fromData = Object.keys(allForecasts || {});
+            return [...new Set([...fromMetadata, ...fromData])].filter(key => allForecasts[key]);
+        }
+
+        function elevationKeys(resort = currentResort) {
+            const existing = Object.keys(allForecasts?.[resort] || {});
+            const preferred = Array.isArray(metadata.elevations) ? metadata.elevations : DEFAULT_ELEVATIONS;
+            return [...new Set([...preferred, ...existing])].filter(key => allForecasts?.[resort]?.[key]);
+        }
+
+        function selectedData(resort = currentResort, elevation = currentElevation) {
+            return allForecasts?.[resort]?.[elevation] || {};
+        }
 
         function numberFrom(value) {
             if (value === null || value === undefined) return 0;
             const match = String(value).replace(',', '.').match(/-?\d+(\.\d+)?/);
             return match ? Number(match[0]) : 0;
-        }
-
-        function daysFor(resort = currentResort, elevation = currentElevation) {
-            return forecasts?.[resort]?.[elevation]?.days || [];
-        }
-
-        function daySnow(day) {
-            return PERIODS.reduce((total, period) => total + numberFrom(day?.[period]?.snow), 0);
-        }
-
-        function elevationSnow(resort, elevation) {
-            return daysFor(resort, elevation).reduce((total, day) => total + daySnow(day), 0);
         }
 
         function formatCm(value) {
@@ -546,218 +537,318 @@
         }
 
         function conditionIcon(condition = '') {
-            const text = condition.toLowerCase();
+            const text = String(condition).toLowerCase();
+            if (text.includes('thunder')) return '⛈️';
             if (text.includes('heavy snow')) return '🌨️';
             if (text.includes('snow')) return '❄️';
             if (text.includes('rain')) return '🌧️';
             if (text.includes('clear')) return '☀️';
             if (text.includes('cloud')) return '☁️';
+            if (text.includes('fog')) return '🌫️';
             return '⛅';
         }
 
-        function hashToResort() {
-            const hash = decodeURIComponent(window.location.hash.replace('#', '')).toLowerCase();
-            return Object.keys(resortInfo).find(key => key.toLowerCase() === hash) || 'Val-Thorens';
+        function periodsForDay(day) {
+            return PERIODS.map(period => ({ name: period, data: day?.[period] })).filter(item => item.data);
         }
 
-        function renderResortNav() {
-            const nav = document.getElementById('resort-nav');
-            nav.innerHTML = Object.entries(resortInfo).map(([key, resort]) => `
-                <button class="resort-tab ${key === currentResort ? 'active' : ''}" onclick="switchResort('${key}')">
-                    ${resort.flag} ${resort.name}
-                </button>
-            `).join('');
+        function daySnow(day) {
+            if (!day) return 0;
+            if (day.average_snow !== undefined && day.average_snow !== null) return numberFrom(day.average_snow);
+            return periodsForDay(day).reduce((total, item) => total + numberFrom(item.data.snow), 0);
         }
 
-        function renderHeroActions() {
-            const resort = resortInfo[currentResort];
-            document.getElementById('hero-actions').innerHTML = `
-                <button class="btn" onclick="openWebcam()">📹 Live webcam</button>
-                <a class="btn secondary" href="${resort.pisteMap}" target="_blank" rel="noopener">🗺️ Piste map</a>
-                <a class="btn secondary" href="${resort.liftStatus}" target="_blank" rel="noopener">🚡 Lift status</a>
-                <a class="btn secondary" href="${resort.website}" target="_blank" rel="noopener">↗ Resort site</a>
-            `;
+        function daysFor(resort = currentResort, elevation = currentElevation) {
+            return selectedData(resort, elevation).days || [];
         }
 
-        function renderElevationCards() {
-            const stack = document.getElementById('elevation-stack');
-            stack.innerHTML = ELEVATIONS.map(elevation => {
-                const meta = resortInfo[currentResort].elevations[elevation];
-                const total = elevationSnow(currentResort, elevation);
-                return `
-                    <button class="elevation-card ${elevation === currentElevation ? 'active' : ''}" onclick="switchElevation('${elevation}')">
-                        <div class="elevation-topline">
-                            <div>
-                                <div class="elevation-name">${meta.name}</div>
-                                <div class="elevation-height">${meta.height}</div>
-                            </div>
-                            <div>${elevation === 'top' ? '🗻' : elevation === 'mid' ? '⛰️' : '🏔️'}</div>
-                        </div>
-                        <div class="elevation-snow">${formatCm(total)}</div>
-                        <div class="elevation-sub">forecast total</div>
-                    </button>
-                `;
+        function totalSnow(resort = currentResort, elevation = currentElevation) {
+            return daysFor(resort, elevation).reduce((sum, day) => sum + daySnow(day), 0);
+        }
+
+        function rainTotal(days) {
+            return days.reduce((sum, day) => sum + periodsForDay(day).reduce((s, item) => s + numberFrom(item.data.rain), 0), 0);
+        }
+
+        function tempRange(days) {
+            const temps = days.flatMap(day => periodsForDay(day).map(item => numberFrom(item.data.temperature))).filter(Number.isFinite);
+            if (!temps.length) return null;
+            return { min: Math.min(...temps), max: Math.max(...temps) };
+        }
+
+        function windPeak(days) {
+            const winds = days.flatMap(day => periodsForDay(day).map(item => numberFrom(item.data.wind))).filter(Number.isFinite);
+            return winds.length ? Math.max(...winds) : null;
+        }
+
+        function bestDay(days) {
+            if (!days.length) return null;
+            return days.reduce((winner, day) => daySnow(day) > daySnow(winner) ? day : winner, days[0]);
+        }
+
+        function getExtendedDays(data = selectedData()) {
+            if (Array.isArray(data.extended_forecast)) return data.extended_forecast;
+            if (Array.isArray(data.extended?.extended_forecast)) return data.extended.extended_forecast;
+            return [];
+        }
+
+        function getAnyConditions() {
+            const selected = selectedData();
+            if (selected.snow_conditions && Object.keys(selected.snow_conditions).length) return selected.snow_conditions;
+            const resortData = allForecasts?.[currentResort] || {};
+            for (const elevation of Object.keys(resortData)) {
+                const conditions = resortData[elevation]?.snow_conditions;
+                if (conditions && Object.keys(conditions).length) return conditions;
+            }
+            return null;
+        }
+
+        function loadResortFromHash() {
+            const hash = normalizeKey(window.location.hash.replace('#', ''));
+            const found = resortKeys().find(key => normalizeKey(key) === hash || normalizeKey(metaForResort(key).name) === hash);
+            currentResort = found || resortKeys()[0] || 'Val-Thorens';
+            const available = elevationKeys(currentResort);
+            currentElevation = available.includes(currentElevation) ? currentElevation : (available.includes('bot') ? 'bot' : available[0]);
+        }
+
+        function switchResort(resort) {
+            currentResort = resort;
+            const available = elevationKeys(resort);
+            currentElevation = available.includes(currentElevation) ? currentElevation : (available.includes('bot') ? 'bot' : available[0]);
+            window.location.hash = resort.toLowerCase();
+            loadForecast();
+        }
+
+        function switchElevation(elevation) {
+            currentElevation = elevation;
+            loadForecast();
+        }
+
+        function updateResortLinks() {
+            const meta = metaForResort(currentResort);
+            const links = [
+                meta.webcam ? `<button class="btn" onclick="openWebcam()">📹 Live webcam</button>` : '',
+                meta.pisteMap ? `<a class="btn secondary" href="${meta.pisteMap}" target="_blank" rel="noopener">🗺️ Piste map</a>` : '',
+                meta.liftStatus ? `<a class="btn secondary" href="${meta.liftStatus}" target="_blank" rel="noopener">🚡 Lift status</a>` : '',
+                meta.website ? `<a class="btn secondary" href="${meta.website}" target="_blank" rel="noopener">↗ Resort site</a>` : ''
+            ].filter(Boolean);
+            $('hero-actions').innerHTML = links.join('') || '<span class="pill">No external resort links configured</span>';
+        }
+
+        function renderResortTabs() {
+            $('resort-tabs').innerHTML = resortKeys().map(key => {
+                const meta = metaForResort(key);
+                return `<button class="tab ${key === currentResort ? 'active' : ''}" onclick="switchResort('${key}')">${meta.flag} ${meta.name}</button>`;
             }).join('');
         }
 
-        function collectStats(days) {
-            const allPeriods = days.flatMap(day => PERIODS.map(period => day?.[period]).filter(Boolean));
-            const snow = days.reduce((total, day) => total + daySnow(day), 0);
-            const temps = allPeriods.map(period => numberFrom(period.temperature)).filter(Number.isFinite);
-            const winds = allPeriods.map(period => numberFrom(period.wind)).filter(Number.isFinite);
-            const best = days.reduce((winner, day) => daySnow(day) > daySnow(winner) ? day : winner, days[0] || {});
-            const first = allPeriods[0] || {};
-            return {
-                snow,
-                minTemp: temps.length ? Math.min(...temps) : null,
-                maxTemp: temps.length ? Math.max(...temps) : null,
-                maxWind: winds.length ? Math.max(...winds) : null,
-                bestDay: best,
-                firstCondition: first.condition || '—'
-            };
+        function renderElevationCards() {
+            $('elevation-stack').innerHTML = elevationKeys().map(elevation => {
+                const active = elevation === currentElevation;
+                return `<button class="elevation-card ${active ? 'active' : ''}" onclick="switchElevation('${elevation}')">
+                    <div class="elevation-topline"><div><div class="elevation-name">${elevationLabel(elevation)}</div><div class="elevation-height">${elevationHeight(currentResort, elevation)}</div></div><div>${elevation === 'top' ? '🗻' : elevation === 'mid' ? '⛰️' : '🏔️'}</div></div>
+                    <div class="elevation-snow">${formatCm(totalSnow(currentResort, elevation))}</div>
+                    <div class="small-muted">forecast total</div>
+                </button>`;
+            }).join('');
         }
 
-        function renderMetrics() {
-            const days = daysFor();
-            const stats = collectStats(days);
-            const bestSnow = daySnow(stats.bestDay || {});
-            document.getElementById('hero-snow').textContent = formatCm(stats.snow);
-            document.getElementById('hero-best').textContent = stats.bestDay?.name || '—';
-            document.getElementById('hero-best-note').textContent = bestSnow ? `${formatCm(bestSnow)} expected` : 'No major snow window';
-            document.getElementById('selected-elevation-label').textContent = resortInfo[currentResort].elevations[currentElevation].name;
-            document.getElementById('metrics-grid').innerHTML = `
-                <div class="metric"><div class="metric-label">Condition now</div><div class="metric-value">${conditionIcon(stats.firstCondition)} ${stats.firstCondition}</div><div class="metric-note">first forecast period</div></div>
-                <div class="metric"><div class="metric-label">Temperature range</div><div class="metric-value">${stats.minTemp === null ? '—' : `${Math.round(stats.minTemp)}°/${Math.round(stats.maxTemp)}°`}</div><div class="metric-note">min / max across 7 days</div></div>
-                <div class="metric"><div class="metric-label">Peak wind</div><div class="metric-value">${stats.maxWind === null ? '—' : `${Math.round(stats.maxWind)} km/h`}</div><div class="metric-note">strongest forecast period</div></div>
-                <div class="metric"><div class="metric-label">Powder signal</div><div class="metric-value">${stats.snow >= 20 ? 'Strong' : stats.snow >= 8 ? 'Watch' : 'Low'}</div><div class="metric-note">based on selected elevation</div></div>
+        function renderHero(days) {
+            const meta = metaForResort(currentResort);
+            const best = bestDay(days);
+            $('resort-name').textContent = meta.name;
+            document.title = `${meta.name} Snow Forecast`;
+            $('hero-eyebrow').textContent = `${meta.flag} ${resortKeys().length} resorts · ${elevationKeys().length} elevations loaded`;
+            $('hero-copy').textContent = `${meta.name} forecast across available elevations. The UI now reads the existing JSON data, resort metadata, snow conditions, model fields, and old link behavior.`;
+            $('hero-elevation').textContent = elevationLabel(currentElevation);
+            $('hero-elevation-note').textContent = elevationHeight(currentResort, currentElevation);
+            $('hero-snow').textContent = formatCm(totalSnow());
+            $('hero-best').textContent = best?.name || '—';
+            $('hero-best-note').textContent = best ? `${formatCm(daySnow(best))} expected on ${best.name}` : 'No day data available';
+            updateResortLinks();
+        }
+
+        function renderMetrics(days) {
+            const range = tempRange(days);
+            const wind = windPeak(days);
+            const rain = rainTotal(days);
+            const extended = getExtendedDays();
+            const firstPeriod = periodsForDay(days[0] || {})[0]?.data;
+            $('metrics-grid').innerHTML = `
+                <div class="metric"><div class="label">Condition now</div><div class="metric-value">${conditionIcon(firstPeriod?.condition)} ${firstPeriod?.condition || '—'}</div><div class="metric-note">first forecast period</div></div>
+                <div class="metric"><div class="label">Temperature range</div><div class="metric-value">${range ? `${Math.round(range.min)}°/${Math.round(range.max)}°` : '—'}</div><div class="metric-note">min / max across loaded days</div></div>
+                <div class="metric"><div class="label">Rain total</div><div class="metric-value">${Math.round(rain * 10) / 10} mm</div><div class="metric-note">selected elevation periods</div></div>
+                <div class="metric"><div class="label">Peak wind</div><div class="metric-value">${wind === null ? '—' : `${Math.round(wind)} km/h`}</div><div class="metric-note">selected elevation periods</div></div>
+                <div class="metric"><div class="label">Forecast days</div><div class="metric-value">${days.length}</div><div class="metric-note">from existing `days` function/data</div></div>
+                <div class="metric"><div class="label">Extended days</div><div class="metric-value">${extended.length}</div><div class="metric-note">Open-Meteo when available</div></div>
+                <div class="metric"><div class="label">Sources</div><div class="metric-value">${sourceFlags().filter(s => s.active).length}</div><div class="metric-note">active for current view</div></div>
+                <div class="metric"><div class="label">Powder signal</div><div class="metric-value">${totalSnow() >= 20 ? 'Strong' : totalSnow() >= 6 ? 'Watch' : 'Low'}</div><div class="metric-note">simple snow-total indicator</div></div>
             `;
         }
 
+        function renderCurrentConditions() {
+            const conditions = getAnyConditions();
+            if (!conditions) {
+                $('current-conditions').innerHTML = '<div class="empty-state">No current snow conditions in this data run.</div>';
+                return;
+            }
+            $('current-conditions').innerHTML = Object.entries(conditions).map(([key, value]) => `
+                <div class="condition-item"><div class="condition-key">${key}</div><div class="condition-value">${value || '—'}</div></div>
+            `).join('');
+        }
+
+        function sourceFlags() {
+            const data = selectedData();
+            const days = data.days || [];
+            const extended = getExtendedDays(data);
+            const hasOpenWeather = data.sources?.includes('OpenWeatherMap') || days.some(day => day.openweather !== undefined || day.openweather_details);
+            const hasConsensus = Boolean(data.consensus) || extended.some(day => day.snowfall_sources || day.snowfall_models || day.snowfall_range);
+            return [
+                { name: 'Snow-Forecast.com', active: days.length > 0 },
+                { name: 'Official snow conditions', active: Boolean(getAnyConditions()) },
+                { name: 'OpenWeatherMap', active: Boolean(hasOpenWeather) },
+                { name: 'Open-Meteo extended', active: extended.length > 0 },
+                { name: 'Multi-model / ensemble consensus', active: Boolean(hasConsensus) }
+            ];
+        }
+
+        function renderSources() {
+            $('source-list').innerHTML = sourceFlags().map(source => `
+                <div class="source-chip"><span class="dot ${source.active ? '' : 'off'}"></span><span>${source.name}</span><span class="small-muted">${source.active ? 'active' : 'not in data'}</span></div>
+            `).join('');
+        }
+
         function renderChart() {
-            const labels = daysFor(currentResort, 'bot').map(day => `${day.name?.slice(0, 3) || ''} ${day.date || ''}`.trim());
-            const datasets = ELEVATIONS.map(elevation => ({
-                label: resortInfo[currentResort].elevations[elevation].name,
+            const elevations = elevationKeys();
+            const labels = daysFor(currentResort, currentElevation).map(day => `${String(day.name || '').slice(0,3)} ${day.date || ''}`.trim());
+            const colors = ['#7dd3fc', '#8ef7bd', '#a78bfa', '#facc15', '#fb7185'];
+            const datasets = elevations.map((elevation, index) => ({
+                label: `${elevationLabel(elevation)} ${elevationHeight(currentResort, elevation)}`,
                 data: daysFor(currentResort, elevation).map(daySnow),
+                borderColor: colors[index % colors.length],
+                backgroundColor: colors[index % colors.length],
                 tension: 0.42,
                 borderWidth: elevation === currentElevation ? 4 : 2,
-                pointRadius: elevation === currentElevation ? 5 : 3,
-                fill: false
+                pointRadius: elevation === currentElevation ? 5 : 3
             }));
-
-            const ctx = document.getElementById('snowChart');
             if (snowChart) snowChart.destroy();
-            snowChart = new Chart(ctx, {
+            snowChart = new Chart($('snowChart'), {
                 type: 'line',
                 data: { labels, datasets },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: { labels: { color: '#dbeafe', boxWidth: 14, usePointStyle: true } },
-                        tooltip: { callbacks: { label: item => `${item.dataset.label}: ${formatCm(item.raw)}` } }
-                    },
+                    plugins: { legend: { labels: { color: '#dbeafe', usePointStyle: true } }, tooltip: { callbacks: { label: item => `${item.dataset.label}: ${formatCm(item.raw)}` } } },
                     scales: {
                         x: { ticks: { color: '#9fb3c8' }, grid: { color: 'rgba(255,255,255,0.06)' } },
-                        y: { ticks: { color: '#9fb3c8', callback: value => `${value} cm` }, grid: { color: 'rgba(255,255,255,0.08)' }, beginAtZero: true }
+                        y: { beginAtZero: true, ticks: { color: '#9fb3c8', callback: value => `${value} cm` }, grid: { color: 'rgba(255,255,255,0.08)' } }
                     }
                 }
             });
+            $('selected-elevation-label').textContent = `${elevationLabel(currentElevation)} · ${elevationHeight(currentResort, currentElevation)}`;
         }
 
-        function renderForecastCards() {
-            document.getElementById('forecast-grid').innerHTML = daysFor().map(day => {
+        function renderForecastCards(days) {
+            if (!days.length) {
+                $('forecast-grid').innerHTML = '<div class="empty-state">No day forecast data for this resort/elevation.</div>';
+                return;
+            }
+            $('forecast-grid').innerHTML = days.map(day => {
                 const total = daySnow(day);
-                return `
-                    <article class="day-card">
-                        <div class="day-head">
-                            <div class="day-name">${day.name || 'Day'}</div>
-                            <div class="day-date">${day.date ? `Day ${day.date}` : ''}</div>
-                            <div class="day-total ${total ? '' : 'zero'}">${formatCm(total)}</div>
-                        </div>
-                        <div class="periods">
-                            ${PERIODS.map(period => renderPeriod(period, day?.[period] || {})).join('')}
-                        </div>
-                    </article>
-                `;
+                const compare = day.openweather !== undefined ? `<div class="small-muted">SF ${formatCm(day.snow_forecast_com || 0)} · OW ${formatCm(day.openweather || 0)}</div>` : '';
+                return `<article class="day-card">
+                    <div class="day-head"><div class="day-name">${day.name || 'Day'}</div><div class="day-date">${day.date ? `Day ${day.date}` : ''}</div><div class="day-total ${total ? '' : 'zero'}">${formatCm(total)}</div>${compare}</div>
+                    <div class="periods">${PERIODS.map(period => renderPeriod(period, day?.[period])).join('')}</div>
+                </article>`;
             }).join('');
         }
 
-        function renderPeriod(name, data) {
-            return `
-                <div class="period">
-                    <div class="period-top">
-                        <div class="period-name">${name.toUpperCase()}</div>
-                        <div class="period-condition">${conditionIcon(data.condition)} ${data.condition || '—'}</div>
-                    </div>
-                    <div class="period-stats">
-                        <div class="period-stat"><strong>${formatTemp(data.temperature)}</strong>Temp</div>
-                        <div class="period-stat"><strong>${formatCm(numberFrom(data.snow))}</strong>Snow</div>
-                        <div class="period-stat"><strong>${data.wind || '—'}</strong>Wind</div>
-                    </div>
+        function renderPeriod(period, data) {
+            if (!data) return `<div class="period"><div class="period-top"><div class="period-name">${period.toUpperCase()}</div><div class="period-condition">No data</div></div></div>`;
+            return `<div class="period">
+                <div class="period-top"><div class="period-name">${period.toUpperCase()}</div><div class="period-condition">${conditionIcon(data.condition)} ${data.condition || '—'}</div></div>
+                <div class="period-stats">
+                    <div class="period-stat"><strong>${formatTemp(data.temperature)}</strong>Temp</div>
+                    <div class="period-stat"><strong>${formatCm(numberFrom(data.snow))}</strong>Snow</div>
+                    <div class="period-stat"><strong>${data.wind || '—'}</strong>Wind</div>
                 </div>
-            `;
+            </div>`;
         }
 
-        function renderDashboard() {
-            const resort = resortInfo[currentResort];
-            document.title = `${resort.name} Snow Forecast`;
-            document.getElementById('resort-name').textContent = resort.name;
-            document.getElementById('hero-copy').textContent = `${resort.name} forecast across bottom, mid, and top elevations. Built for quick resort comparison on mobile and desktop.`;
-            renderResortNav();
-            renderHeroActions();
+        function renderExtendedForecast() {
+            const data = selectedData();
+            const extended = getExtendedDays(data);
+            if (!extended.length) {
+                $('extended-panel').style.display = 'none';
+                return;
+            }
+            $('extended-panel').style.display = 'block';
+            $('extended-count').textContent = `${extended.length} days`;
+            $('extended-caption').textContent = data.consensus ? `Consensus: ${data.consensus.method || 'model median'}` : (data.extended?.source || 'Open-Meteo extended forecast');
+            $('extended-grid').innerHTML = extended.slice(0, 16).map(day => {
+                const snow = numberFrom(day.snowfall);
+                const range = Array.isArray(day.snowfall_range) ? `${formatCm(numberFrom(day.snowfall_range[0]))}–${formatCm(numberFrom(day.snowfall_range[1]))}` : '';
+                const temp = day.temp_min !== undefined && day.temp_max !== undefined ? `${Math.round(numberFrom(day.temp_min))}°/${Math.round(numberFrom(day.temp_max))}°` : '—';
+                return `<div class="extended-day">
+                    <div class="day-name">${day.day_name ? String(day.day_name).slice(0,3) : ''}</div>
+                    <div class="extended-date">${day.date || ''}</div>
+                    <div class="extended-weather">${conditionIcon(String(day.weather_code || day.condition || ''))}</div>
+                    <div class="extended-snow">${formatCm(snow)}</div>
+                    <div class="extended-range">${range || `${temp} · ${Math.round(numberFrom(day.precipitation || 0))}mm precip`}</div>
+                    ${day.snowfall_sources ? `<div class="extended-range">${day.snowfall_sources} model values</div>` : ''}
+                </div>`;
+            }).join('');
+        }
+
+        function loadForecast() {
+            const days = daysFor();
+            renderResortTabs();
+            renderHero(days);
             renderElevationCards();
-            renderMetrics();
+            renderMetrics(days);
+            renderCurrentConditions();
+            renderSources();
             renderChart();
-            renderForecastCards();
-            document.getElementById('updated-pill').textContent = `Updated view · ${new Date().toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}`;
-        }
-
-        function switchResort(resort) {
-            currentResort = resort;
-            currentElevation = forecasts?.[resort]?.[currentElevation] ? currentElevation : 'bot';
-            window.location.hash = resort.toLowerCase();
-            renderDashboard();
-        }
-
-        function switchElevation(elevation) {
-            currentElevation = elevation;
-            renderElevationCards();
-            renderMetrics();
-            renderChart();
-            renderForecastCards();
+            renderForecastCards(days);
+            renderExtendedForecast();
+            const updated = selectedData().last_updated || selectedData().extended?.last_updated || metadata.last_updated;
+            $('updated-pill').textContent = updated ? `Data updated · ${new Date(updated).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}` : 'Data loaded';
         }
 
         function openWebcam() {
-            const resort = resortInfo[currentResort];
-            document.getElementById('webcam-title').textContent = `${resort.name} live webcam`;
-            document.getElementById('webcam-frame').src = resort.webcam;
-            document.getElementById('webcam-modal').classList.add('active');
+            const meta = metaForResort(currentResort);
+            if (!meta.webcam) return;
+            $('webcam-title').textContent = `${meta.name} live webcam`;
+            $('webcam-frame').src = meta.webcam;
+            $('webcam-modal').classList.add('active');
         }
 
         function closeWebcam() {
-            document.getElementById('webcam-modal').classList.remove('active');
-            document.getElementById('webcam-frame').src = '';
+            $('webcam-modal').classList.remove('active');
+            $('webcam-frame').src = '';
         }
 
-        document.getElementById('webcam-modal').addEventListener('click', event => {
-            if (event.target.id === 'webcam-modal') closeWebcam();
-        });
+        $('webcam-modal').addEventListener('click', event => { if (event.target.id === 'webcam-modal') closeWebcam(); });
+        window.addEventListener('hashchange', () => { loadResortFromHash(); loadForecast(); });
 
         async function init() {
             try {
-                currentResort = hashToResort();
-                renderResortNav();
-                const response = await fetch(DATA_URL, { cache: 'no-store' });
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                forecasts = await response.json();
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('dashboard').style.display = 'grid';
-                renderDashboard();
+                const [data, meta] = await Promise.all([
+                    fetchJson(DATA_URL),
+                    fetchJson(META_URL).catch(() => ({}))
+                ]);
+                allForecasts = data || {};
+                metadata = meta || {};
+                if (!resortKeys().length) throw new Error('No resorts found in all-forecasts.json');
+                loadResortFromHash();
+                $('loading').style.display = 'none';
+                $('dashboard').style.display = 'grid';
+                loadForecast();
             } catch (error) {
                 console.error(error);
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('error').style.display = 'block';
-                document.getElementById('updated-pill').textContent = 'Data unavailable';
+                $('loading').style.display = 'none';
+                $('error').style.display = 'block';
+                $('updated-pill').textContent = 'Data unavailable';
             }
         }
 

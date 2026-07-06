@@ -4,7 +4,7 @@ Snow and weather dashboard for multiple ski resorts including Val Thorens, Cervi
 
 ## Highlights
 - 7-day outlook for bottom, mid, and top elevations (AM/PM/Night breakdown)
-- Multi-resort support (Val Thorens, Cervinia, Via Lattea, Monterosa Ski, Gudauri, St. Anton, Alpe d'Huez, Mount Hermon) with combined JSON feeds in `data/`
+- Multi-resort support (Val Thorens, Cervinia, Via Lattea, Monterosa Ski, Gudauri, St. Anton, Alpe d'Huez, La Plagne, Mount Hermon) with combined JSON feeds in `data/`
 - Optional OpenWeatherMap fusion for temperature, snow, and precipitation cross-checks
 - REST API for live pulls plus static JSON for CDN/static hosting workflows
 - Works on Vercel (dynamic Flask) or GitHub Pages (static assets refreshed every 3 hours)

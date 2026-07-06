@@ -139,7 +139,7 @@ def get_formatted_forecast():
             elevation = 'bot'
         
         # Validate resort
-        valid_resorts = ['Val-Thorens', 'Cervinia', 'Via-Lattea', 'Monterosa-Ski', 'Gudauri', 'St-Anton', 'Alpe-d-Huez', 'Mount-Hermon']
+        valid_resorts = ['Val-Thorens', 'Cervinia', 'Via-Lattea', 'Monterosa-Ski', 'Gudauri', 'St-Anton', 'Alpe-d-Huez', 'La-Plagne', 'Mount-Hermon']
         if resort not in valid_resorts:
             resort = 'Val-Thorens'
         
@@ -152,6 +152,7 @@ def get_formatted_forecast():
             'Gudauri': 'Gudauri',
             'St-Anton': 'St-Anton',
             'Alpe-d-Huez': 'Alpe-d-Huez',
+            'La-Plagne': 'La-Plagne',
             'Mount-Hermon': 'mounthermon'
         }
         resort_url = resort_url_mapping.get(resort, resort)

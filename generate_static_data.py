@@ -476,6 +476,7 @@ def main():
         'Gudauri': {'lat': 42.4789, 'lon': 44.4728},
         'St-Anton': {'lat': 47.1275, 'lon': 10.2639},
         'Alpe-d-Huez': {'lat': 45.0908, 'lon': 6.0714},
+        'La-Plagne': {'lat': 45.5052, 'lon': 6.6782},
         'Mount-Hermon': {'lat': 33.4162, 'lon': 35.8572}
     }
     
@@ -488,6 +489,7 @@ def main():
         'Gudauri': {'bot': 1990, 'mid': 2350, 'top': 3279},
         'St-Anton': {'bot': 1304, 'mid': 2150, 'top': 2811},
         'Alpe-d-Huez': {'bot': 1250, 'mid': 2350, 'top': 3330},
+        'La-Plagne': {'bot': 1250, 'mid': 2250, 'top': 3250},
         'Mount-Hermon': {'bot': 1600, 'mid': 2000, 'top': 2236}
     }
     
@@ -500,6 +502,7 @@ def main():
         'Gudauri': 'Gudauri',
         'St-Anton': 'St-Anton',
         'Alpe-d-Huez': 'Alpe-d-Huez',
+        'La-Plagne': 'La-Plagne',
         'Mount-Hermon': 'mounthermon'
     }
     
@@ -511,6 +514,7 @@ def main():
         'Gudauri': ['bot', 'mid', 'top'],
         'St-Anton': ['bot', 'mid', 'top'],
         'Alpe-d-Huez': ['bot', 'mid', 'top'],
+        'La-Plagne': ['bot', 'mid', 'top'],
         'Mount-Hermon': ['bot', 'mid', 'top']
     }
     
@@ -527,8 +531,8 @@ def main():
     # Initialize Weather Unlocked API if available
     weatherunlocked_api = None
     if WEATHERUNLOCKED_AVAILABLE:
-        app_id = os.environ.get('WEATHERUNLOCKED_APP_ID', '24fbe7db')
-        app_key = os.environ.get('WEATHERUNLOCKED_KEY', 'c553a3a126b8b8eb808f36548c1ed467')
+        app_id = os.environ.get('WEATHERUNLOCKED_APP_ID')
+        app_key = os.environ.get('WEATHERUNLOCKED_KEY')
         if app_id and app_key:
             weatherunlocked_api = WeatherUnlockedAPI(app_id, app_key)
             print("✓ Weather Unlocked API initialized")

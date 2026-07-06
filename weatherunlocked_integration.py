@@ -12,8 +12,10 @@ class WeatherUnlockedAPI:
     """Integration with Weather Unlocked API"""
     
     def __init__(self, app_id=None, app_key=None):
-        self.app_id = app_id or os.environ.get('WEATHERUNLOCKED_APP_ID', '24fbe7db')
-        self.app_key = app_key or os.environ.get('WEATHERUNLOCKED_KEY', 'c553a3a126b8b8eb808f36548c1ed467')
+        self.app_id = app_id or os.environ.get('WEATHERUNLOCKED_APP_ID')
+        self.app_key = app_key or os.environ.get('WEATHERUNLOCKED_KEY')
+        if not self.app_id or not self.app_key:
+            raise ValueError('Set WEATHERUNLOCKED_APP_ID and WEATHERUNLOCKED_KEY environment variables')
         self.base_url = 'http://api.weatherunlocked.com/api'
         
         # Resort coordinates
@@ -52,6 +54,11 @@ class WeatherUnlockedAPI:
                 'bot': {'lat': 45.09, 'lon': 6.07},      # 1250m
                 'mid': {'lat': 45.10, 'lon': 6.08},      # 2350m
                 'top': {'lat': 45.11, 'lon': 6.09}       # 3330m
+            },
+            'La-Plagne': {
+                'bot': {'lat': 45.5550, 'lon': 6.7100},  # 1250m (Montchavin)
+                'mid': {'lat': 45.5052, 'lon': 6.6782},  # 2250m (Plagne Centre)
+                'top': {'lat': 45.4780, 'lon': 6.7230}   # 3250m (Bellecote glacier)
             },
             'Mount-Hermon': {
                 'bot': {'lat': 33.4150, 'lon': 35.8560}, # 1600m

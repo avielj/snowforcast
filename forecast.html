@@ -851,6 +851,7 @@
                 <a href="#" data-resort="Gudauri" onclick="switchResort('Gudauri'); return false;">🇬🇪 Gudauri</a>
                 <a href="#" data-resort="St-Anton" onclick="switchResort('St-Anton'); return false;">🇦🇹 St. Anton</a>
                 <a href="#" data-resort="Alpe-d-Huez" onclick="switchResort('Alpe-d-Huez'); return false;">🇫🇷 Alpe d'Huez</a>
+                <a href="#" data-resort="La-Plagne" onclick="switchResort('La-Plagne'); return false;">🇫🇷 La Plagne</a>
                 <a href="#" data-resort="Mount-Hermon" onclick="switchResort('Mount-Hermon'); return false;">🇮🇱 Mount Hermon</a>
             </div>
         </div>
@@ -1064,6 +1065,18 @@
                     'bot': { name: 'Bottom', height: '1250m', emoji: '🏔️' },
                     'mid': { name: 'Mid', height: '2350m', emoji: '⛰️' },
                     'top': { name: 'Top', height: '3330m', emoji: '🗻' }
+                }
+            },
+            'La-Plagne': {
+                name: 'La Plagne',
+                webcam: 'https://en.la-plagne.com/discover/ski-area/webcams',
+                pisteMap: 'https://en.la-plagne.com/discover/ski-area',
+                website: 'https://en.la-plagne.com/',
+                liftStatus: 'https://en.la-plagne.com/discover/ski-area',
+                elevations: {
+                    'bot': { name: 'Bottom', height: '1250m', emoji: '🏔️' },
+                    'mid': { name: 'Mid', height: '2250m', emoji: '⛰️' },
+                    'top': { name: 'Top', height: '3250m', emoji: '🗻' }
                 }
             },
             'Mount-Hermon': {
@@ -2198,6 +2211,10 @@
                     'Cervinia': { bot: 2050, mid: 2900, top: 3480 },
                     'Via-Lattea': { bot: 1350, mid: 2100, top: 2823 },
                     'Monterosa-Ski': { bot: 1212, mid: 2200, top: 3275 },
+                    'Gudauri': { bot: 1990, mid: 2350, top: 3279 },
+                    'St-Anton': { bot: 1304, mid: 2150, top: 2811 },
+                    'Alpe-d-Huez': { bot: 1250, mid: 2350, top: 3330 },
+                    'La-Plagne': { bot: 1250, mid: 2250, top: 3250 },
                     'Mount-Hermon': { bot: 1600, mid: 2000, top: 2236 }
                 };
                 const resortElevation = elevationHeights[currentResort]?.[currentElevation] || 2300;

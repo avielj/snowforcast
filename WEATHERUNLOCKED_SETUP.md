@@ -13,8 +13,8 @@ Weather Unlocked provides detailed weather forecasts with:
 
 ## API Credentials
 
-**App ID:** `24fbe7db`  
-**API Key:** `c553a3a126b8b8eb808f36548c1ed467`
+**App ID:** `YOUR_APP_ID`  
+**API Key:** `YOUR_API_KEY`
 
 These credentials are for the "nope's App" on Weather Unlocked.
 
@@ -25,8 +25,8 @@ These credentials are for the "nope's App" on Weather Unlocked.
 Set these environment variables for production:
 
 ```bash
-export WEATHERUNLOCKED_APP_ID="24fbe7db"
-export WEATHERUNLOCKED_KEY="c553a3a126b8b8eb808f36548c1ed467"
+export WEATHERUNLOCKED_APP_ID="your_app_id"
+export WEATHERUNLOCKED_KEY="your_api_key"
 ```
 
 ### Default Configuration

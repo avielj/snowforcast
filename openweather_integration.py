@@ -28,6 +28,11 @@ class OpenWeatherAPI:
                 'mid': {'lat': 45.9356, 'lon': 7.6314},  # 2700m
                 'top': {'lat': 45.9372, 'lon': 7.6331}   # 3480m
             },
+            'La-Plagne': {
+                'bot': {'lat': 45.5550, 'lon': 6.7100},  # 1250m (Montchavin)
+                'mid': {'lat': 45.5052, 'lon': 6.6782},  # 2250m (Plagne Centre)
+                'top': {'lat': 45.4780, 'lon': 6.7230}   # 3250m (Bellecote glacier)
+            },
             'Mount-Hermon': {
                 'bot': {'lat': 33.4150, 'lon': 35.8560},  # 1600m
                 'mid': {'lat': 33.4162, 'lon': 35.8572},  # 2000m

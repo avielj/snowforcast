@@ -25,7 +25,7 @@
   "routes": [
     {
       "src": "/forecast.html",
-      "dest": "/forecast.html"
+      "dest": "app.py"
     },
     {
       "src": "/forecast-dark.html",
@@ -41,6 +41,18 @@
     },
     {
       "src": "/api/(.*)",
+      "dest": "app.py"
+    },
+    {
+      "src": "/data/(.*)",
+      "dest": "app.py"
+    },
+    {
+      "src": "/share/(.*)",
+      "dest": "app.py"
+    },
+    {
+      "src": "/share-card/(.*)",
       "dest": "app.py"
     },
     {

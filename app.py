@@ -3,9 +3,16 @@
 
 from flask import Flask, Response, jsonify, render_template_string, request, send_from_directory
 import html
+import io
 import json
 import os
 import re
+
+try:
+    from PIL import Image, ImageDraw, ImageFont, ImageFilter
+    PIL_AVAILABLE = True
+except Exception:
+    PIL_AVAILABLE = False
 
 app = Flask(__name__)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -157,7 +164,6 @@ def _forecast_summary(resort, elevation):
 
 
 def _enhance_forecast_html(page_html):
-    """Runtime patch for UI-only behavior without rewriting the large static file."""
     country_map = {key: value['country'] for key, value in RESORT_INFO.items()}
     country_order = {country: index for index, country in enumerate(COUNTRY_ORDER)}
     enhancement = """
@@ -348,6 +354,112 @@ def _serve_forecast_html():
         return _enhance_forecast_html(f.read())
 
 
+def _font(size, bold=False):
+    if not PIL_AVAILABLE:
+        return None
+    candidates = [
+        '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf' if bold else '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
+        '/usr/share/fonts/dejavu/DejaVuSans-Bold.ttf' if bold else '/usr/share/fonts/dejavu/DejaVuSans.ttf',
+    ]
+    for path in candidates:
+        try:
+            return ImageFont.truetype(path, size)
+        except Exception:
+            pass
+    return ImageFont.load_default()
+
+
+def _draw_text(draw, xy, text, font, fill, max_width=None, line_height=None, max_lines=2):
+    if max_width is None:
+        draw.text(xy, text, font=font, fill=fill)
+        return xy[1] + (line_height or 34)
+    words = str(text).split()
+    lines, line = [], ''
+    for word in words:
+        candidate = f"{line} {word}".strip()
+        width = draw.textbbox((0, 0), candidate, font=font)[2]
+        if width <= max_width or not line:
+            line = candidate
+        else:
+            lines.append(line)
+            line = word
+            if len(lines) >= max_lines:
+                break
+    if line and len(lines) < max_lines:
+        lines.append(line)
+    if words and len(lines) == max_lines and ' '.join(lines).split() != words:
+        lines[-1] = lines[-1].rstrip('…') + '…'
+    y = xy[1]
+    step = line_height or 38
+    for line in lines:
+        draw.text((xy[0], y), line, font=font, fill=fill)
+        y += step
+    return y
+
+
+def _share_card_png(summary):
+    if not PIL_AVAILABLE:
+        raise RuntimeError('Pillow unavailable')
+
+    W, H = 1200, 630
+    img = Image.new('RGB', (W, H), '#06111f')
+    draw = ImageDraw.Draw(img)
+
+    for y in range(H):
+        r = int(6 + y * 0.015)
+        g = int(17 + y * 0.035)
+        b = int(31 + y * 0.055)
+        draw.line([(0, y), (W, y)], fill=(r, g, min(b, 72)))
+    glow = Image.new('RGBA', (W, H), (0, 0, 0, 0))
+    gdraw = ImageDraw.Draw(glow)
+    gdraw.ellipse((-190, -220, 560, 530), fill=(56, 189, 248, 70))
+    gdraw.ellipse((780, -150, 1320, 310), fill=(167, 139, 250, 42))
+    glow = glow.filter(ImageFilter.GaussianBlur(70))
+    img = Image.alpha_composite(img.convert('RGBA'), glow)
+    draw = ImageDraw.Draw(img)
+
+    draw.rounded_rectangle((58, 54, 1142, 576), radius=46, fill=(8, 23, 39, 235), outline=(255, 255, 255, 44), width=2)
+    draw.rounded_rectangle((58, 54, 1142, 155), radius=46, fill=(245, 251, 255, 242))
+    draw.rectangle((58, 118, 1142, 155), fill=(245, 251, 255, 242))
+    draw.rounded_rectangle((58, 453, 1142, 576), radius=32, fill=(8, 12, 43, 245))
+
+    f_brand = _font(27, True)
+    f_title = _font(48, True)
+    f_big = _font(74, True)
+    f_metric = _font(34, True)
+    f_label = _font(25, True)
+    f_text = _font(28, False)
+    f_small = _font(23, False)
+
+    title = f"{summary['resort_name']} {summary['elevation_label']}"
+    draw.text((92, 86), 'Snow Forecast', font=f_brand, fill='#06111f')
+    draw.text((910, 88), summary['country'], font=f_label, fill='#426579')
+    draw.text((92, 195), title, font=f_title, fill='#f6fbff')
+    draw.text((92, 253), f"{summary['height']} · {summary['status_icon']} {summary['status']}", font=f_text, fill='#c9d8e8')
+
+    def metric(x, y, icon, label, value, color='#f6fbff'):
+        draw.text((x, y), icon, font=f_metric, fill=color)
+        draw.text((x + 56, y + 2), label, font=f_label, fill='#9fb3c8')
+        draw.text((x + 56, y + 38), value, font=f_metric, fill=color)
+
+    metric(92, 320, '❄', '7-day snow', _cm(summary['snow']), '#7dd3fc')
+    metric(455, 320, '↗', 'Best window', summary['best_day'], '#8ef7bd')
+    metric(802, 320, '↘', 'Rain / wind', f"{_mm(summary['rain'])} · {round(summary['wind'])} km/h", '#facc15')
+
+    draw.text((92, 492), 'Mountain decision card', font=f_label, fill='#7dd3fc')
+    _draw_text(draw, (92, 526), summary['description'], f_small, '#dbeafe', max_width=715, line_height=30, max_lines=2)
+    draw.text((890, 500), 'All elevations', font=f_label, fill='#f6fbff')
+    y = 532
+    for item in summary['all_elevations'][:3]:
+        draw.text((890, y), f"{item['label']}: {_cm(item['snow'])}", font=f_small, fill='#c9d8e8')
+        y += 31
+
+    output = io.BytesIO()
+    img.convert('RGB').save(output, format='PNG', optimize=True)
+    output.seek(0)
+    return output.getvalue()
+
+
 @app.route('/')
 @app.route('/forecast.html')
 def index():
@@ -368,7 +480,7 @@ def share_preview(resort, elevation):
 
     share_url = request.url_root.rstrip('/') + f"/share/{summary['resort']}/{summary['elevation']}"
     app_url = request.url_root.rstrip('/') + f"/#{summary['resort']}/{summary['elevation']}"
-    image_url = request.url_root.rstrip('/') + f"/share-card/{summary['resort']}/{summary['elevation']}.svg"
+    image_url = request.url_root.rstrip('/') + f"/share-card/{summary['resort']}/{summary['elevation']}.png"
     title = f"{summary['flag']} {summary['resort_name']} {summary['elevation_label']} snow forecast"
     description = f"{summary['status_icon']} {summary['status']} · {summary['description']}"
 
@@ -385,53 +497,61 @@ def share_preview(resort, elevation):
   <meta property="og:description" content="{{ description }}">
   <meta property="og:url" content="{{ share_url }}">
   <meta property="og:image" content="{{ image_url }}">
-  <meta property="og:image:type" content="image/svg+xml">
+  <meta property="og:image:secure_url" content="{{ image_url }}">
+  <meta property="og:image:type" content="image/png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="{{ title }}">
   <meta name="twitter:description" content="{{ description }}">
   <meta name="twitter:image" content="{{ image_url }}">
-  <meta http-equiv="refresh" content="0; url={{ app_url }}">
+  <meta http-equiv="refresh" content="1; url={{ app_url }}">
   <style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#06111f;color:#f6fbff;font-family:system-ui,sans-serif}a{color:#7dd3fc}.card{max-width:720px;padding:32px}.muted{color:#9fb3c8}</style>
 </head>
 <body><main class="card"><h1>{{ title }}</h1><p>{{ description }}</p><p class="muted">Opening the live dashboard…</p><p><a href="{{ app_url }}">Open forecast</a></p></main></body>
 </html>""", title=title, description=description, share_url=share_url, image_url=image_url, app_url=app_url)
 
 
+@app.route('/share-card/<resort>/<elevation>.png')
+def share_card_png(resort, elevation):
+    resort = _safe_key(resort)
+    elevation = _safe_key(elevation)
+    try:
+        summary = _forecast_summary(resort, elevation)
+    except Exception:
+        summary = _forecast_summary('Val-Thorens', 'top')
+    try:
+        png = _share_card_png(summary)
+        response = Response(png, mimetype='image/png')
+        response.headers['Cache-Control'] = 'public, max-age=900'
+        return response
+    except Exception:
+        return share_card_svg(summary['resort'], summary['elevation'])
+
+
 @app.route('/share-card/<resort>/<elevation>.svg')
-def share_card(resort, elevation):
+def share_card_svg(resort, elevation):
     resort = _safe_key(resort)
     elevation = _safe_key(elevation)
     try:
         s = _forecast_summary(resort, elevation)
     except Exception:
         s = _forecast_summary('Val-Thorens', 'top')
-
     rows = ''.join([
         f"<text x='760' y='{330 + i*48}' fill='#c9d8e8' font-size='30'>{html.escape(item['label'])} {html.escape(item['height'])}: {html.escape(_cm(item['snow']))}</text>"
         for i, item in enumerate(s['all_elevations'][:3])
     ])
     svg = f"""<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='630' viewBox='0 0 1200 630'>
-  <defs>
-    <linearGradient id='bg' x1='0' y1='0' x2='1' y2='1'><stop offset='0%' stop-color='#06111f'/><stop offset='45%' stop-color='#0b2842'/><stop offset='100%' stop-color='#17142a'/></linearGradient>
-    <radialGradient id='glow' cx='20%' cy='10%' r='70%'><stop offset='0%' stop-color='#38bdf8' stop-opacity='.42'/><stop offset='70%' stop-color='#38bdf8' stop-opacity='0'/></radialGradient>
-    <filter id='shadow'><feDropShadow dx='0' dy='18' stdDeviation='24' flood-color='#000' flood-opacity='.45'/></filter>
-  </defs>
-  <rect width='1200' height='630' fill='url(#bg)'/>
-  <rect width='1200' height='630' fill='url(#glow)'/>
-  <circle cx='1020' cy='95' r='180' fill='#a78bfa' opacity='.16'/>
-  <path d='M0 500 L130 345 L255 455 L390 270 L560 500 Z' fill='#e0f7ff' opacity='.30'/>
-  <path d='M260 510 L430 330 L590 455 L730 260 L980 510 Z' fill='#ffffff' opacity='.18'/>
-  <path d='M0 560 L240 420 L490 545 L730 380 L1200 560 L1200 630 L0 630 Z' fill='#ffffff' opacity='.12'/>
-  <g filter='url(#shadow)'><rect x='58' y='58' width='1084' height='514' rx='44' fill='rgba(5,16,30,.72)' stroke='rgba(255,255,255,.20)'/></g>
-  <text x='92' y='125' fill='#7dd3fc' font-size='28' font-weight='800'>SNOW FORECAST · {html.escape(s['country'].upper())}</text>
-  <text x='92' y='210' fill='#f6fbff' font-size='72' font-weight='900'>{html.escape(s['resort_name'])}</text>
-  <text x='92' y='266' fill='#c9d8e8' font-size='36'>{html.escape(s['elevation_label'])} · {html.escape(s['height'])}</text>
-  <text x='92' y='365' fill='#f6fbff' font-size='86' font-weight='900'>{html.escape(_cm(s['snow']))}</text>
-  <text x='92' y='414' fill='#9fb3c8' font-size='31'>7-day snowfall · {html.escape(s['status_icon'])} {html.escape(s['status'])}</text>
-  <text x='92' y='476' fill='#c9d8e8' font-size='30'>Best window: {html.escape(s['best_day'])}</text>
-  <text x='92' y='520' fill='#c9d8e8' font-size='30'>Rain {html.escape(_mm(s['rain']))} · Wind {round(s['wind'])} km/h · Temp {html.escape(s['temp'])}</text>
+  <rect width='1200' height='630' fill='#06111f'/>
+  <rect x='58' y='58' width='1084' height='514' rx='44' fill='#081727' stroke='rgba(255,255,255,.20)'/>
+  <rect x='58' y='58' width='1084' height='108' rx='44' fill='#f5fbff'/>
+  <text x='92' y='126' fill='#06111f' font-size='38' font-weight='800'>Snow Forecast</text>
+  <text x='92' y='230' fill='#f6fbff' font-size='72' font-weight='900'>{html.escape(s['resort_name'])}</text>
+  <text x='92' y='286' fill='#c9d8e8' font-size='36'>{html.escape(s['elevation_label'])} · {html.escape(s['height'])}</text>
+  <text x='92' y='385' fill='#7dd3fc' font-size='86' font-weight='900'>{html.escape(_cm(s['snow']))}</text>
+  <text x='92' y='434' fill='#9fb3c8' font-size='31'>7-day snowfall · {html.escape(s['status_icon'])} {html.escape(s['status'])}</text>
+  <text x='92' y='496' fill='#c9d8e8' font-size='30'>Best window: {html.escape(s['best_day'])}</text>
+  <text x='92' y='540' fill='#c9d8e8' font-size='30'>Rain {html.escape(_mm(s['rain']))} · Wind {round(s['wind'])} km/h · Temp {html.escape(s['temp'])}</text>
   <text x='760' y='268' fill='#f6fbff' font-size='36' font-weight='800'>All elevations</text>
   {rows}
 </svg>"""

@@ -195,26 +195,6 @@ def _enhance_forecast_html(page_html):
     return `${window.location.origin}/share/${resort}/${elevation}`;
   }
 
-  function shareTitleSafe() {
-    try {
-      const meta = metaForResort(currentResort);
-      const elevation = elevationLabel(currentElevation);
-      return `${meta.flag || '🏔️'} ${meta.name} ${elevation} snow forecast`;
-    } catch (error) {
-      return 'Snow forecast';
-    }
-  }
-
-  function shareTextSafe() {
-    try {
-      const decision = buildDecision();
-      const meta = metaForResort(currentResort);
-      return `${meta.name}: ${decision.status.icon} ${decision.status.label}. ${decision.reasons[0]}`;
-    } catch (error) {
-      return 'Snow forecast preview';
-    }
-  }
-
   function shareButtons() {
     return Array.from(document.querySelectorAll('#top-share-btn, #share-btn, [data-share-button]'));
   }
@@ -228,7 +208,6 @@ def _enhance_forecast_html(page_html):
         button.textContent = button.dataset.originalText || '🔗 Share forecast';
       }, 1700);
     });
-
     let toast = document.getElementById('share-toast');
     if (!toast) {
       toast = document.createElement('div');
@@ -245,10 +224,7 @@ def _enhance_forecast_html(page_html):
 
   async function copyFallback(text) {
     if (navigator.clipboard && window.isSecureContext) {
-      try {
-        await navigator.clipboard.writeText(text);
-        return true;
-      } catch (error) {}
+      try { await navigator.clipboard.writeText(text); return true; } catch (error) {}
     }
     try {
       const textarea = document.createElement('textarea');
@@ -262,19 +238,15 @@ def _enhance_forecast_html(page_html):
       const copied = document.execCommand('copy');
       textarea.remove();
       return copied;
-    } catch (error) {
-      return false;
-    }
+    } catch (error) { return false; }
   }
 
   async function robustShareForecast() {
     const url = sharePreviewUrlSafe();
-    const title = shareTitleSafe();
-    const text = shareTextSafe();
 
     if (navigator.share) {
       try {
-        await navigator.share({ title, text, url });
+        await navigator.share({ url });
         showShareStatus('✓ Shared');
         return;
       } catch (error) {
@@ -285,9 +257,9 @@ def _enhance_forecast_html(page_html):
       }
     }
 
-    const copied = await copyFallback(`${title}\n${text}\n${url}`);
+    const copied = await copyFallback(url);
     if (copied) {
-      showShareStatus('✓ Share link copied');
+      showShareStatus('✓ Link copied');
     } else {
       window.prompt('Copy this share link:', url);
       showShareStatus('Share link ready');
@@ -402,57 +374,63 @@ def _share_card_png(summary):
         raise RuntimeError('Pillow unavailable')
 
     W, H = 1200, 630
-    img = Image.new('RGB', (W, H), '#06111f')
+    img = Image.new('RGB', (W, H), '#101418')
     draw = ImageDraw.Draw(img)
-
     for y in range(H):
-        r = int(6 + y * 0.015)
-        g = int(17 + y * 0.035)
-        b = int(31 + y * 0.055)
-        draw.line([(0, y), (W, y)], fill=(r, g, min(b, 72)))
+        shade = int(16 + y * 0.018)
+        draw.line([(0, y), (W, y)], fill=(shade, min(shade + 4, 34), min(shade + 10, 52)))
+
     glow = Image.new('RGBA', (W, H), (0, 0, 0, 0))
     gdraw = ImageDraw.Draw(glow)
-    gdraw.ellipse((-190, -220, 560, 530), fill=(56, 189, 248, 70))
-    gdraw.ellipse((780, -150, 1320, 310), fill=(167, 139, 250, 42))
-    glow = glow.filter(ImageFilter.GaussianBlur(70))
+    gdraw.ellipse((760, -260, 1330, 260), fill=(134, 239, 172, 62))
+    gdraw.ellipse((500, -260, 1050, 260), fill=(125, 211, 252, 45))
+    glow = glow.filter(ImageFilter.GaussianBlur(72))
     img = Image.alpha_composite(img.convert('RGBA'), glow)
     draw = ImageDraw.Draw(img)
 
-    draw.rounded_rectangle((58, 54, 1142, 576), radius=46, fill=(8, 23, 39, 235), outline=(255, 255, 255, 44), width=2)
-    draw.rounded_rectangle((58, 54, 1142, 155), radius=46, fill=(245, 251, 255, 242))
-    draw.rectangle((58, 118, 1142, 155), fill=(245, 251, 255, 242))
-    draw.rounded_rectangle((58, 453, 1142, 576), radius=32, fill=(8, 12, 43, 245))
+    # Main WhatsApp/Open Graph card: white top, navy strip, dark footer.
+    x0, y0, x1, y1 = 78, 58, 1122, 572
+    draw.rounded_rectangle((x0, y0, x1, y1), radius=32, fill=(30, 30, 30, 255))
+    draw.rounded_rectangle((x0, y0, x1, y0 + 318), radius=32, fill=(250, 252, 255, 255))
+    draw.rectangle((x0, y0 + 280, x1, y0 + 330), fill=(250, 252, 255, 255))
+    draw.rectangle((x0, y0 + 318, x1, y0 + 408), fill=(3, 8, 48, 255))
+    draw.rectangle((x0, y0 + 408, x1, y1 - 28), fill=(31, 31, 31, 255))
+    draw.rounded_rectangle((x0, y1 - 70, x1, y1), radius=32, fill=(31, 31, 31, 255))
 
-    f_brand = _font(27, True)
     f_title = _font(48, True)
-    f_big = _font(74, True)
     f_metric = _font(34, True)
-    f_label = _font(25, True)
-    f_text = _font(28, False)
-    f_small = _font(23, False)
+    f_metric_label = _font(31, True)
+    f_footer = _font(29, True)
+    f_small = _font(25, False)
+    f_brand = _font(33, True)
 
     title = f"{summary['resort_name']} {summary['elevation_label']}"
-    draw.text((92, 86), 'Snow Forecast', font=f_brand, fill='#06111f')
-    draw.text((910, 88), summary['country'], font=f_label, fill='#426579')
-    draw.text((92, 195), title, font=f_title, fill='#f6fbff')
-    draw.text((92, 253), f"{summary['height']} · {summary['status_icon']} {summary['status']}", font=f_text, fill='#c9d8e8')
+    if len(title) > 34:
+        title = title[:31] + '…'
+    draw.text((112, 104), title, font=f_title, fill=(25, 31, 39, 255))
 
-    def metric(x, y, icon, label, value, color='#f6fbff'):
-        draw.text((x, y), icon, font=f_metric, fill=color)
-        draw.text((x + 56, y + 2), label, font=f_label, fill='#9fb3c8')
-        draw.text((x + 56, y + 38), value, font=f_metric, fill=color)
+    def metric(x, y, icon, label, value, color):
+        draw.text((x, y), icon, font=f_metric_label, fill=color)
+        draw.text((x + 55, y + 2), label, font=f_metric_label, fill=(28, 32, 40, 255))
+        draw.text((x + 55 + draw.textbbox((0, 0), label, font=f_metric_label)[2] + 10, y + 2), value, font=f_metric_label, fill=(28, 32, 40, 255))
 
-    metric(92, 320, '❄', '7-day snow', _cm(summary['snow']), '#7dd3fc')
-    metric(455, 320, '↗', 'Best window', summary['best_day'], '#8ef7bd')
-    metric(802, 320, '↘', 'Rain / wind', f"{_mm(summary['rain'])} · {round(summary['wind'])} km/h", '#facc15')
+    metric(116, 198, '❄', 'Snow:', _cm(summary['snow']), (221, 171, 24, 255))
+    metric(608, 198, '↗', 'Best:', summary['best_day'], (34, 197, 94, 255))
+    metric(116, 283, '⚠', 'Rain:', _mm(summary['rain']), (90, 96, 112, 255))
+    metric(608, 283, '↘', 'Wind:', f"{round(summary['wind'])} km/h", (225, 29, 72, 255))
 
-    draw.text((92, 492), 'Mountain decision card', font=f_label, fill='#7dd3fc')
-    _draw_text(draw, (92, 526), summary['description'], f_small, '#dbeafe', max_width=715, line_height=30, max_lines=2)
-    draw.text((890, 500), 'All elevations', font=f_label, fill='#f6fbff')
-    y = 532
-    for item in summary['all_elevations'][:3]:
-        draw.text((890, y), f"{item['label']}: {_cm(item['snow'])}", font=f_small, fill='#c9d8e8')
-        y += 31
+    # Simple snowflake/diamond mark, similar role to OptionStrat logo strip.
+    cx, cy = 132, 363
+    for dx, dy in [(-18, 0), (0, -18), (18, 0), (0, 18), (-10, -10), (10, -10), (-10, 10), (10, 10)]:
+        draw.ellipse((cx + dx - 4, cy + dy - 4, cx + dx + 4, cy + dy + 4), fill=(56, 189, 248, 255))
+    draw.text((176, 344), 'SnowForecast', font=f_brand, fill=(246, 251, 255, 255))
+    draw.text((830, 349), 'Mountain Decision Card', font=f_small, fill=(226, 232, 240, 255))
+
+    footer_title = f"{summary['resort_name']} {summary['elevation_label']} {summary['height']}"
+    draw.text((110, 435), footer_title, font=f_footer, fill=(226, 232, 240, 255))
+    details = f"{summary['status_icon']} {summary['status']} | Snow {_cm(summary['snow'])} | Rain {_mm(summary['rain'])} | Wind {round(summary['wind'])} km/h"
+    draw.text((110, 482), details, font=f_footer, fill=(226, 232, 240, 255))
+    draw.text((110, 532), 'Open live forecast on SnowForecast', font=f_small, fill=(157, 163, 175, 255))
 
     output = io.BytesIO()
     img.convert('RGB').save(output, format='PNG', optimize=True)
@@ -480,9 +458,9 @@ def share_preview(resort, elevation):
 
     share_url = request.url_root.rstrip('/') + f"/share/{summary['resort']}/{summary['elevation']}"
     app_url = request.url_root.rstrip('/') + f"/#{summary['resort']}/{summary['elevation']}"
-    image_url = request.url_root.rstrip('/') + f"/share-card/{summary['resort']}/{summary['elevation']}.png"
+    image_url = request.url_root.rstrip('/') + f"/share-card/{summary['resort']}/{summary['elevation']}.png?v=2"
     title = f"{summary['flag']} {summary['resort_name']} {summary['elevation_label']} snow forecast"
-    description = f"{summary['status_icon']} {summary['status']} · {summary['description']}"
+    description = f"{summary['status_icon']} {summary['status']} · {_cm(summary['snow'])} snow · {_mm(summary['rain'])} rain · wind {round(summary['wind'])} km/h"
 
     return render_template_string("""<!doctype html>
 <html lang="en">
@@ -491,8 +469,9 @@ def share_preview(resort, elevation):
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ title }}</title>
   <meta name="description" content="{{ description }}">
+  <link rel="canonical" href="{{ share_url }}">
   <meta property="og:type" content="website">
-  <meta property="og:site_name" content="Snow Forecast">
+  <meta property="og:site_name" content="SnowForecast">
   <meta property="og:title" content="{{ title }}">
   <meta property="og:description" content="{{ description }}">
   <meta property="og:url" content="{{ share_url }}">
@@ -505,10 +484,9 @@ def share_preview(resort, elevation):
   <meta name="twitter:title" content="{{ title }}">
   <meta name="twitter:description" content="{{ description }}">
   <meta name="twitter:image" content="{{ image_url }}">
-  <meta http-equiv="refresh" content="1; url={{ app_url }}">
-  <style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#06111f;color:#f6fbff;font-family:system-ui,sans-serif}a{color:#7dd3fc}.card{max-width:720px;padding:32px}.muted{color:#9fb3c8}</style>
+  <style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#06111f;color:#f6fbff;font-family:system-ui,sans-serif}a{color:#7dd3fc}.card{max-width:720px;padding:32px}.button{display:inline-block;margin-top:12px;padding:13px 18px;border-radius:999px;background:#7dd3fc;color:#06111f;text-decoration:none;font-weight:900}.muted{color:#9fb3c8}</style>
 </head>
-<body><main class="card"><h1>{{ title }}</h1><p>{{ description }}</p><p class="muted">Opening the live dashboard…</p><p><a href="{{ app_url }}">Open forecast</a></p></main></body>
+<body><main class="card"><h1>{{ title }}</h1><p>{{ description }}</p><p class="muted">This page creates the WhatsApp preview card.</p><p><a class="button" href="{{ app_url }}">Open live forecast</a></p></main></body>
 </html>""", title=title, description=description, share_url=share_url, image_url=image_url, app_url=app_url)
 
 
@@ -523,7 +501,7 @@ def share_card_png(resort, elevation):
     try:
         png = _share_card_png(summary)
         response = Response(png, mimetype='image/png')
-        response.headers['Cache-Control'] = 'public, max-age=900'
+        response.headers['Cache-Control'] = 'public, max-age=300'
         return response
     except Exception:
         return share_card_svg(summary['resort'], summary['elevation'])

@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Snow Forecast — Mountain Dashboard</title>
-  <meta name="description" content="Multi-resort snow forecast dashboard with favorites, elevation comparison, current conditions, and practical ride recommendations." />
+  <meta name="description" content="Multi-resort snow forecast dashboard with favorites, ranking, saved elevations, compact mode, sharing, and practical ride recommendations." />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
     :root {
@@ -17,7 +17,6 @@
       --muted: #9fb3c8;
       --muted-2: #6f8499;
       --accent: #7dd3fc;
-      --accent-2: #38bdf8;
       --green: #8ef7bd;
       --yellow: #facc15;
       --red: #fb7185;
@@ -25,7 +24,6 @@
       --shadow: 0 24px 80px rgba(0,0,0,0.36);
       --radius-xl: 32px;
       --radius-lg: 24px;
-      --radius-md: 16px;
     }
 
     * { box-sizing: border-box; }
@@ -46,6 +44,7 @@
     .topbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 18px; }
     .brand { display: inline-flex; align-items: center; gap: 12px; font-size: clamp(1.1rem, 2vw, 1.45rem); font-weight: 900; letter-spacing: -0.04em; }
     .brand-mark { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 16px; background: linear-gradient(135deg, rgba(125,211,252,0.95), rgba(14,165,233,0.55)); box-shadow: 0 16px 42px rgba(14,165,233,0.24); }
+    .top-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
     .pill { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 38px; padding: 9px 14px; border-radius: 999px; border: 1px solid var(--line); background: rgba(255,255,255,0.07); color: var(--muted); font-size: 0.88rem; font-weight: 800; white-space: nowrap; }
 
     .resort-top { margin: 0 0 18px; }
@@ -55,11 +54,17 @@
     .resort-scroller { padding: 10px; border: 1px solid rgba(255,255,255,0.13); background: rgba(7,17,31,0.78); backdrop-filter: blur(18px); border-radius: 999px; overflow-x: auto; scrollbar-width: none; box-shadow: 0 12px 40px rgba(0,0,0,.18); }
     .resort-scroller::-webkit-scrollbar { display: none; }
     .tabs { display: flex; flex-wrap: nowrap; gap: 10px; min-width: max-content; }
-    .tab { border: 0; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 12px 16px; border-radius: 999px; font-weight: 900; color: #c7d8e8; background: transparent; border: 1px solid transparent; transition: transform 180ms ease, background 180ms ease, border 180ms ease; }
-    .tab:hover { transform: translateY(-2px); background: rgba(255,255,255,0.14); }
+    .tab, .btn { border: 0; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 12px 16px; border-radius: 999px; font-weight: 900; transition: transform 180ms ease, background 180ms ease, border 180ms ease, box-shadow 180ms ease; }
+    .tab { color: #c7d8e8; background: transparent; border: 1px solid transparent; }
+    .tab:hover, .btn:hover { transform: translateY(-2px); }
     .tab.active { background: rgba(125,211,252,0.18); color: #f8fdff; border-color: rgba(125,211,252,0.36); }
     .tab.favorite { border-color: rgba(250,204,21,0.42); color: #fff7cc; }
     .tab-star { color: var(--yellow); filter: drop-shadow(0 0 8px rgba(250,204,21,.28)); }
+    .btn { color: #06111f; background: linear-gradient(135deg, #e0f7ff, var(--accent)); box-shadow: 0 14px 35px rgba(56,189,248,0.22); }
+    .btn.secondary { color: var(--text); background: rgba(255,255,255,0.09); border: 1px solid var(--line); box-shadow: none; }
+    .btn.secondary:hover { background: rgba(255,255,255,0.14); }
+    .btn.favorite-btn { color: #1f1700; background: linear-gradient(135deg, #fff7cc, var(--yellow)); }
+    .btn.favorite-btn.saved { color: #fff7cc; background: rgba(250,204,21,0.12); border: 1px solid rgba(250,204,21,.45); box-shadow: none; }
 
     .hero { position: relative; overflow: hidden; border-radius: var(--radius-xl); padding: clamp(24px, 4vw, 46px); background: linear-gradient(135deg, rgba(255,255,255,0.14), rgba(255,255,255,0.055)), radial-gradient(circle at 78% 18%, rgba(125,211,252,0.24), transparent 20rem); border: 1px solid rgba(255,255,255,0.18); box-shadow: var(--shadow); isolation: isolate; }
     .hero::before { content: ""; position: absolute; left: -6%; right: -6%; bottom: -1px; height: 38%; background: linear-gradient(135deg, transparent 18%, rgba(255,255,255,0.16) 18% 31%, transparent 31% 47%, rgba(255,255,255,0.12) 47% 62%, transparent 62%), linear-gradient(to top, rgba(255,255,255,0.10), transparent); clip-path: polygon(0 82%, 12% 48%, 24% 70%, 40% 32%, 56% 72%, 72% 38%, 88% 64%, 100% 24%, 100% 100%, 0 100%); z-index: -1; opacity: 0.95; }
@@ -68,12 +73,6 @@
     h1 { font-size: clamp(2.45rem, 6vw, 5.75rem); line-height: 0.94; letter-spacing: -0.08em; margin: 0 0 18px; }
     .hero-copy { max-width: 760px; color: #c9d8e8; font-size: clamp(1rem, 1.6vw, 1.2rem); line-height: 1.55; margin: 0 0 24px; }
     .hero-actions { display: flex; flex-wrap: wrap; gap: 10px; }
-    .btn { border: 0; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 12px 16px; border-radius: 999px; font-weight: 900; color: #06111f; background: linear-gradient(135deg, #e0f7ff, var(--accent)); box-shadow: 0 14px 35px rgba(56,189,248,0.22); transition: transform 180ms ease, background 180ms ease, border 180ms ease, box-shadow 180ms ease; }
-    .btn:hover { transform: translateY(-2px); }
-    .btn.secondary { color: var(--text); background: rgba(255,255,255,0.09); border: 1px solid var(--line); box-shadow: none; }
-    .btn.secondary:hover { background: rgba(255,255,255,0.14); }
-    .btn.favorite-btn { color: #1f1700; background: linear-gradient(135deg, #fff7cc, var(--yellow)); }
-    .btn.favorite-btn.saved { color: #fff7cc; background: rgba(250,204,21,0.12); border: 1px solid rgba(250,204,21,.45); box-shadow: none; }
     .hero-card { border-radius: 28px; padding: 20px; background: rgba(5,16,30,0.58); border: 1px solid rgba(255,255,255,0.14); backdrop-filter: blur(18px); display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
     .hero-stat { padding: 18px; border-radius: 22px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); }
     .hero-stat.wide { grid-column: 1 / -1; }
@@ -89,11 +88,12 @@
     .panel-title h2, .panel-title h3 { margin: 0; font-size: 1.05rem; letter-spacing: -0.03em; }
     .caption { color: var(--muted); font-size: 0.86rem; }
 
-    .elevation-stack, .condition-list, .source-list, .reason-list, .extended-grid { display: grid; gap: 10px; }
+    .elevation-stack, .condition-list, .source-list, .reason-list, .extended-grid, .ranking-list, .compare-list { display: grid; gap: 10px; }
     .elevation-card { width: 100%; text-align: left; border: 1px solid rgba(255,255,255,0.12); color: var(--text); background: rgba(255,255,255,0.07); border-radius: 18px; padding: 15px; cursor: pointer; transition: transform 180ms ease, background 180ms ease, border 180ms ease; }
     .elevation-card:hover { transform: translateY(-2px); background: rgba(255,255,255,0.10); }
     .elevation-card.active { background: linear-gradient(135deg, rgba(125,211,252,0.20), rgba(255,255,255,0.08)); border-color: rgba(125,211,252,0.46); }
-    .elevation-topline { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .elevation-card.saved-elevation { border-color: rgba(250,204,21,.38); }
+    .elevation-topline, .rank-row, .compare-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
     .elevation-name { font-size: 1.06rem; font-weight: 950; }
     .elevation-height, .small-muted { color: var(--muted); font-size: 0.86rem; }
     .elevation-snow { margin-top: 12px; font-size: 2rem; font-weight: 950; letter-spacing: -0.06em; }
@@ -104,10 +104,13 @@
     .metric-note { color: var(--muted); font-size: 0.84rem; margin-top: 5px; }
 
     .decision-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-    .decision-card, .condition-item, .source-chip, .reason-item, .extended-day { border-radius: 14px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.10); padding: 12px; }
-    .decision-card strong, .reason-item strong { display: block; color: var(--text); margin-bottom: 4px; }
+    .decision-card, .condition-item, .source-chip, .reason-item, .extended-day, .rank-card, .compare-card { border-radius: 14px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.10); padding: 12px; }
+    .decision-card strong, .reason-item strong, .rank-card strong, .compare-card strong { display: block; color: var(--text); margin-bottom: 4px; }
     .reason-item { color: #c9d8e8; line-height: 1.42; }
     .decision-card .big { font-size: 1.55rem; font-weight: 950; letter-spacing: -0.04em; }
+    .status-good { color: var(--green); border-color: rgba(142,247,189,0.44); }
+    .status-watch { color: var(--yellow); border-color: rgba(250,204,21,0.44); }
+    .status-bad { color: var(--red); border-color: rgba(251,113,133,0.44); }
     .confidence-high { color: var(--green); border-color: rgba(142,247,189,0.38); }
     .confidence-medium { color: var(--yellow); border-color: rgba(250,204,21,0.38); }
     .confidence-low { color: var(--red); border-color: rgba(251,113,133,0.38); }
@@ -145,6 +148,7 @@
 
     .loading, .error, .empty-state { text-align: center; padding: 38px; border-radius: var(--radius-lg); background: rgba(255,255,255,0.08); border: 1px solid var(--line); }
     .error { color: #fecdd3; border-color: rgba(251,113,133,0.34); background: rgba(251,113,133,0.12); }
+    .mobile-only { display: none; }
 
     .modal { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; padding: 18px; background: rgba(3,8,16,0.84); backdrop-filter: blur(14px); z-index: 80; }
     .modal.active { display: flex; }
@@ -153,6 +157,12 @@
     .modal-title { font-weight: 950; }
     .modal-close { border: 0; background: rgba(255,255,255,0.10); color: var(--text); border-radius: 999px; width: 38px; height: 38px; cursor: pointer; font-size: 1.3rem; }
     .modal iframe { width: 100%; height: calc(100% - 67px); border: 0; background: white; }
+
+    body.compact .full-only { display: none !important; }
+    body.compact .main-grid { grid-template-columns: 1fr; }
+    body.compact .mobile-only { display: block; }
+    body.compact .hero { padding: 22px; }
+    body.compact .hero-card { grid-template-columns: 1fr; }
 
     @media (max-width: 1240px) {
       .hero-layout, .main-grid { grid-template-columns: 1fr; }
@@ -163,6 +173,7 @@
     @media (max-width: 760px) {
       .app-shell { width: min(100% - 20px, 1480px); padding-top: 12px; }
       .topbar, .resort-header { align-items: flex-start; flex-direction: column; }
+      .top-actions { justify-content: flex-start; }
       .pill { white-space: normal; }
       .hero { padding: 22px; border-radius: 24px; }
       .hero-card, .metrics-grid, .forecast-grid, .extended-grid, .decision-summary { grid-template-columns: 1fr; }
@@ -175,7 +186,10 @@
   <main class="app-shell">
     <div class="topbar">
       <div class="brand"><span class="brand-mark">❄️</span><span>Snow Forecast</span></div>
-      <div class="pill" id="updated-pill">Loading mountain data…</div>
+      <div class="top-actions">
+        <button class="btn secondary" id="compact-btn" type="button" onclick="toggleCompactMode()">Compact mode</button>
+        <div class="pill" id="updated-pill">Loading mountain data…</div>
+      </div>
     </div>
 
     <section class="resort-top" aria-label="Choose resort">
@@ -209,7 +223,7 @@
     <div id="error" class="error" style="display:none; margin-top:18px;">Could not load forecast data. Please refresh or check the data files.</div>
 
     <section class="main-grid" id="dashboard" style="display:none;">
-      <aside>
+      <aside class="full-only">
         <div class="panel">
           <div class="panel-pad">
             <div class="panel-title"><div><h2>Elevation</h2><div class="caption">Compare bottom, mid, and top where data exists.</div></div></div>
@@ -243,7 +257,28 @@
           </div>
         </div>
 
-        <div class="panel">
+        <div class="panel mobile-only" style="margin-bottom:18px;">
+          <div class="panel-pad">
+            <div class="panel-title"><div><h2>Saved elevation</h2><div class="caption">Tap an elevation to save it for this resort.</div></div></div>
+            <div class="elevation-stack" id="compact-elevation-stack"></div>
+          </div>
+        </div>
+
+        <div class="panel full-only" style="margin-bottom:18px;">
+          <div class="panel-pad">
+            <div class="panel-title"><div><h2>Best resort today</h2><div class="caption">Ranking compares every resort by its strongest elevation.</div></div><span class="pill" id="best-resort-pill">—</span></div>
+            <div class="ranking-list" id="resort-ranking"></div>
+          </div>
+        </div>
+
+        <div class="panel full-only" style="margin-bottom:18px;">
+          <div class="panel-pad">
+            <div class="panel-title"><div><h2>Favorite comparison</h2><div class="caption">Compare the saved favorite against the currently selected resort and the field.</div></div></div>
+            <div class="compare-list" id="favorite-comparison"></div>
+          </div>
+        </div>
+
+        <div class="panel full-only">
           <div class="panel-pad">
             <div class="panel-title">
               <div><h2>Snowfall trend</h2><div class="caption">Daily total across every available elevation.</div></div>
@@ -253,9 +288,9 @@
           </div>
         </div>
 
-        <div class="forecast-grid" id="forecast-grid"></div>
+        <div class="forecast-grid full-only" id="forecast-grid"></div>
 
-        <div class="panel" id="extended-panel" style="display:none; margin-top:18px;">
+        <div class="panel full-only" id="extended-panel" style="display:none; margin-top:18px;">
           <div class="panel-pad">
             <div class="panel-title">
               <div><h2>Extended forecast</h2><div class="caption" id="extended-caption">Longer-range model view.</div></div>
@@ -278,7 +313,12 @@
   <script>
     const DATA_URL = 'https://raw.githubusercontent.com/avielj/snowforcast/refs/heads/main/data/all-forecasts.json';
     const META_URL = 'https://raw.githubusercontent.com/avielj/snowforcast/refs/heads/main/data/metadata.json';
-    const FAVORITE_KEY = 'snowforcast.favoriteResort';
+    const STORAGE = {
+      favoriteResort: 'snowforcast.favoriteResort',
+      favoriteElevationPrefix: 'snowforcast.favoriteElevation.',
+      lastResort: 'snowforcast.lastResort',
+      compactMode: 'snowforcast.compactMode'
+    };
     const PERIODS = ['am', 'pm', 'night'];
     const DEFAULT_ELEVATIONS = ['bot', 'mid', 'top'];
 
@@ -306,16 +346,18 @@
       if (!response.ok) throw new Error(`${url} returned ${response.status}`);
       return response.json();
     }
-
+    function storageGet(key) { try { return localStorage.getItem(key); } catch { return null; } }
+    function storageSet(key, value) { try { localStorage.setItem(key, value); } catch {} }
+    function storageRemove(key) { try { localStorage.removeItem(key); } catch {} }
     function normalizeKey(value) { return String(value || '').toLowerCase().replace(/[^a-z0-9]/g, ''); }
-    function metaForResort(key) { return RESORT_INFO[key] || { flag: '🏔️', name: humanName(key), webcam: null, pisteMap: null, website: null, liftStatus: null, elevations: {} }; }
     function humanName(key) { return String(key || '').replace(/-/g, ' ').replace(/\b\w/g, ch => ch.toUpperCase()); }
+    function metaForResort(key) { return RESORT_INFO[key] || { flag: '🏔️', name: humanName(key), webcam: null, pisteMap: null, website: null, liftStatus: null, elevations: {} }; }
     function elevationLabel(elevation) { return ({ bot: 'Bottom', mid: 'Mid', top: 'Top' })[elevation] || humanName(elevation); }
     function selectedData(resort = currentResort, elevation = currentElevation) { return allForecasts?.[resort]?.[elevation] || {}; }
     function elevationHeight(resort, elevation) { return metaForResort(resort).elevations?.[elevation] || selectedData(resort, elevation)?.elevation || elevationLabel(elevation); }
-    function getFavoriteResort() { try { return localStorage.getItem(FAVORITE_KEY); } catch { return null; } }
-    function setFavoriteResort(resort) { try { localStorage.setItem(FAVORITE_KEY, resort); } catch {} }
-    function clearFavoriteResort() { try { localStorage.removeItem(FAVORITE_KEY); } catch {} }
+    function favoriteElevationKey(resort) { return `${STORAGE.favoriteElevationPrefix}${resort}`; }
+    function getFavoriteResort() { return storageGet(STORAGE.favoriteResort); }
+    function getFavoriteElevation(resort) { return storageGet(favoriteElevationKey(resort)); }
 
     function resortKeys() {
       const fromMetadata = Array.isArray(metadata.resorts) ? metadata.resorts : [];
@@ -325,7 +367,6 @@
       if (!favorite || !unique.includes(favorite)) return unique;
       return [favorite, ...unique.filter(key => key !== favorite)];
     }
-
     function elevationKeys(resort = currentResort) {
       const existing = Object.keys(allForecasts?.[resort] || {});
       const preferred = Array.isArray(metadata.elevations) ? metadata.elevations : DEFAULT_ELEVATIONS;
@@ -384,22 +425,33 @@
       const score = snow * 5 + extendedSnow * 0.8 + coldBonus - rain * 0.7 - wind * 0.2;
       return { resort, elevation, days, snow, rain, wind, range, extendedSnow, score };
     }
+    function bestElevationForResort(resort) {
+      return elevationKeys(resort).map(e => scoreElevation(resort, e)).sort((a, b) => b.score - a.score)[0] || null;
+    }
+    function resortRanking() {
+      return resortKeys().map(resort => bestElevationForResort(resort)).filter(Boolean).sort((a, b) => b.score - a.score);
+    }
+    function rideStatus(score) {
+      if (score >= 55) return { label: 'Good', cls: 'status-good', icon: '✅' };
+      if (score >= 12) return { label: 'Watch', cls: 'status-watch', icon: '⚠️' };
+      return { label: 'Bad', cls: 'status-bad', icon: '⛔' };
+    }
 
     function buildDecision() {
-      const elevationScores = elevationKeys().map(e => scoreElevation(currentResort, e)).sort((a, b) => b.score - a.score);
       const selected = scoreElevation(currentResort, currentElevation);
-      const bestElevation = elevationScores[0] || selected;
+      const bestElevation = bestElevationForResort(currentResort) || selected;
       const days = daysFor();
       const best = bestDay(days);
       const activeSources = sourceFlags().filter(s => s.active).length;
       const extendedCount = getExtendedDays().length;
       const confidencePoints = (days.length >= 6 ? 2 : days.length >= 3 ? 1 : 0) + (activeSources >= 4 ? 2 : activeSources >= 2 ? 1 : 0) + (extendedCount >= 10 ? 1 : 0);
       const confidence = confidencePoints >= 4 ? 'High' : confidencePoints >= 2 ? 'Medium' : 'Low';
+      const status = rideStatus(selected.score);
       const snowText = best?.name ? `${best.name} has the strongest snow signal at ${formatCm(daySnow(best))}.` : 'No clear snow window is available in the selected forecast.';
       const elevationText = bestElevation ? `${elevationLabel(bestElevation.elevation)} (${elevationHeight(currentResort, bestElevation.elevation)}) scores best with ${formatCm(bestElevation.snow)} forecast snow, ${formatMm(bestElevation.rain)} rain, and peak wind around ${Math.round(bestElevation.wind || 0)} km/h.` : 'No elevation comparison is available.';
       const tempText = selected.range ? (selected.range.max <= 1 ? 'Temperatures stay snow-friendly for the selected elevation.' : selected.range.min <= 0 ? 'There is some freezing-level support, but warmer periods may affect snow quality.' : 'Temperatures look warm, so treat snowfall numbers carefully and watch for rain.') : 'Temperature data is not available for this selection.';
       const sourceText = `Confidence is ${confidence.toLowerCase()} because ${activeSources} data signals are active, ${days.length} forecast days are loaded, and ${extendedCount} extended days are available.`;
-      return { selected, bestElevation, best, confidence, reasons: [elevationText, snowText, tempText, sourceText] };
+      return { selected, bestElevation, best, confidence, status, reasons: [elevationText, snowText, tempText, sourceText] };
     }
 
     function sourceFlags() {
@@ -417,43 +469,79 @@
       ];
     }
 
-    function loadResortFromHash() {
+    function parseHashSelection() {
+      const raw = decodeURIComponent(window.location.hash.replace('#', '')).trim();
+      if (!raw) return {};
+      const parts = raw.split('/').filter(Boolean);
+      return { resortPart: parts[0], elevationPart: parts[1] };
+    }
+    function findResortFromPart(part) {
+      const normalized = normalizeKey(part);
+      return resortKeys().find(key => normalizeKey(key) === normalized || normalizeKey(metaForResort(key).name) === normalized);
+    }
+    function findElevationFromPart(resort, part) {
+      const normalized = normalizeKey(part);
+      return elevationKeys(resort).find(key => normalizeKey(key) === normalized || normalizeKey(elevationLabel(key)) === normalized);
+    }
+    function updateShareHash() {
+      const target = `${currentResort}/${currentElevation}`;
+      if (decodeURIComponent(window.location.hash.replace('#', '')) !== target) {
+        history.replaceState(null, '', `#${target}`);
+      }
+    }
+    function loadInitialSelection() {
       const keys = resortKeys();
-      const hash = normalizeKey(window.location.hash.replace('#', ''));
-      const found = keys.find(key => normalizeKey(key) === hash || normalizeKey(metaForResort(key).name) === hash);
+      const parsed = parseHashSelection();
+      const hashResort = findResortFromPart(parsed.resortPart);
       const favorite = getFavoriteResort();
-      currentResort = found || (favorite && keys.includes(favorite) ? favorite : keys[0]) || 'Val-Thorens';
+      const last = storageGet(STORAGE.lastResort);
+      currentResort = hashResort || (favorite && keys.includes(favorite) ? favorite : null) || (last && keys.includes(last) ? last : null) || keys[0] || 'Val-Thorens';
       const available = elevationKeys(currentResort);
-      currentElevation = available.includes(currentElevation) ? currentElevation : (available.includes('bot') ? 'bot' : available[0]);
+      const hashElevation = parsed.elevationPart ? findElevationFromPart(currentResort, parsed.elevationPart) : null;
+      const savedElevation = getFavoriteElevation(currentResort);
+      currentElevation = hashElevation || (savedElevation && available.includes(savedElevation) ? savedElevation : null) || (available.includes('bot') ? 'bot' : available[0]);
+      updateShareHash();
     }
 
     function switchResort(resort) {
       currentResort = resort;
+      storageSet(STORAGE.lastResort, resort);
       const available = elevationKeys(resort);
-      currentElevation = available.includes(currentElevation) ? currentElevation : (available.includes('bot') ? 'bot' : available[0]);
-      window.location.hash = resort.toLowerCase();
+      const savedElevation = getFavoriteElevation(resort);
+      currentElevation = savedElevation && available.includes(savedElevation) ? savedElevation : (available.includes(currentElevation) ? currentElevation : (available.includes('bot') ? 'bot' : available[0]));
+      updateShareHash();
       loadForecast();
     }
-    function switchElevation(elevation) { currentElevation = elevation; loadForecast(); }
-
+    function switchElevation(elevation) {
+      currentElevation = elevation;
+      storageSet(favoriteElevationKey(currentResort), elevation);
+      updateShareHash();
+      loadForecast();
+    }
     function toggleFavoriteResort() {
       const favorite = getFavoriteResort();
-      if (favorite === currentResort) clearFavoriteResort();
-      else setFavoriteResort(currentResort);
+      if (favorite === currentResort) storageRemove(STORAGE.favoriteResort);
+      else storageSet(STORAGE.favoriteResort, currentResort);
       renderResortTabs();
       renderFavoriteControl();
+      renderRanking();
+      renderFavoriteComparison();
     }
-
-    function renderFavoriteControl() {
-      const favorite = getFavoriteResort();
-      const meta = metaForResort(currentResort);
-      const favoriteBtn = $('favorite-btn');
-      const isSaved = favorite === currentResort;
-      favoriteBtn.className = `btn favorite-btn ${isSaved ? 'saved' : ''}`;
-      favoriteBtn.textContent = isSaved ? `★ ${meta.name} is favorite` : `☆ Save ${meta.name}`;
-      $('favorite-hint').textContent = favorite && allForecasts[favorite]
-        ? `${metaForResort(favorite).name} is saved locally and will open first when no resort is in the URL.`
-        : 'Save your go-to resort locally so it opens first on return visits.';
+    function toggleCompactMode() {
+      const isCompact = document.body.classList.toggle('compact');
+      storageSet(STORAGE.compactMode, isCompact ? '1' : '0');
+      renderCompactControl();
+    }
+    function renderCompactControl() {
+      const isCompact = document.body.classList.contains('compact');
+      $('compact-btn').textContent = isCompact ? 'Full mode' : 'Compact mode';
+    }
+    function copyShareLink() {
+      const url = window.location.href;
+      if (navigator.clipboard?.writeText) navigator.clipboard.writeText(url);
+      const old = $('share-btn').textContent;
+      $('share-btn').textContent = '✓ Link copied';
+      setTimeout(() => $('share-btn').textContent = old, 1300);
     }
 
     function renderResortTabs() {
@@ -464,110 +552,142 @@
         return `<button class="tab ${key === currentResort ? 'active' : ''} ${isFavorite ? 'favorite' : ''}" onclick="switchResort('${key}')">${isFavorite ? '<span class="tab-star">★</span>' : ''}${meta.flag} ${meta.name}</button>`;
       }).join('');
     }
-
+    function renderFavoriteControl() {
+      const favorite = getFavoriteResort();
+      const meta = metaForResort(currentResort);
+      const favoriteBtn = $('favorite-btn');
+      const isSaved = favorite === currentResort;
+      favoriteBtn.className = `btn favorite-btn ${isSaved ? 'saved' : ''}`;
+      favoriteBtn.textContent = isSaved ? `★ ${meta.name} is favorite` : `☆ Save ${meta.name}`;
+      $('favorite-hint').textContent = favorite && allForecasts[favorite]
+        ? `${metaForResort(favorite).name} is saved locally and opens first when no resort is in the URL.`
+        : 'Save your go-to resort locally so it opens first on return visits.';
+    }
     function updateResortLinks() {
       const meta = metaForResort(currentResort);
       const links = [
+        `<button class="btn secondary" id="share-btn" onclick="copyShareLink()">🔗 Share view</button>`,
         meta.webcam ? `<button class="btn" onclick="openWebcam()">📹 Live webcam</button>` : '',
         meta.pisteMap ? `<a class="btn secondary" href="${meta.pisteMap}" target="_blank" rel="noopener">🗺️ Piste map</a>` : '',
         meta.liftStatus ? `<a class="btn secondary" href="${meta.liftStatus}" target="_blank" rel="noopener">🚡 Lift status</a>` : '',
         meta.website ? `<a class="btn secondary" href="${meta.website}" target="_blank" rel="noopener">↗ Resort site</a>` : ''
       ].filter(Boolean);
-      $('hero-actions').innerHTML = links.join('') || '<span class="pill">Resort links unavailable</span>';
+      $('hero-actions').innerHTML = links.join('');
     }
-
-    function renderElevationCards() {
-      $('elevation-stack').innerHTML = elevationKeys().map(elevation => {
+    function renderElevationCardsInto(containerId) {
+      const savedElevation = getFavoriteElevation(currentResort);
+      $(containerId).innerHTML = elevationKeys().map(elevation => {
         const active = elevation === currentElevation;
-        return `<button class="elevation-card ${active ? 'active' : ''}" onclick="switchElevation('${elevation}')">
-          <div class="elevation-topline"><div><div class="elevation-name">${elevationLabel(elevation)}</div><div class="elevation-height">${elevationHeight(currentResort, elevation)}</div></div><div>${elevation === 'top' ? '🗻' : elevation === 'mid' ? '⛰️' : '🏔️'}</div></div>
-          <div class="elevation-snow">${formatCm(totalSnow(currentResort, elevation))}</div><div class="small-muted">forecast total</div>
+        const saved = elevation === savedElevation;
+        return `<button class="elevation-card ${active ? 'active' : ''} ${saved ? 'saved-elevation' : ''}" onclick="switchElevation('${elevation}')">
+          <div class="elevation-topline"><div><div class="elevation-name">${saved ? '★ ' : ''}${elevationLabel(elevation)}</div><div class="elevation-height">${elevationHeight(currentResort, elevation)}</div></div><div>${elevation === 'top' ? '🗻' : elevation === 'mid' ? '⛰️' : '🏔️'}</div></div>
+          <div class="elevation-snow">${formatCm(totalSnow(currentResort, elevation))}</div><div class="small-muted">${saved ? 'saved elevation for this resort' : 'tap to select and save'}</div>
         </button>`;
       }).join('');
     }
-
+    function renderElevationCards() {
+      renderElevationCardsInto('elevation-stack');
+      renderElevationCardsInto('compact-elevation-stack');
+    }
     function renderHero(days) {
       const meta = metaForResort(currentResort);
       const decision = buildDecision();
       $('resort-name').textContent = meta.name;
-      document.title = `${meta.name} Snow Forecast`;
+      document.title = `${meta.name} ${elevationLabel(currentElevation)} Snow Forecast`;
       $('hero-eyebrow').textContent = `${meta.flag} ${resortKeys().length} resorts loaded · ${elevationKeys().map(elevationLabel).join(' / ')}`;
       $('hero-copy').textContent = decision.reasons[0];
       $('hero-elevation').textContent = elevationLabel(currentElevation);
-      $('hero-elevation-note').textContent = elevationHeight(currentResort, currentElevation);
+      $('hero-elevation-note').textContent = `${elevationHeight(currentResort, currentElevation)} · share URL saves this view`;
       $('hero-snow').textContent = formatCm(totalSnow());
       $('hero-best').textContent = decision.best?.name || 'No window';
       $('hero-best-note').textContent = decision.best ? `${formatCm(daySnow(decision.best))} expected on ${decision.best.name}` : 'No day data available';
       updateResortLinks();
     }
-
     function renderMetrics(days) {
       const range = tempRange(days);
       const wind = windPeak(days);
       const rain = rainTotal(days);
       const extended = getExtendedDays();
+      const decision = buildDecision();
       const firstPeriod = periodsForDay(days[0] || {})[0]?.data;
       $('metrics-grid').innerHTML = `
+        <div class="metric ${decision.status.cls}"><div class="label">Ride status</div><div class="metric-value">${decision.status.icon} ${decision.status.label}</div><div class="metric-note">score ${Math.round(decision.selected.score)}</div></div>
         <div class="metric"><div class="label">Condition now</div><div class="metric-value">${conditionIcon(firstPeriod?.condition)} ${firstPeriod?.condition || '—'}</div><div class="metric-note">first forecast period</div></div>
         <div class="metric"><div class="label">Temperature range</div><div class="metric-value">${range ? `${Math.round(range.min)}°/${Math.round(range.max)}°` : '—'}</div><div class="metric-note">min / max across loaded days</div></div>
         <div class="metric"><div class="label">Rain total</div><div class="metric-value">${formatMm(rain)}</div><div class="metric-note">selected elevation periods</div></div>
         <div class="metric"><div class="label">Peak wind</div><div class="metric-value">${wind === null ? '—' : `${Math.round(wind)} km/h`}</div><div class="metric-note">selected elevation periods</div></div>
         <div class="metric"><div class="label">Forecast days</div><div class="metric-value">${days.length}</div><div class="metric-note">loaded for this elevation</div></div>
         <div class="metric"><div class="label">Extended days</div><div class="metric-value">${extended.length}</div><div class="metric-note">longer-range model view</div></div>
-        <div class="metric"><div class="label">Sources</div><div class="metric-value">${sourceFlags().filter(s => s.active).length}</div><div class="metric-note">supporting signals</div></div>
-        <div class="metric"><div class="label">Powder signal</div><div class="metric-value">${totalSnow() >= 20 ? 'Strong' : totalSnow() >= 6 ? 'Watch' : 'Low'}</div><div class="metric-note">snow total plus weather context</div></div>`;
+        <div class="metric"><div class="label">Sources</div><div class="metric-value">${sourceFlags().filter(s => s.active).length}</div><div class="metric-note">supporting signals</div></div>`;
     }
-
     function renderDecision() {
       const decision = buildDecision();
-      const cls = decision.confidence === 'High' ? 'confidence-high' : decision.confidence === 'Medium' ? 'confidence-medium' : 'confidence-low';
-      $('decision-confidence').className = `pill ${cls}`;
+      const confCls = decision.confidence === 'High' ? 'confidence-high' : decision.confidence === 'Medium' ? 'confidence-medium' : 'confidence-low';
+      $('decision-confidence').className = `pill ${confCls}`;
       $('decision-confidence').textContent = `${decision.confidence} confidence`;
       $('decision-brief').innerHTML = `
         <div class="decision-summary">
+          <div class="decision-card ${decision.status.cls}"><strong>Ride status</strong><div class="big">${decision.status.icon} ${decision.status.label}</div><div class="small-muted">score ${Math.round(decision.selected.score)}</div></div>
           <div class="decision-card"><strong>Best elevation</strong><div class="big">${elevationLabel(decision.bestElevation?.elevation)}</div><div class="small-muted">${elevationHeight(currentResort, decision.bestElevation?.elevation)}</div></div>
           <div class="decision-card"><strong>Best day</strong><div class="big">${decision.best?.name || 'No clear day'}</div><div class="small-muted">${decision.best ? formatCm(daySnow(decision.best)) : 'No snow signal'}</div></div>
+          <div class="decision-card"><strong>Shareable view</strong><div class="big">${currentResort}/${currentElevation}</div><div class="small-muted">URL hash saves resort and elevation</div></div>
         </div>
         <div class="reason-list">${decision.reasons.map(reason => `<div class="reason-item">${reason}</div>`).join('')}</div>`;
     }
-
     function renderCurrentConditions() {
       const conditions = getAnyConditions();
       if (!conditions) { $('current-conditions').innerHTML = '<div class="empty-state">No current snow conditions were included in this run.</div>'; return; }
       $('current-conditions').innerHTML = Object.entries(conditions).map(([key, value]) => `<div class="condition-item"><div class="condition-key">${key}</div><div class="condition-value">${value || '—'}</div></div>`).join('');
     }
-
     function renderSources() {
       $('source-list').innerHTML = sourceFlags().map(source => `<div class="source-chip"><span class="dot ${source.active ? '' : 'off'}"></span><span>${source.name}</span><span class="status">${source.active ? 'Active' : 'Unavailable'}</span></div>`).join('');
     }
-
+    function renderRanking() {
+      const ranking = resortRanking();
+      const best = ranking[0];
+      $('best-resort-pill').textContent = best ? `${metaForResort(best.resort).name} · ${rideStatus(best.score).label}` : 'No ranking';
+      $('resort-ranking').innerHTML = ranking.slice(0, 6).map((item, index) => {
+        const meta = metaForResort(item.resort);
+        const status = rideStatus(item.score);
+        return `<button class="rank-card ${status.cls}" onclick="switchResort('${item.resort}')">
+          <div class="rank-row"><strong>#${index + 1} ${meta.flag} ${meta.name}</strong><span>${status.icon} ${status.label}</span></div>
+          <div class="small-muted">Best: ${elevationLabel(item.elevation)} · ${formatCm(item.snow)} snow · ${formatMm(item.rain)} rain · score ${Math.round(item.score)}</div>
+        </button>`;
+      }).join('') || '<div class="empty-state">No resort ranking available.</div>';
+    }
+    function renderFavoriteComparison() {
+      const favorite = getFavoriteResort();
+      const ranking = resortRanking();
+      if (!favorite || !allForecasts[favorite]) {
+        $('favorite-comparison').innerHTML = '<div class="empty-state">Save a favorite resort to compare it against the current resort and the field.</div>';
+        return;
+      }
+      const favoriteScore = bestElevationForResort(favorite);
+      const currentScore = bestElevationForResort(currentResort);
+      const best = ranking[0];
+      const rows = [
+        { title: `Favorite · ${metaForResort(favorite).name}`, item: favoriteScore },
+        { title: `Selected · ${metaForResort(currentResort).name}`, item: currentScore },
+        { title: `Best field signal · ${best ? metaForResort(best.resort).name : '—'}`, item: best }
+      ];
+      $('favorite-comparison').innerHTML = rows.map(row => {
+        if (!row.item) return `<div class="compare-card"><strong>${row.title}</strong><div class="small-muted">No data</div></div>`;
+        const status = rideStatus(row.item.score);
+        return `<button class="compare-card ${status.cls}" onclick="switchResort('${row.item.resort}')">
+          <div class="compare-row"><strong>${row.title}</strong><span>${status.icon} ${status.label}</span></div>
+          <div class="small-muted">${elevationLabel(row.item.elevation)} · ${formatCm(row.item.snow)} snow · score ${Math.round(row.item.score)}</div>
+        </button>`;
+      }).join('');
+    }
     function renderChart() {
       const elevations = elevationKeys();
       const labels = daysFor(currentResort, currentElevation).map(day => `${String(day.name || '').slice(0,3)} ${day.date || ''}`.trim());
       const colors = ['#7dd3fc', '#8ef7bd', '#a78bfa', '#facc15', '#fb7185'];
-      const datasets = elevations.map((elevation, index) => ({
-        label: `${elevationLabel(elevation)} ${elevationHeight(currentResort, elevation)}`,
-        data: daysFor(currentResort, elevation).map(daySnow),
-        borderColor: colors[index % colors.length],
-        backgroundColor: colors[index % colors.length],
-        tension: 0.42,
-        borderWidth: elevation === currentElevation ? 4 : 2,
-        pointRadius: elevation === currentElevation ? 5 : 3
-      }));
+      const datasets = elevations.map((elevation, index) => ({ label: `${elevationLabel(elevation)} ${elevationHeight(currentResort, elevation)}`, data: daysFor(currentResort, elevation).map(daySnow), borderColor: colors[index % colors.length], backgroundColor: colors[index % colors.length], tension: 0.42, borderWidth: elevation === currentElevation ? 4 : 2, pointRadius: elevation === currentElevation ? 5 : 3 }));
       if (snowChart) snowChart.destroy();
-      snowChart = new Chart($('snowChart'), {
-        type: 'line',
-        data: { labels, datasets },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { labels: { color: '#dbeafe', usePointStyle: true } }, tooltip: { callbacks: { label: item => `${item.dataset.label}: ${formatCm(item.raw)}` } } },
-          scales: { x: { ticks: { color: '#9fb3c8' }, grid: { color: 'rgba(255,255,255,0.06)' } }, y: { beginAtZero: true, ticks: { color: '#9fb3c8', callback: value => `${value} cm` }, grid: { color: 'rgba(255,255,255,0.08)' } } }
-        }
-      });
+      snowChart = new Chart($('snowChart'), { type: 'line', data: { labels, datasets }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#dbeafe', usePointStyle: true } }, tooltip: { callbacks: { label: item => `${item.dataset.label}: ${formatCm(item.raw)}` } } }, scales: { x: { ticks: { color: '#9fb3c8' }, grid: { color: 'rgba(255,255,255,0.06)' } }, y: { beginAtZero: true, ticks: { color: '#9fb3c8', callback: value => `${value} cm` }, grid: { color: 'rgba(255,255,255,0.08)' } } } } });
       $('selected-elevation-label').textContent = `${elevationLabel(currentElevation)} · ${elevationHeight(currentResort, currentElevation)}`;
     }
-
     function renderForecastCards(days) {
       if (!days.length) { $('forecast-grid').innerHTML = '<div class="empty-state">No day forecast is available for this resort and elevation.</div>'; return; }
       $('forecast-grid').innerHTML = days.map(day => {
@@ -576,12 +696,10 @@
         return `<article class="day-card"><div class="day-head"><div class="day-name">${day.name || 'Day'}</div><div class="day-date">${day.date ? `Day ${day.date}` : ''}</div><div class="day-total ${total ? '' : 'zero'}">${formatCm(total)}</div>${compare}</div><div class="periods">${PERIODS.map(period => renderPeriod(period, day?.[period])).join('')}</div></article>`;
       }).join('');
     }
-
     function renderPeriod(period, data) {
       if (!data) return `<div class="period"><div class="period-top"><div class="period-name">${period.toUpperCase()}</div><div class="period-condition">No data</div></div></div>`;
       return `<div class="period"><div class="period-top"><div class="period-name">${period.toUpperCase()}</div><div class="period-condition">${conditionIcon(data.condition)} ${data.condition || '—'}</div></div><div class="period-stats"><div class="period-stat"><strong>${formatTemp(data.temperature)}</strong>Temp</div><div class="period-stat"><strong>${formatCm(numberFrom(data.snow))}</strong>Snow</div><div class="period-stat"><strong>${data.wind || '—'}</strong>Wind</div></div></div>`;
     }
-
     function renderExtendedForecast() {
       const data = selectedData();
       const extended = getExtendedDays(data);
@@ -600,6 +718,7 @@
 
     function loadForecast() {
       const days = daysFor();
+      storageSet(STORAGE.lastResort, currentResort);
       renderResortTabs();
       renderFavoriteControl();
       renderHero(days);
@@ -608,17 +727,18 @@
       renderDecision();
       renderCurrentConditions();
       renderSources();
+      renderRanking();
+      renderFavoriteComparison();
       renderChart();
       renderForecastCards(days);
       renderExtendedForecast();
       const updated = selectedData().last_updated || selectedData().extended?.last_updated || metadata.last_updated;
       $('updated-pill').textContent = updated ? `Data updated · ${new Date(updated).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}` : 'Data loaded';
     }
-
     function openWebcam() { const meta = metaForResort(currentResort); if (!meta.webcam) return; $('webcam-title').textContent = `${meta.name} live webcam`; $('webcam-frame').src = meta.webcam; $('webcam-modal').classList.add('active'); }
     function closeWebcam() { $('webcam-modal').classList.remove('active'); $('webcam-frame').src = ''; }
     $('webcam-modal').addEventListener('click', event => { if (event.target.id === 'webcam-modal') closeWebcam(); });
-    window.addEventListener('hashchange', () => { loadResortFromHash(); loadForecast(); });
+    window.addEventListener('hashchange', () => { loadInitialSelection(); loadForecast(); });
 
     async function init() {
       try {
@@ -626,7 +746,9 @@
         allForecasts = data || {};
         metadata = meta || {};
         if (!resortKeys().length) throw new Error('No resorts found in forecast data');
-        loadResortFromHash();
+        if (storageGet(STORAGE.compactMode) === '1') document.body.classList.add('compact');
+        renderCompactControl();
+        loadInitialSelection();
         $('loading').style.display = 'none';
         $('dashboard').style.display = 'grid';
         loadForecast();

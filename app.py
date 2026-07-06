@@ -3,7 +3,7 @@
 Flask web application for Snow Forecast.
 """
 
-from flask import Flask, render_template_string, jsonify, send_from_directory, request, Response, redirect
+from flask import Flask, render_template_string, jsonify, request, Response
 import os
 import json
 import html
@@ -39,9 +39,9 @@ RESORT_INFO = {
     'Cervinia': {'name': 'Cervinia', 'flag': '🇮🇹', 'country': 'Italy', 'elevations': {'bot': '2050m', 'mid': '2900m', 'top': '3480m'}},
     'Via-Lattea': {'name': 'Via Lattea', 'flag': '🇮🇹', 'country': 'Italy', 'elevations': {'bot': '1350m', 'mid': '2100m', 'top': '2823m'}},
     'Monterosa-Ski': {'name': 'Monterosa Ski', 'flag': '🇮🇹', 'country': 'Italy', 'elevations': {'bot': '1212m', 'mid': '2200m', 'top': '3275m'}},
-    'Gudauri': {'name': 'Gudauri', 'flag': '🇬🇪', 'country': 'Georgia', 'elevations': {'bot': '1990m', 'mid': '2350m', 'top': '3279m'}},
-    'St-Anton': {'name': 'St. Anton', 'flag': '🇦🇹', 'country': 'Austria', 'elevations': {'bot': '1304m', 'mid': '2150m', 'top': '2811m'}},
     'Mount-Hermon': {'name': 'Mount Hermon', 'flag': '🇮🇱', 'country': 'Israel', 'elevations': {'bot': '1600m', 'mid': '2000m', 'top': '2236m'}},
+    'St-Anton': {'name': 'St. Anton', 'flag': '🇦🇹', 'country': 'Austria', 'elevations': {'bot': '1304m', 'mid': '2150m', 'top': '2811m'}},
+    'Gudauri': {'name': 'Gudauri', 'flag': '🇬🇪', 'country': 'Georgia', 'elevations': {'bot': '1990m', 'mid': '2350m', 'top': '3279m'}},
 }
 ELEVATION_LABELS = {'bot': 'Bottom', 'mid': 'Mid', 'top': 'Top'}
 COUNTRY_ORDER = ['France', 'Italy', 'Israel', 'Austria', 'Georgia']
@@ -175,12 +175,96 @@ def _forecast_summary(resort, elevation):
     }
 
 
+def _enhance_forecast_html(page_html):
+    """Runtime patch for UI-only behavior without rewriting the large static file."""
+    country_map = {key: value['country'] for key, value in RESORT_INFO.items()}
+    country_order = {country: index for index, country in enumerate(COUNTRY_ORDER)}
+    enhancement = f"""
+<script>
+(function() {{
+  const COUNTRY_MAP = {json.dumps(country_map)};
+  const COUNTRY_ORDER = {json.dumps(country_order)};
+
+  const originalResortKeys = resortKeys;
+  resortKeys = function() {{
+    const keys = originalResortKeys();
+    const favorite = getFavoriteResort && getFavoriteResort();
+    return keys.slice().sort((a, b) => {{
+      const countryA = COUNTRY_MAP[a] || 'ZZZ';
+      const countryB = COUNTRY_MAP[b] || 'ZZZ';
+      const countryDiff = (COUNTRY_ORDER[countryA] ?? 99) - (COUNTRY_ORDER[countryB] ?? 99);
+      if (countryDiff !== 0) return countryDiff;
+      if (favorite && a === favorite && b !== favorite) return -1;
+      if (favorite && b === favorite && a !== favorite) return 1;
+      return metaForResort(a).name.localeCompare(metaForResort(b).name);
+    }});
+  }};
+
+  const originalCopyShareLink = copyShareLink;
+  copyShareLink = function() {{
+    const shareUrl = `${{window.location.origin}}/share/${{currentResort}}/${{currentElevation}}`;
+    if (navigator.clipboard?.writeText) navigator.clipboard.writeText(shareUrl);
+    const buttons = document.querySelectorAll('[data-share-button], #share-btn');
+    buttons.forEach(button => {{
+      const old = button.textContent;
+      button.textContent = '✓ Preview link copied';
+      setTimeout(() => button.textContent = old, 1300);
+    }});
+  }};
+
+  const originalUpdateResortLinks = updateResortLinks;
+  updateResortLinks = function() {{
+    originalUpdateResortLinks();
+    const heroShare = document.getElementById('share-btn');
+    if (heroShare) heroShare.remove();
+  }};
+
+  const originalRenderHero = renderHero;
+  renderHero = function(days) {{
+    originalRenderHero(days);
+    const eyebrow = document.getElementById('hero-eyebrow');
+    if (eyebrow) eyebrow.remove();
+  }};
+
+  function ensureTopShareButton() {{
+    const topActions = document.querySelector('.top-actions');
+    if (!topActions || document.getElementById('top-share-btn')) return;
+    const button = document.createElement('button');
+    button.id = 'top-share-btn';
+    button.type = 'button';
+    button.className = 'btn secondary';
+    button.dataset.shareButton = 'true';
+    button.textContent = '🔗 Share forecast';
+    button.addEventListener('click', copyShareLink);
+    topActions.prepend(button);
+  }}
+
+  const originalLoadForecast = loadForecast;
+  loadForecast = function() {{
+    originalLoadForecast();
+    ensureTopShareButton();
+    const eyebrow = document.getElementById('hero-eyebrow');
+    if (eyebrow) eyebrow.remove();
+  }};
+
+  ensureTopShareButton();
+}})();
+</script>
+"""
+    style_patch = "<style>.eyebrow{display:none!important}</style>"
+    return page_html.replace('</head>', style_patch + '</head>').replace('</body>', enhancement + '</body>')
+
+
+def _serve_forecast_html():
+    html_path = os.path.join(BASE_DIR, 'forecast.html')
+    with open(html_path, 'r', encoding='utf-8') as f:
+        return _enhance_forecast_html(f.read())
+
+
 @app.route('/')
 def index():
-    html_path = os.path.join(BASE_DIR, 'forecast.html')
     try:
-        with open(html_path, 'r', encoding='utf-8') as f:
-            return f.read()
+        return _serve_forecast_html()
     except FileNotFoundError:
         return "Forecast page not found", 404
 
@@ -428,10 +512,8 @@ def get_formatted_forecast():
 
 @app.route('/forecast.html')
 def forecast_page():
-    html_path = os.path.join(BASE_DIR, 'forecast.html')
     try:
-        with open(html_path, 'r', encoding='utf-8') as f:
-            return f.read()
+        return _serve_forecast_html()
     except FileNotFoundError:
         return "Forecast page not found", 404
 

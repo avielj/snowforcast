@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Snow Forecast — Mountain Dashboard</title>
-  <meta name="description" content="Multi-resort snow forecast dashboard with elevation comparison, current conditions, data sources, and practical ride recommendations." />
+  <meta name="description" content="Multi-resort snow forecast dashboard with favorites, elevation comparison, current conditions, and practical ride recommendations." />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
     :root {
@@ -48,18 +48,32 @@
     .brand-mark { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 16px; background: linear-gradient(135deg, rgba(125,211,252,0.95), rgba(14,165,233,0.55)); box-shadow: 0 16px 42px rgba(14,165,233,0.24); }
     .pill { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 38px; padding: 9px 14px; border-radius: 999px; border: 1px solid var(--line); background: rgba(255,255,255,0.07); color: var(--muted); font-size: 0.88rem; font-weight: 800; white-space: nowrap; }
 
+    .resort-top { margin: 0 0 18px; }
+    .resort-header { display: flex; justify-content: space-between; align-items: flex-end; gap: 14px; margin: 0 0 10px; }
+    .resort-header h2 { margin: 0; font-size: 1rem; letter-spacing: -0.03em; }
+    .resort-header p { margin: 4px 0 0; color: var(--muted); font-size: .88rem; }
+    .resort-scroller { padding: 10px; border: 1px solid rgba(255,255,255,0.13); background: rgba(7,17,31,0.78); backdrop-filter: blur(18px); border-radius: 999px; overflow-x: auto; scrollbar-width: none; box-shadow: 0 12px 40px rgba(0,0,0,.18); }
+    .resort-scroller::-webkit-scrollbar { display: none; }
+    .tabs { display: flex; flex-wrap: nowrap; gap: 10px; min-width: max-content; }
+    .tab { border: 0; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 12px 16px; border-radius: 999px; font-weight: 900; color: #c7d8e8; background: transparent; border: 1px solid transparent; transition: transform 180ms ease, background 180ms ease, border 180ms ease; }
+    .tab:hover { transform: translateY(-2px); background: rgba(255,255,255,0.14); }
+    .tab.active { background: rgba(125,211,252,0.18); color: #f8fdff; border-color: rgba(125,211,252,0.36); }
+    .tab.favorite { border-color: rgba(250,204,21,0.42); color: #fff7cc; }
+    .tab-star { color: var(--yellow); filter: drop-shadow(0 0 8px rgba(250,204,21,.28)); }
+
     .hero { position: relative; overflow: hidden; border-radius: var(--radius-xl); padding: clamp(24px, 4vw, 46px); background: linear-gradient(135deg, rgba(255,255,255,0.14), rgba(255,255,255,0.055)), radial-gradient(circle at 78% 18%, rgba(125,211,252,0.24), transparent 20rem); border: 1px solid rgba(255,255,255,0.18); box-shadow: var(--shadow); isolation: isolate; }
     .hero::before { content: ""; position: absolute; left: -6%; right: -6%; bottom: -1px; height: 38%; background: linear-gradient(135deg, transparent 18%, rgba(255,255,255,0.16) 18% 31%, transparent 31% 47%, rgba(255,255,255,0.12) 47% 62%, transparent 62%), linear-gradient(to top, rgba(255,255,255,0.10), transparent); clip-path: polygon(0 82%, 12% 48%, 24% 70%, 40% 32%, 56% 72%, 72% 38%, 88% 64%, 100% 24%, 100% 100%, 0 100%); z-index: -1; opacity: 0.95; }
     .hero-layout { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr); gap: 28px; align-items: stretch; }
     .eyebrow { display: inline-flex; align-items: center; gap: 8px; color: #e0f7ff; background: rgba(125,211,252,0.14); border: 1px solid rgba(125,211,252,0.28); border-radius: 999px; padding: 8px 12px; font-size: 0.86rem; font-weight: 900; margin-bottom: 18px; }
     h1 { font-size: clamp(2.45rem, 6vw, 5.75rem); line-height: 0.94; letter-spacing: -0.08em; margin: 0 0 18px; }
     .hero-copy { max-width: 760px; color: #c9d8e8; font-size: clamp(1rem, 1.6vw, 1.2rem); line-height: 1.55; margin: 0 0 24px; }
-    .hero-actions, .tabs { display: flex; flex-wrap: wrap; gap: 10px; }
-    .btn, .tab { border: 0; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 12px 16px; border-radius: 999px; font-weight: 900; transition: transform 180ms ease, background 180ms ease, border 180ms ease, box-shadow 180ms ease; }
-    .btn { color: #06111f; background: linear-gradient(135deg, #e0f7ff, var(--accent)); box-shadow: 0 14px 35px rgba(56,189,248,0.22); }
-    .btn:hover, .tab:hover { transform: translateY(-2px); }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+    .btn { border: 0; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 12px 16px; border-radius: 999px; font-weight: 900; color: #06111f; background: linear-gradient(135deg, #e0f7ff, var(--accent)); box-shadow: 0 14px 35px rgba(56,189,248,0.22); transition: transform 180ms ease, background 180ms ease, border 180ms ease, box-shadow 180ms ease; }
+    .btn:hover { transform: translateY(-2px); }
     .btn.secondary { color: var(--text); background: rgba(255,255,255,0.09); border: 1px solid var(--line); box-shadow: none; }
-    .btn.secondary:hover, .tab:hover { background: rgba(255,255,255,0.14); }
+    .btn.secondary:hover { background: rgba(255,255,255,0.14); }
+    .btn.favorite-btn { color: #1f1700; background: linear-gradient(135deg, #fff7cc, var(--yellow)); }
+    .btn.favorite-btn.saved { color: #fff7cc; background: rgba(250,204,21,0.12); border: 1px solid rgba(250,204,21,.45); box-shadow: none; }
     .hero-card { border-radius: 28px; padding: 20px; background: rgba(5,16,30,0.58); border: 1px solid rgba(255,255,255,0.14); backdrop-filter: blur(18px); display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
     .hero-stat { padding: 18px; border-radius: 22px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); }
     .hero-stat.wide { grid-column: 1 / -1; }
@@ -67,13 +81,7 @@
     .value { margin-top: 7px; font-size: clamp(1.65rem, 3.5vw, 3.35rem); font-weight: 950; letter-spacing: -0.06em; }
     .note { color: var(--muted); font-size: 0.9rem; margin-top: 4px; }
 
-    .resort-scroller { position: sticky; top: 0; z-index: 20; margin: 18px 0; padding: 10px; border: 1px solid rgba(255,255,255,0.13); background: rgba(7,17,31,0.78); backdrop-filter: blur(18px); border-radius: 999px; overflow-x: auto; scrollbar-width: none; }
-    .resort-scroller::-webkit-scrollbar { display: none; }
-    .tabs { min-width: max-content; }
-    .tab { color: #c7d8e8; background: transparent; border: 1px solid transparent; }
-    .tab.active { background: rgba(125,211,252,0.18); color: #f8fdff; border-color: rgba(125,211,252,0.36); }
-
-    .main-grid { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 18px; align-items: start; }
+    .main-grid { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 18px; align-items: start; margin-top: 18px; }
     .panel { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-lg); box-shadow: 0 18px 55px rgba(0,0,0,0.18); overflow: hidden; }
     .panel-pad { padding: 18px; }
     .panel + .panel { margin-top: 18px; }
@@ -154,7 +162,7 @@
     }
     @media (max-width: 760px) {
       .app-shell { width: min(100% - 20px, 1480px); padding-top: 12px; }
-      .topbar { align-items: flex-start; flex-direction: column; }
+      .topbar, .resort-header { align-items: flex-start; flex-direction: column; }
       .pill { white-space: normal; }
       .hero { padding: 22px; border-radius: 24px; }
       .hero-card, .metrics-grid, .forecast-grid, .extended-grid, .decision-summary { grid-template-columns: 1fr; }
@@ -169,6 +177,17 @@
       <div class="brand"><span class="brand-mark">❄️</span><span>Snow Forecast</span></div>
       <div class="pill" id="updated-pill">Loading mountain data…</div>
     </div>
+
+    <section class="resort-top" aria-label="Choose resort">
+      <div class="resort-header">
+        <div>
+          <h2>Choose resort</h2>
+          <p id="favorite-hint">Pick a resort or save a favorite for faster return visits.</p>
+        </div>
+        <button class="btn favorite-btn" id="favorite-btn" type="button" onclick="toggleFavoriteResort()">☆ Set favorite</button>
+      </div>
+      <nav class="resort-scroller"><div class="tabs" id="resort-tabs"></div></nav>
+    </section>
 
     <section class="hero">
       <div class="hero-layout">
@@ -186,10 +205,8 @@
       </div>
     </section>
 
-    <nav class="resort-scroller" aria-label="Select resort"><div class="tabs" id="resort-tabs"></div></nav>
-
-    <div id="loading" class="loading">Loading all resort forecasts…</div>
-    <div id="error" class="error" style="display:none;">Could not load forecast data. Please refresh or check the data files.</div>
+    <div id="loading" class="loading" style="margin-top:18px;">Loading all resort forecasts…</div>
+    <div id="error" class="error" style="display:none; margin-top:18px;">Could not load forecast data. Please refresh or check the data files.</div>
 
     <section class="main-grid" id="dashboard" style="display:none;">
       <aside>
@@ -219,7 +236,7 @@
         <div class="panel" style="margin-bottom:18px;">
           <div class="panel-pad">
             <div class="panel-title">
-              <div><h2>Ride decision</h2><div class="caption">The recommendation is calculated from snow, rain, wind, temperature, elevation, and source confidence.</div></div>
+              <div><h2>Ride decision</h2><div class="caption">Calculated from snow, rain, wind, temperature, elevation, and source confidence.</div></div>
               <span class="pill" id="decision-confidence">—</span>
             </div>
             <div id="decision-brief"></div>
@@ -261,6 +278,7 @@
   <script>
     const DATA_URL = 'https://raw.githubusercontent.com/avielj/snowforcast/refs/heads/main/data/all-forecasts.json';
     const META_URL = 'https://raw.githubusercontent.com/avielj/snowforcast/refs/heads/main/data/metadata.json';
+    const FAVORITE_KEY = 'snowforcast.favoriteResort';
     const PERIODS = ['am', 'pm', 'night'];
     const DEFAULT_ELEVATIONS = ['bot', 'mid', 'top'];
 
@@ -295,11 +313,17 @@
     function elevationLabel(elevation) { return ({ bot: 'Bottom', mid: 'Mid', top: 'Top' })[elevation] || humanName(elevation); }
     function selectedData(resort = currentResort, elevation = currentElevation) { return allForecasts?.[resort]?.[elevation] || {}; }
     function elevationHeight(resort, elevation) { return metaForResort(resort).elevations?.[elevation] || selectedData(resort, elevation)?.elevation || elevationLabel(elevation); }
+    function getFavoriteResort() { try { return localStorage.getItem(FAVORITE_KEY); } catch { return null; } }
+    function setFavoriteResort(resort) { try { localStorage.setItem(FAVORITE_KEY, resort); } catch {} }
+    function clearFavoriteResort() { try { localStorage.removeItem(FAVORITE_KEY); } catch {} }
 
     function resortKeys() {
       const fromMetadata = Array.isArray(metadata.resorts) ? metadata.resorts : [];
       const fromData = Object.keys(allForecasts || {});
-      return [...new Set([...fromMetadata, ...fromData])].filter(key => allForecasts[key]);
+      const favorite = getFavoriteResort();
+      const unique = [...new Set([...fromMetadata, ...fromData])].filter(key => allForecasts[key]);
+      if (!favorite || !unique.includes(favorite)) return unique;
+      return [favorite, ...unique.filter(key => key !== favorite)];
     }
 
     function elevationKeys(resort = currentResort) {
@@ -394,20 +418,50 @@
     }
 
     function loadResortFromHash() {
+      const keys = resortKeys();
       const hash = normalizeKey(window.location.hash.replace('#', ''));
-      const found = resortKeys().find(key => normalizeKey(key) === hash || normalizeKey(metaForResort(key).name) === hash);
-      currentResort = found || resortKeys()[0] || 'Val-Thorens';
+      const found = keys.find(key => normalizeKey(key) === hash || normalizeKey(metaForResort(key).name) === hash);
+      const favorite = getFavoriteResort();
+      currentResort = found || (favorite && keys.includes(favorite) ? favorite : keys[0]) || 'Val-Thorens';
       const available = elevationKeys(currentResort);
       currentElevation = available.includes(currentElevation) ? currentElevation : (available.includes('bot') ? 'bot' : available[0]);
     }
 
-    function switchResort(resort) { currentResort = resort; const available = elevationKeys(resort); currentElevation = available.includes(currentElevation) ? currentElevation : (available.includes('bot') ? 'bot' : available[0]); window.location.hash = resort.toLowerCase(); loadForecast(); }
+    function switchResort(resort) {
+      currentResort = resort;
+      const available = elevationKeys(resort);
+      currentElevation = available.includes(currentElevation) ? currentElevation : (available.includes('bot') ? 'bot' : available[0]);
+      window.location.hash = resort.toLowerCase();
+      loadForecast();
+    }
     function switchElevation(elevation) { currentElevation = elevation; loadForecast(); }
 
+    function toggleFavoriteResort() {
+      const favorite = getFavoriteResort();
+      if (favorite === currentResort) clearFavoriteResort();
+      else setFavoriteResort(currentResort);
+      renderResortTabs();
+      renderFavoriteControl();
+    }
+
+    function renderFavoriteControl() {
+      const favorite = getFavoriteResort();
+      const meta = metaForResort(currentResort);
+      const favoriteBtn = $('favorite-btn');
+      const isSaved = favorite === currentResort;
+      favoriteBtn.className = `btn favorite-btn ${isSaved ? 'saved' : ''}`;
+      favoriteBtn.textContent = isSaved ? `★ ${meta.name} is favorite` : `☆ Save ${meta.name}`;
+      $('favorite-hint').textContent = favorite && allForecasts[favorite]
+        ? `${metaForResort(favorite).name} is saved locally and will open first when no resort is in the URL.`
+        : 'Save your go-to resort locally so it opens first on return visits.';
+    }
+
     function renderResortTabs() {
+      const favorite = getFavoriteResort();
       $('resort-tabs').innerHTML = resortKeys().map(key => {
         const meta = metaForResort(key);
-        return `<button class="tab ${key === currentResort ? 'active' : ''}" onclick="switchResort('${key}')">${meta.flag} ${meta.name}</button>`;
+        const isFavorite = favorite === key;
+        return `<button class="tab ${key === currentResort ? 'active' : ''} ${isFavorite ? 'favorite' : ''}" onclick="switchResort('${key}')">${isFavorite ? '<span class="tab-star">★</span>' : ''}${meta.flag} ${meta.name}</button>`;
       }).join('');
     }
 
@@ -547,6 +601,7 @@
     function loadForecast() {
       const days = daysFor();
       renderResortTabs();
+      renderFavoriteControl();
       renderHero(days);
       renderElevationCards();
       renderMetrics(days);

@@ -653,6 +653,12 @@
       margin-top: 8px;
       font-size: 0.9em;
     }
+    .extended-snow-range {
+      font-size: 0.75em;
+      opacity: 0.65;
+      margin-top: 2px;
+    }
+
     .extended-snow-line {
       color: #cbd5f5;
       font-size: 0.8em;
@@ -881,10 +887,25 @@
 
     <!-- Data Sources -->
     <div class="data-sources">
-      <h3>📊 Data Source</h3>
+      <h3>📊 Data Sources</h3>
       <div class="source-indicator">
         <span class="source-status inactive" id="source-snow-forecast"></span>
-        <span class="source-name">Snow-Forecast.com</span>
+        <span class="source-name">Snow-Forecast.com (Primary)</span>
+      </div>
+      <div class="source-indicator">
+        <span class="source-status inactive" id="source-openmeteo"></span>
+        <span class="source-name">Open-Meteo Multi-Model (AROME · ICON · ECMWF · GFS)</span>
+      </div>
+      <div class="source-indicator">
+        <span class="source-status inactive" id="source-ensemble"></span>
+        <span class="source-name">Open-Meteo Ensemble (~30 members)</span>
+      </div>
+      <div class="source-indicator">
+        <span class="source-status inactive" id="source-metnorway"></span>
+        <span class="source-name">MET Norway</span>
+      </div>
+      <div style="margin-top: 10px; font-size: 0.85em; opacity: 0.7;">
+        <em>💡 Extended snowfall is the median of up to 7 independent models — the range shows model disagreement</em>
       </div>
     </div>
   </div>
@@ -1435,6 +1456,14 @@
         }
         const weekday = getWeekdayFromDate(day.date);
         const shortDate = getShortDate(day.date);
+
+        // Model disagreement range from the multi-model consensus
+        let rangeDisplay = '';
+        if (day.snowfall_range && (day.snowfall_range[1] - day.snowfall_range[0]) >= 1) {
+          const sources = day.snowfall_sources ? ` · ${day.snowfall_sources} models` : '';
+          rangeDisplay = `${day.snowfall_range[0]}–${day.snowfall_range[1]}cm spread${sources}`;
+        }
+
         html += `
           <div class="extended-day">
             <div class="extended-day-name">${weekday}</div>
@@ -1442,6 +1471,7 @@
             <div class="extended-weather">${weatherEmoji}</div>
             <div class="extended-condition">${weatherCondition}</div>
             ${snowDisplay ? `<div class="extended-snow">${snowDisplay}</div>` : ''}
+            ${rangeDisplay ? `<div class="extended-snow-range">${rangeDisplay}</div>` : ''}
             ${weatherDesc ? `<div class="extended-description">${weatherDesc}</div>` : ''}
             ${snowLineMsg ? `<div class="extended-snow-line">${snowLineMsg}</div>` : ''}
             <div class="extended-temp">Max ${Math.round(day.temp_max)}℃<br>Min ${Math.round(day.temp_min)}℃</div>
@@ -1478,6 +1508,7 @@
       
       const labels = [];
       const snowfallData = [];
+      const snowfallRanges = [];
       const temperatureData = [];
       const weatherEmojis = [];
       const colors = [];
@@ -1512,6 +1543,7 @@
         const label = shortDate ? `${weekday} ${shortDate}` : weekday;
         labels.push(label);
         snowfallData.push(totalSnow);
+        snowfallRanges.push(null);
         temperatureData.push(maxTemp);
         weatherEmojis.push(emoji);
         colors.push('rgba(56, 189, 248, 0.8)'); // BLUE for 7-day
@@ -1539,6 +1571,7 @@
         const emoji = getWeatherCodeEmoji(day.weather_code);
         labels.push(label);
         snowfallData.push(snowfall);
+        snowfallRanges.push(day.snowfall_range || null);
         temperatureData.push(day.temp_max);
         weatherEmojis.push(emoji);
         colors.push('rgba(147, 112, 219, 0.7)'); // PURPLE for extended
@@ -1595,7 +1628,12 @@
               callbacks: {
                 label: function(context) {
                   if (context.dataset.label === 'Snowfall (cm)') {
-                    return '❄️ ' + context.parsed.y.toFixed(1) + ' cm';
+                    const range = snowfallRanges[context.dataIndex];
+                    let label = '❄️ ' + context.parsed.y.toFixed(1) + ' cm';
+                    if (range && range[1] - range[0] >= 1) {
+                      label += ' (models: ' + range[0] + '–' + range[1] + ' cm)';
+                    }
+                    return label;
                   } else {
                     return '🌡️ ' + context.parsed.y.toFixed(1) + '°C';
                   }
@@ -1683,6 +1721,7 @@
       
       const labels = [];
       const snowfallData = [];
+      const snowfallRanges = [];
       const temperatureData = [];
       const weatherEmojis = [];
       const colors = [];
@@ -1715,6 +1754,7 @@
         const label = shortDate ? `${weekday} ${shortDate}` : weekday;
         labels.push(label);
         snowfallData.push(totalSnow);
+        snowfallRanges.push(null);
         temperatureData.push(maxTemp);
         weatherEmojis.push(emoji);
         colors.push('rgba(56, 189, 248, 0.8)');
@@ -1737,6 +1777,7 @@
         const emoji = getWeatherCodeEmoji(day.weather_code);
         labels.push(label);
         snowfallData.push(snowfall);
+        snowfallRanges.push(day.snowfall_range || null);
         temperatureData.push(day.temp_max);
         weatherEmojis.push(emoji);
         colors.push('rgba(147, 112, 219, 0.7)');
@@ -1794,7 +1835,12 @@
               callbacks: {
                 label: function(context) {
                   if (context.dataset.label === 'Snowfall (cm)') {
-                    return '❄️ ' + context.parsed.y.toFixed(1) + ' cm';
+                    const range = snowfallRanges[context.dataIndex];
+                    let label = '❄️ ' + context.parsed.y.toFixed(1) + ' cm';
+                    if (range && range[1] - range[0] >= 1) {
+                      label += ' (models: ' + range[0] + '–' + range[1] + ' cm)';
+                    }
+                    return label;
                   } else {
                     return '🌡️ ' + context.parsed.y.toFixed(1) + '°C';
                   }

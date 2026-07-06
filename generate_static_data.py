@@ -19,13 +19,13 @@ except ImportError:
     OPENWEATHER_AVAILABLE = False
     print("OpenWeather integration not available, using snow-forecast.com only")
 
-# Try to import Weather Unlocked integration
+# Multi-model consensus (Open-Meteo models + ensemble + MET Norway)
 try:
-    from weatherunlocked_integration import WeatherUnlockedAPI, compare_with_weatherunlocked
-    WEATHERUNLOCKED_AVAILABLE = True
+    import multi_model
+    MULTI_MODEL_AVAILABLE = True
 except ImportError:
-    WEATHERUNLOCKED_AVAILABLE = False
-    print("Weather Unlocked integration not available")
+    MULTI_MODEL_AVAILABLE = False
+    print("Multi-model consensus not available")
 
 def fetch_valthorens_conditions():
     """Fetch current snow conditions from Val Thorens official website"""
@@ -528,17 +528,6 @@ def main():
         else:
             print("⚠ OPENWEATHER_API_KEY not set, using snow-forecast.com only")
     
-    # Initialize Weather Unlocked API if available
-    weatherunlocked_api = None
-    if WEATHERUNLOCKED_AVAILABLE:
-        app_id = os.environ.get('WEATHERUNLOCKED_APP_ID')
-        app_key = os.environ.get('WEATHERUNLOCKED_KEY')
-        if app_id and app_key:
-            weatherunlocked_api = WeatherUnlockedAPI(app_id, app_key)
-            print("✓ Weather Unlocked API initialized")
-        else:
-            print("⚠ Weather Unlocked credentials not set")
-    
     all_data = {}
     
     for resort, elevations in resorts.items():
@@ -563,17 +552,6 @@ def main():
                             print(f"  ✓ Combined data from OpenWeather")
                     except Exception as e:
                         print(f"  ⚠ OpenWeather fetch failed: {e}")
-                
-                # Try to fetch from Weather Unlocked and combine
-                if weatherunlocked_api and forecast_data:
-                    try:
-                        print(f"  → Fetching Weather Unlocked data...")
-                        wu_data = weatherunlocked_api.get_forecast(resort=resort, elevation=elevation)
-                        if wu_data:
-                            forecast_data = compare_with_weatherunlocked(forecast_data, wu_data)
-                            print(f"  ✓ Combined data from Weather Unlocked")
-                    except Exception as e:
-                        print(f"  ⚠ Weather Unlocked fetch failed: {e}")
                 
                 if forecast_data and 'days' in forecast_data:
                     all_data[resort][elevation] = forecast_data
@@ -601,7 +579,7 @@ def main():
                     # Store extended forecast within the elevation data
                     if elevation in all_data[resort]:
                         all_data[resort][elevation]['extended'] = extended
-                        
+
                         # Fill missing days to get 7-day forecast
                         if 'days' in all_data[resort][elevation]:
                             all_data[resort][elevation] = fill_missing_days_from_openmeteo(
@@ -609,14 +587,25 @@ def main():
                                 extended,
                                 target_days=7
                             )
-                            
-                            # Re-save individual file with complete 7 days
-                            filename = f"data/{resort.lower()}-{elevation}.json"
-                            with open(filename, 'w') as f:
-                                json.dump(all_data[resort][elevation], f, indent=2, default=str)
-                            print(f"  ✓ Updated {filename} with complete forecast")
                     else:
                         all_data[resort][elevation] = {'extended': extended}
+
+                    # Blend independent models into a consensus median + range
+                    if MULTI_MODEL_AVAILABLE:
+                        try:
+                            all_data[resort][elevation] = multi_model.enrich_extended_forecast(
+                                all_data[resort][elevation],
+                                coords['lat'], coords['lon'], elev_height,
+                                resort=resort
+                            )
+                        except Exception as e:
+                            print(f"  ⚠ Multi-model consensus failed: {e}")
+
+                    # Re-save individual file with complete, enriched forecast
+                    filename = f"data/{resort.lower()}-{elevation}.json"
+                    with open(filename, 'w') as f:
+                        json.dump(all_data[resort][elevation], f, indent=2, default=str)
+                    print(f"  ✓ Updated {filename} with complete forecast")
     
     # Save combined file
     with open('data/all-forecasts.json', 'w') as f:

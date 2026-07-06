@@ -1,10 +1,12 @@
 # ❄️ Snow Forecast Dashboard
 
-Snow and weather dashboard for multiple ski resorts including Val Thorens, Cervinia, Mount Hermon, and more. The app scrapes snow-forecast.com, optionally merges OpenWeatherMap data, and serves an interactive front-end via `forecast.html`.
+Snow and weather dashboard for multiple ski resorts including Val Thorens, La Plagne, Cervinia, Mount Hermon, and more. The app scrapes snow-forecast.com, blends several independent weather models into a consensus forecast, and serves an interactive front-end via `forecast.html`.
 
 ## Highlights
 - 7-day outlook for bottom, mid, and top elevations (AM/PM/Night breakdown)
 - Multi-resort support (Val Thorens, Cervinia, Via Lattea, Monterosa Ski, Gudauri, St. Anton, Alpe d'Huez, La Plagne, Mount Hermon) with combined JSON feeds in `data/`
+- Multi-model snowfall consensus: Open-Meteo multi-model (Meteo-France AROME, DWD ICON, ECMWF IFS, NOAA GFS), a ~30-member ensemble for uncertainty ranges, and MET Norway — merged as a median with a model-disagreement range
+- Model skill tracking: `forecast_skill.py` scores each model's past accuracy from git history (weekly GitHub Action) and the consensus weights models accordingly
 - Optional OpenWeatherMap fusion for temperature, snow, and precipitation cross-checks
 - REST API for live pulls plus static JSON for CDN/static hosting workflows
 - Works on Vercel (dynamic Flask) or GitHub Pages (static assets refreshed every 3 hours)
@@ -48,6 +50,8 @@ Snow and weather dashboard for multiple ski resorts including Val Thorens, Cervi
 ## Repository Tour
 - `forecast.html` — responsive front-end with automatic source detection (static vs. live).
 - `snow_forecast_parser.py` — core scraper for the canonical Val Thorens feed.
+- `multi_model.py` — multi-model / ensemble / MET Norway consensus engine.
+- `forecast_skill.py` — scores model accuracy from git history into `data/skill.json`.
 - `openweather_integration.py` — OpenWeather helper and dataset merger.
 - `data/` — auto-generated JSON bundles (`all-forecasts.json`, per-resort/elevation files, `metadata.json`).
 - `cron_examples.txt` — sample crontab entries for local automation.

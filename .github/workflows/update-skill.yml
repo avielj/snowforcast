@@ -1,0 +1,37 @@
+name: Update Model Skill Scores
+
+on:
+  schedule:
+    # Weekly, Monday 03:00 UTC
+    - cron: '0 3 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-skill:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository (full history)
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Score forecast models against history
+      run: |
+        python3 forecast_skill.py --days 45
+
+    - name: Commit and push if changed
+      run: |
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "github-actions[bot]"
+        git add data/skill.json
+        git diff --quiet && git diff --staged --quiet || (git commit -m "Update model skill scores - $(date -u)" && git push)

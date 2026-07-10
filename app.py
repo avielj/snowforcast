@@ -139,6 +139,7 @@ def _forecast_summary(resort, elevation):
     info = _resort_info(resort)
     elevation_label = ELEVATION_LABELS.get(elevation, elevation.title())
     height = info.get('elevations', {}).get(elevation, elevation_label)
+    next3 = [{'name': (d.get('name') or '')[:3], 'snow': round(_day_snow(d))} for d in days[:3]]
     best_day_text = f"{best_day.get('name')} {_cm(_day_snow(best_day))}" if best_day else 'No clear snow window'
     temp_text = f"{round(temp_range[0])}°/{round(temp_range[1])}°" if temp_range else 'temperature unavailable'
     description = f"{elevation_label} {height}: {_cm(total_snow)} snow, {_mm(total_rain)} rain, peak wind {round(peak_wind)} km/h. Best window: {best_day_text}."
@@ -157,6 +158,8 @@ def _forecast_summary(resort, elevation):
         'status': status,
         'status_icon': status_icon,
         'best_day': best_day_text,
+        'next3': next3,
+        'updated': (data.get('last_updated') or '')[:16].replace('T', ' '),
         'temp': temp_text,
         'description': description,
         'all_elevations': sorted(all_elevations, key=lambda item: ['bot', 'mid', 'top'].index(item['key']) if item['key'] in ['bot', 'mid', 'top'] else 99),
@@ -326,12 +329,18 @@ def _serve_forecast_html():
         return _enhance_forecast_html(f.read())
 
 
+_FONT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'fonts')
+
+
 def _font(size, bold=False):
     if not PIL_AVAILABLE:
         return None
+    name = 'DejaVuSans-Bold.ttf' if bold else 'DejaVuSans.ttf'
     candidates = [
-        '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf' if bold else '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
-        '/usr/share/fonts/dejavu/DejaVuSans-Bold.ttf' if bold else '/usr/share/fonts/dejavu/DejaVuSans.ttf',
+        # Repo-bundled first: deterministic on Vercel/Lambda and locally.
+        os.path.join(_FONT_DIR, name),
+        '/usr/share/fonts/truetype/dejavu/' + name,
+        '/usr/share/fonts/dejavu/' + name,
     ]
     for path in candidates:
         try:
@@ -373,64 +382,110 @@ def _share_card_png(summary):
     if not PIL_AVAILABLE:
         raise RuntimeError('Pillow unavailable')
 
+    import math
+    import random
     W, H = 1200, 630
-    img = Image.new('RGB', (W, H), '#101418')
-    draw = ImageDraw.Draw(img)
+
+    # --- alpine night background (gradient sky, moon, layered snow-capped ridges) ---
+    base = Image.new('RGB', (W, H))
+    px = base.load()
+    top, midc, horizon = (20, 55, 78), (46, 111, 149), (120, 170, 198)
+    lerp = lambda a, b, t: tuple(int(a[i] + (b[i] - a[i]) * t) for i in range(3))
     for y in range(H):
-        shade = int(16 + y * 0.018)
-        draw.line([(0, y), (W, y)], fill=(shade, min(shade + 4, 34), min(shade + 10, 52)))
+        t = y / H
+        c = lerp(top, midc, min(1.0, t * 1.4)) if t < 0.62 else lerp(midc, horizon, (t - 0.62) / 0.38)
+        for x in range(W):
+            px[x, y] = c
+    img = base.convert('RGBA')
+    d = ImageDraw.Draw(img, 'RGBA')
+    for r in range(150, 0, -1):
+        d.ellipse([980 - r, 150 - r, 980 + r, 150 + r], fill=(230, 244, 252, max(0, 40 - int(38 * (r / 150)))))
 
-    glow = Image.new('RGBA', (W, H), (0, 0, 0, 0))
-    gdraw = ImageDraw.Draw(glow)
-    gdraw.ellipse((760, -260, 1330, 260), fill=(134, 239, 172, 62))
-    gdraw.ellipse((500, -260, 1050, 260), fill=(125, 211, 252, 45))
-    glow = glow.filter(ImageFilter.GaussianBlur(72))
-    img = Image.alpha_composite(img.convert('RGBA'), glow)
-    draw = ImageDraw.Draw(img)
+    def ridge(basey, amp, seed, color, alpha):
+        pts = [(0, H)]
+        for i in range(10):
+            x = W * i / 9
+            yv = basey - amp * abs(math.sin(i * seed)) * (0.5 + 0.5 * math.sin(i * 1.7 + seed))
+            pts.append((x, yv))
+        pts.append((W, H))
+        d.polygon(pts, fill=color + (alpha,))
+        return pts
 
-    # Main WhatsApp/Open Graph card: white top, navy strip, dark footer.
-    x0, y0, x1, y1 = 78, 58, 1122, 572
-    draw.rounded_rectangle((x0, y0, x1, y1), radius=32, fill=(30, 30, 30, 255))
-    draw.rounded_rectangle((x0, y0, x1, y0 + 318), radius=32, fill=(250, 252, 255, 255))
-    draw.rectangle((x0, y0 + 280, x1, y0 + 330), fill=(250, 252, 255, 255))
-    draw.rectangle((x0, y0 + 318, x1, y0 + 408), fill=(3, 8, 48, 255))
-    draw.rectangle((x0, y0 + 408, x1, y1 - 28), fill=(31, 31, 31, 255))
-    draw.rounded_rectangle((x0, y1 - 70, x1, y1), radius=32, fill=(31, 31, 31, 255))
+    ridge(430, 150, 0.9, (70, 110, 140), 150)
+    ridge(470, 180, 1.35, (48, 92, 120), 200)
+    near = ridge(520, 235, 2.1, (28, 64, 92), 255)
+    for (x, y) in near[1:-1]:
+        if y < 430:
+            d.polygon([(x - 30, y + 34), (x, y), (x + 30, y + 34),
+                       (x + 11, y + 29), (x, y + 14), (x - 12, y + 30)], fill=(240, 248, 252, 235))
+    rnd = random.Random(7)
+    for _ in range(80):
+        x, y, rr = rnd.randint(0, W), rnd.randint(0, 430), rnd.choice([2, 2, 3, 4])
+        d.ellipse([x, y, x + rr, y + rr], fill=(255, 255, 255, rnd.randint(90, 200)))
+    for y in range(H - 215, H):
+        a = int(160 * ((y - (H - 215)) / 215))
+        d.line([(0, y), (W, y)], fill=(8, 26, 40, a))
 
-    f_title = _font(48, True)
-    f_metric = _font(34, True)
-    f_metric_label = _font(31, True)
-    f_footer = _font(29, True)
-    f_small = _font(25, False)
-    f_brand = _font(33, True)
+    def flake(cx, cy, s, col=(233, 243, 250, 255), w=6):
+        for k in range(6):
+            a = math.radians(k * 60)
+            d.line([(cx, cy), (cx + s * math.cos(a), cy + s * math.sin(a))], fill=col, width=w)
+            for bp in (0.5, 0.78):
+                bx, by = cx + s * bp * math.cos(a), cy + s * bp * math.sin(a)
+                for sgn in (-1, 1):
+                    ba = a + sgn * math.radians(35)
+                    d.line([(bx, by), (bx + s * 0.2 * math.cos(ba), by + s * 0.2 * math.sin(ba))],
+                           fill=col, width=max(2, w - 2))
 
-    title = f"{summary['resort_name']} {summary['elevation_label']}"
-    if len(title) > 34:
-        title = title[:31] + '…'
-    draw.text((112, 104), title, font=f_title, fill=(25, 31, 39, 255))
+    white, soft = (255, 255, 255, 255), (200, 220, 234, 255)
+    scol = {'Good': (52, 199, 120), 'Watch': (224, 168, 60), 'Low': (232, 120, 120)}.get(summary['status'], (180, 200, 214))
 
-    def metric(x, y, icon, label, value, color):
-        draw.text((x, y), icon, font=f_metric_label, fill=color)
-        draw.text((x + 55, y + 2), label, font=f_metric_label, fill=(28, 32, 40, 255))
-        draw.text((x + 55 + draw.textbbox((0, 0), label, font=f_metric_label)[2] + 10, y + 2), value, font=f_metric_label, fill=(28, 32, 40, 255))
+    # eyebrow + resort headline (size-to-fit)
+    d.text((60, 56), 'SNOWFORECAST', font=_font(24, True), fill=(150, 190, 214, 255))
+    head = f"{summary['resort_name']} {summary['elevation_label']}"
+    fs = 62
+    while fs > 38 and d.textlength(head, font=_font(fs, True)) > 900:
+        fs -= 2
+    d.text((60, 90), head, font=_font(fs, True), fill=white)
 
-    metric(116, 198, '❄', 'Snow:', _cm(summary['snow']), (221, 171, 24, 255))
-    metric(608, 198, '↗', 'Best:', summary['best_day'], (34, 197, 94, 255))
-    metric(116, 283, '⚠', 'Rain:', _mm(summary['rain']), (90, 96, 112, 255))
-    metric(608, 283, '↘', 'Wind:', f"{round(summary['wind'])} km/h", (225, 29, 72, 255))
+    # hero snow number + status pill
+    snow_cm = round(_num(summary['snow']))
+    hero = f"{snow_cm} cm"
+    hf = _font(88, True)
+    d.text((60, 176), hero, font=hf, fill=white)
+    hx = 60 + d.textlength(hero, font=hf) + 22
+    d.text((hx, 214), 'snow this week', font=_font(30, True), fill=soft)
+    st = summary['status'].upper()
+    pf = _font(26, True)
+    pw = d.textlength(st, font=pf)
+    d.rounded_rectangle((hx, 250, hx + pw + 34, 293), radius=21, fill=scol + (235,))
+    d.text((hx + 17, 256), st, font=pf, fill=(10, 30, 24, 255))
 
-    # Simple snowflake/diamond mark, similar role to OptionStrat logo strip.
-    cx, cy = 132, 363
-    for dx, dy in [(-18, 0), (0, -18), (18, 0), (0, 18), (-10, -10), (10, -10), (-10, 10), (10, 10)]:
-        draw.ellipse((cx + dx - 4, cy + dy - 4, cx + dx + 4, cy + dy + 4), fill=(56, 189, 248, 255))
-    draw.text((176, 344), 'SnowForecast', font=f_brand, fill=(246, 251, 255, 255))
-    draw.text((830, 349), 'Mountain Decision Card', font=f_small, fill=(226, 232, 240, 255))
+    # 3-day strip
+    y0 = 322
+    n3 = summary.get('next3') or []
+    for i, dd in enumerate(n3):
+        cx = 62 + i * 175
+        d.text((cx, y0), dd.get('name', ''), font=_font(25), fill=soft)
+        cm = int(dd.get('snow', 0))
+        if cm > 0:
+            flake(cx + 10, y0 + 46, 9, col=(224, 238, 248, 255), w=3)
+            d.text((cx + 26, y0 + 30), f"{cm} cm", font=_font(29, True), fill=white)
+        else:
+            d.text((cx, y0 + 30), '0 cm', font=_font(29, True), fill=(206, 222, 233, 255))
+        if i < len(n3) - 1:
+            d.line([(cx + 146, y0 + 6), (cx + 146, y0 + 56)], fill=(255, 255, 255, 70), width=2)
 
-    footer_title = f"{summary['resort_name']} {summary['elevation_label']} {summary['height']}"
-    draw.text((110, 435), footer_title, font=f_footer, fill=(226, 232, 240, 255))
-    details = f"{summary['status_icon']} {summary['status']} | Snow {_cm(summary['snow'])} | Rain {_mm(summary['rain'])} | Wind {round(summary['wind'])} km/h"
-    draw.text((110, 482), details, font=f_footer, fill=(226, 232, 240, 255))
-    draw.text((110, 532), 'Open live forecast on SnowForecast', font=f_small, fill=(157, 163, 175, 255))
+    # bottom row + wordmark + as-of
+    row = f"Rain {_mm(summary['rain'])}   ·   Wind {round(_num(summary['wind']))} km/h   ·   Best {summary['best_day']}"
+    d.text((62, H - 122), row, font=_font(27, True), fill=(214, 230, 240, 255))
+    flake(80, H - 52, 18)
+    d.text((108, H - 66), 'snowforcast  ·  9 Alps resorts', font=_font(28, True), fill=(232, 242, 250, 255))
+    upd = summary.get('updated')
+    if upd:
+        stamp = f"as of {upd}"
+        fa = _font(23)
+        d.text((W - d.textlength(stamp, font=fa) - 44, H - 56), stamp, font=fa, fill=(186, 208, 224, 255))
 
     output = io.BytesIO()
     img.convert('RGB').save(output, format='PNG', optimize=True)

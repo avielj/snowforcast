@@ -2,15 +2,17 @@
 name: snowforcast-architecture-contract
 description: >-
   Load before touching the snowforcast data pipeline (generate_static_data.py,
-  multi_model.py, forecast_skill.py), the all-forecasts.json contract, or the
-  resort roster. Explains the load-bearing design decisions and invariants a
-  change must not violate, plus the known-weak points, so you understand WHY the
-  system is shaped the way it is before editing it. Read when you are about to:
-  add/rename a resort or elevation, add a JSON field, change consensus/skill
-  logic, alter git-history retention, or reason about why there is "no database".
+  multi_model.py, forecast_skill.py), the all-forecasts.json contract, the
+  app.py serving/share layer, or the resort roster. Explains the load-bearing
+  design decisions and invariants a change must not violate, plus the known-weak
+  points, so you understand WHY the system is shaped the way it is before editing
+  it. Read when you are about to: add/rename a resort or elevation, add a JSON
+  field, change consensus/skill logic, alter git-history retention, touch how
+  app.py serves/enhances the page, or reason about why there is "no database".
   Triggers: "why is it built this way", "add a resort", "add a field to the
   JSON", "consensus invariant", "skill scoring", "git history datastore",
-  "graceful degradation", "prune history".
+  "graceful degradation", "prune history", "how is the page served", "app.py
+  serving layer".
 ---
 
 # snowforcast Architecture Contract
@@ -57,8 +59,8 @@ Instead:
 - The 3-hourly GitHub Action (`.github/workflows/update-forecast.yml`, cron
   `0 */3 * * *`) runs `generate_static_data.py` and **commits whatever it
   scraped** with the message `Update forecast data`.
-- As of **2026-07-08** the repo has **2016 commits total, of which 1938 are
-  these `Update forecast data` bot commits** (78 are real human commits). Those
+- As of **2026-07-11** the repo has **2086 commits total, of which 1969 are
+  these `Update forecast data` bot commits** (117 are real human commits). Those
   bot commits **are the store**: every 3 hours, a full snapshot of every
   resort/elevation forecast is frozen into git.
 
@@ -109,15 +111,41 @@ and does two stages per elevation:
 Finally `main()` writes each per-elevation `data/<resort>-<elevation>.json` and
 the combined **`data/all-forecasts.json`** (line ~611), plus `data/metadata.json`.
 
-### app.py is a parallel, largely-unused path
+### app.py is the PRIMARY serving layer — but NOT the data layer (refreshed 2026-07-11)
 
-`app.py` (Flask) **duplicates the entire scrape/parse logic** — it has its own
-`forecast-table__table` parse at line ~173 and its own `resort_url_mapping`. It
-serves dynamic routes (`/api/forecast`, `/val_thorens_forecast.json`, etc.) and
-is the Vercel dynamic target. **But the deployed static pages do not depend on
-it** — they fetch the committed JSON from GitHub raw (Section 5). Treat `app.py`
-as **secondary**: a change to the real pipeline is a change to
-`generate_static_data.py` + `multi_model.py`, not `app.py`.
+Post-Codex redesign, `app.py` (Flask) is the **front door of the live site**, not
+a parallel unused path. It **no longer duplicates the scraper** — verified
+2026-07-11: a grep of `app.py` for `forecast-table__table`, `requests.get`,
+`BeautifulSoup`, `snow-forecast.com`, and `resort_url_mapping` returns **zero**.
+`app.py` is now ~631 lines of pure serving/share code that reads
+`data/all-forecasts.json` from disk (`_load_all_forecasts()`, line ~56) and
+derives per-resort summaries; it never scrapes.
+
+`vercel.json` routes the site **through** `app.py` (`@vercel/python`):
+
+| Route | Handler | What it does |
+|---|---|---|
+| `/` and `/forecast.html` | `index()` → `_serve_forecast_html()` (line ~326) | reads `forecast.html` from disk, runs it through `_enhance_forecast_html()` (line ~169), returns the enhanced page |
+| `/share/<resort>/<elevation>` | `share_preview()` (line ~505) | dynamic per-resort OG page via `render_template_string` |
+| `/share-card/<resort>/<elevation>.png` (`.svg`) | `share_card_png()` / `_share_card_png()` (line ~381) | 1200×630 Pillow card per resort |
+| `/data/<filename>` | `data_file()` (line ~594) | `send_from_directory('data', …)` |
+| `/api/forecast`, `/val_thorens_forecast.json`, … | JSON endpoints | all read the committed JSON |
+| `/(.*)` (catch-all) | `app.py` | everything else routes to Flask |
+
+So `forecast.html` is a **static FILE that is served and enhanced dynamically**:
+`_serve_forecast_html()` opens it and `_enhance_forecast_html()` injects a JS
+enhancement (country-ordered resort sort, favorite pinning, and a share button
+that builds `/share/<resort>/<elevation>` links) before returning. Editing the
+page means editing the file; the browser never gets the raw file on Vercel.
+
+**Critical distinction — serving layer ≠ data layer.** `app.py` serves and shares
+data; it does **not** generate it. The data pipeline is still, exclusively,
+`generate_static_data.py` + `multi_model.py` committed to git (Sections 1–2 above).
+A change to *what the forecast says* is a change to those two files; a change to
+*how the page/preview is served* is a change to `app.py`. Do not put scrape or
+consensus logic back into `app.py`. (Serving/share details are owned by
+`snowforcast-build-deploy-and-operations` and `snowforcast-link-preview-and-positioning`;
+the served page's structure by `snowforcast-frontend-ui-contract`.)
 
 ---
 
@@ -134,7 +162,7 @@ optionally skill-weighted. Two hard thresholds guard against garbage:
 
 Consequence: if fewer than 2 models have a track record, `load_skill_weights`
 returns `{}`, every model gets neutral weight `1.0`, and the result is a **plain
-unweighted median**. As of **2026-07-08** the deployed data shows
+unweighted median**. As of **2026-07-11** the deployed data still shows
 `"method": "median"` and `"skill_weights": null` — i.e. weighting is currently
 **dormant** across the board (this dormancy and its math are owned by
 `snowforcast-consensus-and-model-reference` and the skill-methodology skill).
@@ -178,20 +206,27 @@ drop a source (fine) or does it fabricate a value (forbidden)?*
 
 ## 5. all-forecasts.json — the frozen deployed contract
 
-Both front-ends fetch this file **directly from GitHub raw**, not from `app.py`:
+The served page fetches this file **directly from GitHub raw**, not from the
+`app.py` that served the page:
 
 ```
 https://raw.githubusercontent.com/avielj/snowforcast/refs/heads/main/data/all-forecasts.json
 ```
 
-(hardcoded in `forecast.html` as `const GITHUB_DATA_URL`, line ~961 — verified).
+(hardcoded in `forecast.html` as `const DATA_URL`, line ~23 — verified 2026-07-11;
+alongside `const META_URL` for `metadata.json`. Note the browser hits GitHub raw
+even though the page HTML was served by `app.py`.) `app.py` also exposes the same
+JSON at `/data/all-forecasts.json` via `send_from_directory`, and its share/OG
+routes read the on-disk JSON through `_load_all_forecasts()` — but the **front-end
+page uses the GitHub-raw URL**, so the page's data freshness tracks the last bot
+commit on `main`, independent of the Vercel deploy.
 
 **Fields may be added additively; existing fields/paths must never change,
 move, or disappear**, or the live page breaks silently. The consensus fields
 (`snowfall_range`, `snowfall_models`, `snowfall_sources`) and the `extended`
 block were all added this additive way.
 
-### Verified field inventory (as of 2026-07-08)
+### Verified field inventory (as of 2026-07-11)
 
 Top-level: object keyed by internal resort name → `{ bot, mid, top }`.
 
@@ -242,7 +277,13 @@ A resort's identity is spread across **three parallel dictionaries in
 - `elevation_heights` (line ~484) — `{bot, mid, top}` metres per resort
 - `snow_forecast_names` (line ~497) — maps internal name → snow-forecast.com name
 
-Plus `app.py`'s own `resort_url_mapping` (line ~147) for the Flask path.
+Plus, since the Codex redesign, `app.py`'s own **`RESORT_INFO`** dict (line ~20)
+— but this is **display/share** metadata, not a scrape-URL map: each entry is
+`{name, flag, country, elevations:{bot,mid,top}}`, keyed by internal name and used
+by the served page's enhancement, the `/share/*` OG page, and the `/share-card/*`
+PNG. `app.py` no longer holds a `resort_url_mapping` (removed with the scraper —
+verified 2026-07-11). The scrape-URL mapping lives **only** in
+`generate_static_data.py::snow_forecast_names`.
 
 **Internal names are not the same as the scrape URLs.** The non-identity mappings:
 
@@ -257,9 +298,12 @@ Plus `app.py`'s own `resort_url_mapping` (line ~147) for the Flask path.
 `La-Plagne`, `Mount-Hermon`. Each has three elevations: **`bot`, `mid`, `top`**.
 
 **To add or rename a resort you must update all three dicts in
-`generate_static_data.py` AND the `resort_url_mapping` in `app.py`** — a
-mismatch means a resort silently scrapes the wrong URL or gets no coordinates.
-Do this under change control.
+`generate_static_data.py` (`resort_coords`, `elevation_heights`,
+`snow_forecast_names`) AND `RESORT_INFO` in `app.py`** — a mismatch means a
+resort silently scrapes the wrong URL / gets no coordinates (generator side), or
+renders with a wrong/`🏔️`-fallback name, flag, and elevation labels on the served
+page and share cards (app.py side — `_resort_info()` falls back to a de-hyphenated
+name when a key is missing). Do this under change control.
 
 ---
 
@@ -288,20 +332,22 @@ skills noted.
    `YYYY-MM-DD` dates and mis-merging days. Low-frequency but real. Debugging
    angle lives in `snowforcast-debugging-playbook`.
 
-3. **Front-end is decoupled from Flask; README overstates it.** `forecast.html`
-   always fetches the hardcoded GitHub raw URL (line ~961) — there is **no**
-   runtime "static vs. live" source detection. `README.md:51` claims
-   *"automatic source detection (static vs. live)"*, which is **false** as
-   written. Do not rely on that claim; do not "fix the front-end to match the
-   README" — fix the README instead (owned by `snowforcast-docs-and-writing` and
-   `snowforcast-frontend-ui-contract`).
+3. **Front-end data source is decoupled from Flask; README overstates it.** Even
+   though `app.py` now serves the page, `forecast.html` always fetches the
+   hardcoded GitHub-raw `DATA_URL` (line ~23) for its data — there is **no**
+   runtime "static vs. live" source detection. `README.md:51` still claims
+   *"automatic source detection (static vs. live)"* (verified 2026-07-11), which
+   is **false** as written. Do not rely on that claim; do not "fix the front-end
+   to match the README" — fix the README instead (owned by
+   `snowforcast-docs-and-writing` and `snowforcast-frontend-ui-contract`).
 
 ---
 
 ## Provenance and maintenance
 
-Every claim above was verified against the repo on **2026-07-08**. Volatile
-facts are date-stamped. Re-verify with these one-liners (run from repo root):
+Every claim above was verified against the repo on **2026-07-11** (post-Codex
+serving/share redesign). Volatile facts are date-stamped. Re-verify with these
+one-liners (run from repo root):
 
 ```bash
 # No database anywhere (expect zero matches):
@@ -310,6 +356,21 @@ grep -rniE 'sqlite|postgres|redis|psycopg|mysql|mongodb' ./*.py
 # Total vs. bot commits (numbers drift — re-count):
 git log --oneline | wc -l
 git log --oneline | grep -c 'Update forecast data'
+
+# app.py is the SERVING layer, not the data layer (expect zero — no scraper left):
+grep -nE 'forecast-table__table|requests\.get|BeautifulSoup|resort_url_mapping' app.py
+
+# Site is served THROUGH app.py (expect /forecast.html + catch-all -> app.py):
+grep -nE '"/forecast.html"|"/\(\.\*\)"|"/share|"/data|"/api' vercel.json
+grep -n 'def _serve_forecast_html\|def _enhance_forecast_html\|def index' app.py
+grep -n "@app.route" app.py                                 # / , /forecast.html, /share/*, /share-card/*, /data/*, /api/*
+
+# Serving layer needs Pillow + bundled fonts for the dynamic share card:
+grep -n 'Pillow' requirements.txt
+ls fonts/DejaVuSans.ttf fonts/DejaVuSans-Bold.ttf
+
+# forecast.html has NO static OG tags (sharing is dynamic via /share/*):
+grep -c 'property="og:' forecast.html                       # expect 0
 
 # Skill replay uses `git show <hash>:<path>` and needs full history:
 grep -n "git('show'" forecast_skill.py
@@ -323,12 +384,12 @@ grep -n "get('n', 0) >= 5" multi_model.py                  # >=5 samples per mod
 # Consensus source roster:
 grep -n 'FORECAST_MODELS =' multi_model.py
 
-# Resort identity dicts + URL map:
+# Resort identity dicts (generator = data) + display/share dict (app.py):
 grep -n 'resort_coords\|elevation_heights\|snow_forecast_names' generate_static_data.py
-grep -n 'resort_url_mapping' app.py
+grep -n 'RESORT_INFO =' app.py                              # display/share, NOT a scrape-URL map
 
-# Frozen-contract fetch URL (front-end):
-grep -n 'GITHUB_DATA_URL' forecast.html
+# Frozen-contract fetch URL (served page still hits GitHub raw):
+grep -n 'DATA_URL' forecast.html
 
 # Known-weak points:
 grep -n '1mm water equivalent' multi_model.py              # MET Norway heuristic

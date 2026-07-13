@@ -1,6 +1,6 @@
 {
-  "generated": "2026-07-06T13:13:56.639173",
-  "days_analyzed": 30,
+  "generated": "2026-07-13T06:11:26.250793",
+  "days_analyzed": 45,
   "max_lead_days": 3,
   "note": "MAE (cm) of extended snowfall vs day-of forecast, mid elevation",
   "resorts": {
@@ -8,13 +8,69 @@
       "models": {
         "openmeteo_best_match": {
           "mae": 0.0,
-          "n": 18
+          "n": 30
+        },
+        "meteofrance_seamless": {
+          "mae": 0.0,
+          "n": 14
+        },
+        "icon_seamless": {
+          "mae": 0.0,
+          "n": 14
+        },
+        "ecmwf_ifs025": {
+          "mae": 0.0,
+          "n": 14
+        },
+        "gfs_seamless": {
+          "mae": 0.0,
+          "n": 14
+        },
+        "met_norway": {
+          "mae": 0.0,
+          "n": 14
+        },
+        "ensemble_median": {
+          "mae": 0.0,
+          "n": 14
         }
       }
     },
     "Cervinia": {
       "models": {
         "openmeteo_best_match": {
+          "mae": 0.0,
+          "n": 22
+        }
+      }
+    },
+    "Via-Lattea": {
+      "models": {
+        "openmeteo_best_match": {
+          "mae": 0.0,
+          "n": 14
+        },
+        "meteofrance_seamless": {
+          "mae": 0.0,
+          "n": 14
+        },
+        "icon_seamless": {
+          "mae": 0.0,
+          "n": 14
+        },
+        "ecmwf_ifs025": {
+          "mae": 0.0,
+          "n": 14
+        },
+        "gfs_seamless": {
+          "mae": 0.0,
+          "n": 14
+        },
+        "met_norway": {
+          "mae": 0.0,
+          "n": 14
+        },
+        "ensemble_median": {
           "mae": 0.0,
           "n": 14
         }
@@ -28,9 +84,29 @@
         }
       }
     },
+    "Gudauri": {
+      "models": {
+        "openmeteo_best_match": {
+          "mae": 0.0,
+          "n": 5
+        }
+      }
+    },
     "Alpe-d-Huez": {
       "models": {
         "openmeteo_best_match": {
+          "mae": 0.0,
+          "n": 8
+        }
+      }
+    },
+    "La-Plagne": {
+      "models": {
+        "openmeteo_best_match": {
+          "mae": 0.0,
+          "n": 6
+        },
+        "met_norway": {
           "mae": 0.0,
           "n": 6
         }
@@ -40,7 +116,31 @@
       "models": {
         "openmeteo_best_match": {
           "mae": 0.0,
-          "n": 8
+          "n": 14
+        },
+        "met_norway": {
+          "mae": 0.0,
+          "n": 6
+        },
+        "ensemble_median": {
+          "mae": 0.0,
+          "n": 5
+        },
+        "meteofrance_seamless": {
+          "mae": 0.0,
+          "n": 5
+        },
+        "icon_seamless": {
+          "mae": 0.0,
+          "n": 5
+        },
+        "ecmwf_ifs025": {
+          "mae": 0.0,
+          "n": 5
+        },
+        "gfs_seamless": {
+          "mae": 0.0,
+          "n": 5
         }
       }
     }

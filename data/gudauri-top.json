@@ -141,34 +141,6 @@
       }
     },
     {
-      "name": "Monday",
-      "date": "24",
-      "am": {
-        "condition": "fog",
-        "temperature": "8.6",
-        "feels_like": "5.6",
-        "snow": "0",
-        "rain": "0.0",
-        "wind": "10.0 km/h W"
-      },
-      "pm": {
-        "condition": "fog",
-        "temperature": "15.2",
-        "feels_like": "13.2",
-        "snow": "0",
-        "rain": "0.0",
-        "wind": "10.0 km/h W"
-      },
-      "night": {
-        "condition": "fog",
-        "temperature": "11.9",
-        "feels_like": "7.9",
-        "snow": "0",
-        "rain": "0.0",
-        "wind": "5.0 km/h W"
-      }
-    },
-    {
       "name": "Sunday",
       "date": "30",
       "am": {
@@ -195,9 +167,37 @@
         "rain": "4.8",
         "wind": "5.0 km/h W"
       }
+    },
+    {
+      "name": "Monday",
+      "date": "31",
+      "am": {
+        "condition": "thunderstorm",
+        "temperature": "1.9",
+        "feels_like": "-1.1",
+        "snow": "0",
+        "rain": "0.6",
+        "wind": "10.0 km/h W"
+      },
+      "pm": {
+        "condition": "thunderstorm",
+        "temperature": "5.8",
+        "feels_like": "3.8",
+        "snow": "0",
+        "rain": "0.8",
+        "wind": "10.0 km/h W"
+      },
+      "night": {
+        "condition": "thunderstorm",
+        "temperature": "3.8",
+        "feels_like": "-0.2",
+        "snow": "0",
+        "rain": "0.6",
+        "wind": "5.0 km/h W"
+      }
     }
   ],
-  "last_updated": "2026-08-24T21:22:08.634447",
+  "last_updated": "2026-08-25T00:38:22.137596",
   "resort": "Gudauri",
   "elevation": "top",
   "snow_conditions": {
@@ -210,45 +210,27 @@
   "extended": {
     "extended_forecast": [
       {
-        "date": "2026-08-24",
-        "day_name": "Monday",
-        "temp_max": 11.4,
-        "temp_min": 7.1,
+        "date": "2026-08-25",
+        "day_name": "Tuesday",
+        "temp_max": 10.6,
+        "temp_min": 6.1,
         "precipitation": 0.7,
         "rain": 0.0,
         "snowfall": 0.0,
-        "weather_code": 45,
-        "freezing_level_min": 4820.0,
-        "freezing_level_max": 4980.0,
-        "snowfall_range": [
-          0.0,
-          0.0
-        ],
-        "snowfall_sources": 3,
-        "snowfall_models": {
-          "openmeteo_best_match": 0.0,
-          "met_norway": 0.0,
-          "ensemble_median": 0.0
-        }
-      },
-      {
-        "date": "2026-08-25",
-        "day_name": "Tuesday",
-        "temp_max": 9.9,
-        "temp_min": 5.8,
-        "precipitation": 2.9,
-        "rain": 0.0,
-        "snowfall": 0.0,
         "weather_code": 80,
-        "freezing_level_min": 4590.0,
-        "freezing_level_max": 4950.0,
+        "freezing_level_min": 4580.0,
+        "freezing_level_max": 4970.0,
         "snowfall_range": [
           0.0,
           0.0
         ],
-        "snowfall_sources": 3,
+        "snowfall_sources": 7,
         "snowfall_models": {
           "openmeteo_best_match": 0.0,
+          "meteofrance_seamless": 0.0,
+          "icon_seamless": 0.0,
+          "ecmwf_ifs025": 0.0,
+          "gfs_seamless": 0.0,
           "met_norway": 0.0,
           "ensemble_median": 0.0
         }
@@ -256,21 +238,25 @@
       {
         "date": "2026-08-26",
         "day_name": "Wednesday",
-        "temp_max": 8.6,
-        "temp_min": 4.4,
-        "precipitation": 3.8,
+        "temp_max": 10.0,
+        "temp_min": 5.1,
+        "precipitation": 0.9,
         "rain": 0.1,
         "snowfall": 0.0,
-        "weather_code": 95,
-        "freezing_level_min": 4220.0,
-        "freezing_level_max": 4520.0,
+        "weather_code": 80,
+        "freezing_level_min": 4180.0,
+        "freezing_level_max": 4470.0,
         "snowfall_range": [
           0.0,
           0.0
         ],
-        "snowfall_sources": 3,
+        "snowfall_sources": 7,
         "snowfall_models": {
           "openmeteo_best_match": 0.0,
+          "meteofrance_seamless": 0.0,
+          "icon_seamless": 0.0,
+          "ecmwf_ifs025": 0.0,
+          "gfs_seamless": 0.0,
           "met_norway": 0.0,
           "ensemble_median": 0.0
         }
@@ -278,21 +264,25 @@
       {
         "date": "2026-08-27",
         "day_name": "Thursday",
-        "temp_max": 9.8,
-        "temp_min": 2.5,
-        "precipitation": 0.2,
+        "temp_max": 9.3,
+        "temp_min": 2.9,
+        "precipitation": 0.7,
         "rain": 0.0,
         "snowfall": 0.0,
-        "weather_code": 3,
-        "freezing_level_min": 4230.0,
-        "freezing_level_max": 4480.0,
+        "weather_code": 45,
+        "freezing_level_min": 4110.0,
+        "freezing_level_max": 4370.0,
         "snowfall_range": [
           0.0,
           0.0
         ],
-        "snowfall_sources": 3,
+        "snowfall_sources": 7,
         "snowfall_models": {
           "openmeteo_best_match": 0.0,
+          "meteofrance_seamless": 0.0,
+          "icon_seamless": 0.0,
+          "ecmwf_ifs025": 0.0,
+          "gfs_seamless": 0.0,
           "met_norway": 0.0,
           "ensemble_median": 0.0
         }
@@ -300,21 +290,25 @@
       {
         "date": "2026-08-28",
         "day_name": "Friday",
-        "temp_max": 10.0,
-        "temp_min": 1.3,
-        "precipitation": 1.2,
+        "temp_max": 9.9,
+        "temp_min": 1.4,
+        "precipitation": 1.8,
         "rain": 0.0,
         "snowfall": 0.0,
         "weather_code": 95,
-        "freezing_level_min": 4090.0,
-        "freezing_level_max": 4400.0,
+        "freezing_level_min": 4040.0,
+        "freezing_level_max": 4330.0,
         "snowfall_range": [
           0.0,
           0.0
         ],
-        "snowfall_sources": 3,
+        "snowfall_sources": 7,
         "snowfall_models": {
           "openmeteo_best_match": 0.0,
+          "meteofrance_seamless": 0.0,
+          "icon_seamless": 0.0,
+          "ecmwf_ifs025": 0.0,
+          "gfs_seamless": 0.0,
           "met_norway": 0.0,
           "ensemble_median": 0.0
         }
@@ -322,21 +316,24 @@
       {
         "date": "2026-08-29",
         "day_name": "Saturday",
-        "temp_max": 6.4,
-        "temp_min": 3.3,
-        "precipitation": 22.65,
-        "rain": 4.5,
+        "temp_max": 6.2,
+        "temp_min": 2.0,
+        "precipitation": 16.5,
+        "rain": 8.85,
         "snowfall": 0.0,
         "weather_code": 95,
-        "freezing_level_min": 3980.0,
-        "freezing_level_max": 4102.5,
+        "freezing_level_min": 3880.0,
+        "freezing_level_max": 4142.5,
         "snowfall_range": [
           0.0,
           0.0
         ],
-        "snowfall_sources": 3,
+        "snowfall_sources": 6,
         "snowfall_models": {
           "openmeteo_best_match": 0.0,
+          "icon_seamless": 0.0,
+          "ecmwf_ifs025": 0.0,
+          "gfs_seamless": 0.0,
           "met_norway": 0.0,
           "ensemble_median": 0.0
         }
@@ -344,8 +341,8 @@
       {
         "date": "2026-08-30",
         "day_name": "Sunday",
-        "temp_max": 8.2,
-        "temp_min": 2.4,
+        "temp_max": 6.9,
+        "temp_min": 1.3,
         "precipitation": 26.1,
         "rain": 15.9,
         "snowfall": 0.0,
@@ -354,20 +351,23 @@
         "freezing_level_max": 4020.0,
         "snowfall_range": [
           0.0,
-          0.0
+          1.3
         ],
-        "snowfall_sources": 3,
+        "snowfall_sources": 6,
         "snowfall_models": {
           "openmeteo_best_match": 0.0,
-          "met_norway": 0.0,
+          "icon_seamless": 0.0,
+          "ecmwf_ifs025": 0.0,
+          "gfs_seamless": 0.0,
+          "met_norway": 1.3,
           "ensemble_median": 0.0
         }
       },
       {
         "date": "2026-08-31",
         "day_name": "Monday",
-        "temp_max": 7.8,
-        "temp_min": 1.8,
+        "temp_max": 5.8,
+        "temp_min": 1.6,
         "precipitation": 8.4,
         "rain": 2.1,
         "snowfall": 0.0,
@@ -378,9 +378,12 @@
           0.0,
           0.0
         ],
-        "snowfall_sources": 3,
+        "snowfall_sources": 6,
         "snowfall_models": {
           "openmeteo_best_match": 0.0,
+          "icon_seamless": 0.0,
+          "ecmwf_ifs025": 0.0,
+          "gfs_seamless": 0.0,
           "met_norway": 0.0,
           "ensemble_median": 0.0
         }
@@ -388,8 +391,8 @@
       {
         "date": "2026-09-01",
         "day_name": "Tuesday",
-        "temp_max": 6.8,
-        "temp_min": -0.4,
+        "temp_max": 5.9,
+        "temp_min": -2.5,
         "precipitation": 3.0,
         "rain": 0.6,
         "snowfall": 0.0,
@@ -400,9 +403,11 @@
           0.0,
           0.0
         ],
-        "snowfall_sources": 3,
+        "snowfall_sources": 5,
         "snowfall_models": {
           "openmeteo_best_match": 0.0,
+          "ecmwf_ifs025": 0.0,
+          "gfs_seamless": 0.0,
           "met_norway": 0.0,
           "ensemble_median": 0.0
         }
@@ -411,7 +416,7 @@
         "date": "2026-09-02",
         "day_name": "Wednesday",
         "temp_max": 6.5,
-        "temp_min": 0.3,
+        "temp_min": 0.7,
         "precipitation": 11.4,
         "rain": 3.0,
         "snowfall": 0.0,
@@ -422,9 +427,11 @@
           0.0,
           0.0
         ],
-        "snowfall_sources": 3,
+        "snowfall_sources": 5,
         "snowfall_models": {
           "openmeteo_best_match": 0.0,
+          "ecmwf_ifs025": 0.0,
+          "gfs_seamless": 0.0,
           "met_norway": 0.0,
           "ensemble_median": 0.0
         }
@@ -432,8 +439,8 @@
       {
         "date": "2026-09-03",
         "day_name": "Thursday",
-        "temp_max": 3.9,
-        "temp_min": 1.4,
+        "temp_max": 4.8,
+        "temp_min": 1.2,
         "precipitation": 11.7,
         "rain": 5.1,
         "snowfall": 0.0,
@@ -444,17 +451,20 @@
           0.0,
           0.0
         ],
-        "snowfall_sources": 2,
+        "snowfall_sources": 5,
         "snowfall_models": {
           "openmeteo_best_match": 0.0,
+          "ecmwf_ifs025": 0.0,
+          "gfs_seamless": 0.0,
+          "met_norway": 0.0,
           "ensemble_median": 0.0
         }
       },
       {
         "date": "2026-09-04",
         "day_name": "Friday",
-        "temp_max": 6.6,
-        "temp_min": 1.2,
+        "temp_max": 6.8,
+        "temp_min": 1.0,
         "precipitation": 3.3,
         "rain": 0.9,
         "snowfall": 0.0,
@@ -465,9 +475,11 @@
           0.0,
           0.0
         ],
-        "snowfall_sources": 2,
+        "snowfall_sources": 4,
         "snowfall_models": {
           "openmeteo_best_match": 0.0,
+          "ecmwf_ifs025": 0.0,
+          "gfs_seamless": 0.0,
           "ensemble_median": 0.0
         }
       },
@@ -475,7 +487,7 @@
         "date": "2026-09-05",
         "day_name": "Saturday",
         "temp_max": 7.5,
-        "temp_min": 2.3,
+        "temp_min": 2.0,
         "precipitation": 1.8,
         "rain": 1.2,
         "snowfall": 0.0,
@@ -486,9 +498,11 @@
           0.0,
           0.0
         ],
-        "snowfall_sources": 2,
+        "snowfall_sources": 4,
         "snowfall_models": {
           "openmeteo_best_match": 0.0,
+          "ecmwf_ifs025": 0.0,
+          "gfs_seamless": 0.0,
           "ensemble_median": 0.0
         }
       },
@@ -496,7 +510,7 @@
         "date": "2026-09-06",
         "day_name": "Sunday",
         "temp_max": 3.8,
-        "temp_min": 1.0,
+        "temp_min": 0.9,
         "precipitation": 18.6,
         "rain": 4.2,
         "snowfall": 0.0,
@@ -507,9 +521,11 @@
           0.0,
           0.4
         ],
-        "snowfall_sources": 2,
+        "snowfall_sources": 4,
         "snowfall_models": {
           "openmeteo_best_match": 0.42,
+          "ecmwf_ifs025": 0.0,
+          "gfs_seamless": 0.0,
           "ensemble_median": 0.0
         }
       },
@@ -517,28 +533,60 @@
         "date": "2026-09-07",
         "day_name": "Monday",
         "temp_max": 6.5,
-        "temp_min": 0.3,
+        "temp_min": -0.2,
         "precipitation": 0.6,
         "rain": 0.0,
         "snowfall": 0.0,
         "weather_code": 51,
         "freezing_level_min": 4380.0,
-        "freezing_level_max": 4650.0
+        "freezing_level_max": 4650.0,
+        "snowfall_range": [
+          0.0,
+          0.0
+        ],
+        "snowfall_sources": 4,
+        "snowfall_models": {
+          "openmeteo_best_match": 0.0,
+          "ecmwf_ifs025": 0.0,
+          "gfs_seamless": 0.0,
+          "ensemble_median": 0.0
+        }
       },
       {
         "date": "2026-09-08",
         "day_name": "Tuesday",
-        "temp_max": 11.5,
-        "temp_min": -0.5,
-        "precipitation": 0.0,
+        "temp_max": 10.3,
+        "temp_min": 0.7,
+        "precipitation": 3.6,
         "rain": 0.0,
         "snowfall": 0.0,
-        "weather_code": 1,
+        "weather_code": 53,
         "freezing_level_min": 4620.0,
-        "freezing_level_max": 4790.0
+        "freezing_level_max": 4790.0,
+        "snowfall_range": [
+          0.0,
+          0.0
+        ],
+        "snowfall_sources": 2,
+        "snowfall_models": {
+          "openmeteo_best_match": 0.0,
+          "gfs_seamless": 0.0
+        }
+      },
+      {
+        "date": "2026-09-09",
+        "day_name": "Wednesday",
+        "temp_max": null,
+        "temp_min": null,
+        "precipitation": null,
+        "rain": null,
+        "snowfall": null,
+        "weather_code": null,
+        "freezing_level_min": 4720.0,
+        "freezing_level_max": 4880.0
       }
     ],
-    "last_updated": "2026-08-24T21:22:09.254211",
+    "last_updated": "2026-08-25T00:38:22.789533",
     "source": "OpenMeteo",
     "elevation": 3279.0,
     "elevation_used": 3279
@@ -547,6 +595,10 @@
     "method": "skill-weighted median",
     "models": [
       "openmeteo_best_match",
+      "meteofrance_seamless",
+      "icon_seamless",
+      "ecmwf_ifs025",
+      "gfs_seamless",
       "met_norway",
       "ensemble_median"
     ],
@@ -559,6 +611,6 @@
       "met_norway": 2.0,
       "ensemble_median": 2.0
     },
-    "generated": "2026-08-24T21:22:40.775898"
+    "generated": "2026-08-25T00:38:24.900729"
   }
 }

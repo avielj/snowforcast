@@ -2,9 +2,7 @@ name: Update Forecast Data
 
 on:
   schedule:
-    # Run every 3 hours
     - cron: '0 */3 * * *'
-  # Allow manual trigger
   workflow_dispatch:
 
 permissions:
@@ -13,29 +11,39 @@ permissions:
 jobs:
   update-forecast:
     runs-on: ubuntu-latest
-    
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-      
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.11'
-        
     - name: Install dependencies
       run: |
         pip install requests beautifulsoup4 lxml
-        
     - name: Generate forecast data
       run: |
         python3 generate_static_data.py
-        
     - name: Commit and push if changed
       run: |
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
         git config --global user.name "github-actions[bot]"
         git add data/*.json
-        git diff --quiet && git diff --staged --quiet || (git commit -m "Update forecast data - $(date -u)" && git push)
+        if git diff --quiet && git diff --staged --quiet; then
+          echo "No forecast changes to push"
+          exit 0
+        fi
+        git commit -m "Update forecast data - $(date -u)"
+        for attempt in 1 2 3; do
+          if git push; then
+            echo "Pushed on attempt $attempt"
+            exit 0
+          fi
+          echo "Push attempt $attempt failed, retrying in 60s..."
+          git pull --rebase || true
+          sleep 60
+        done
+        echo "Push failed after 3 attempts"
+        exit 1

@@ -1,5 +1,5 @@
 {
-  "generated": "2026-11-02T10:27:28.451184",
+  "generated": "2026-11-09T10:49:13.993171",
   "days_analyzed": 45,
   "max_lead_days": 3,
   "note": "MAE (cm) of extended snowfall vs day-of forecast, mid elevation",
@@ -7,108 +7,156 @@
     "Val-Thorens": {
       "models": {
         "openmeteo_best_match": {
-          "mae": 0.47,
-          "n": 70
+          "mae": 0.56,
+          "n": 88
         },
         "meteofrance_seamless": {
-          "mae": 0.46,
-          "n": 70
+          "mae": 0.53,
+          "n": 88
         },
         "icon_seamless": {
-          "mae": 0.16,
-          "n": 70
+          "mae": 0.28,
+          "n": 88
         },
         "ecmwf_ifs025": {
-          "mae": 0.31,
-          "n": 70
+          "mae": 0.4,
+          "n": 88
         },
         "gfs_seamless": {
-          "mae": 0.18,
-          "n": 70
+          "mae": 0.25,
+          "n": 88
         },
         "met_norway": {
-          "mae": 7.24,
-          "n": 70
+          "mae": 8.29,
+          "n": 88
         },
         "ensemble_median": {
-          "mae": 0.24,
-          "n": 70
+          "mae": 0.25,
+          "n": 88
         }
       }
     },
     "Via-Lattea": {
       "models": {
         "openmeteo_best_match": {
-          "mae": 0.07,
-          "n": 48
-        },
-        "meteofrance_seamless": {
-          "mae": 0.0,
-          "n": 39
-        },
-        "icon_seamless": {
-          "mae": 0.05,
-          "n": 39
-        },
-        "ecmwf_ifs025": {
-          "mae": 0.05,
-          "n": 39
-        },
-        "gfs_seamless": {
-          "mae": 0.04,
-          "n": 39
+          "mae": 0.22,
+          "n": 53
         },
         "met_norway": {
-          "mae": 1.53,
-          "n": 48
+          "mae": 3.38,
+          "n": 53
         },
         "ensemble_median": {
-          "mae": 0.12,
-          "n": 44
+          "mae": 0.24,
+          "n": 49
+        },
+        "meteofrance_seamless": {
+          "mae": 0.05,
+          "n": 40
+        },
+        "icon_seamless": {
+          "mae": 0.09,
+          "n": 40
+        },
+        "ecmwf_ifs025": {
+          "mae": 0.13,
+          "n": 40
+        },
+        "gfs_seamless": {
+          "mae": 0.09,
+          "n": 40
         }
       }
     },
     "Monterosa-Ski": {
       "models": {
         "openmeteo_best_match": {
-          "mae": 0.0,
+          "mae": 0.62,
+          "n": 17
+        },
+        "meteofrance_seamless": {
+          "mae": 1.42,
+          "n": 8
+        },
+        "icon_seamless": {
+          "mae": 0.56,
+          "n": 8
+        },
+        "ecmwf_ifs025": {
+          "mae": 1.05,
+          "n": 8
+        },
+        "gfs_seamless": {
+          "mae": 0.21,
           "n": 8
         },
         "met_norway": {
-          "mae": 0.0,
-          "n": 8
+          "mae": 7.79,
+          "n": 17
         }
       }
     },
     "Gudauri": {
       "models": {
         "openmeteo_best_match": {
-          "mae": 0.0,
-          "n": 40
+          "mae": 0.19,
+          "n": 45
         },
         "meteofrance_seamless": {
-          "mae": 0.0,
-          "n": 37
+          "mae": 0.24,
+          "n": 42
         },
         "icon_seamless": {
-          "mae": 0.0,
-          "n": 37
+          "mae": 0.15,
+          "n": 42
         },
         "ecmwf_ifs025": {
-          "mae": 0.09,
-          "n": 37
+          "mae": 0.29,
+          "n": 42
         },
         "gfs_seamless": {
-          "mae": 0.04,
-          "n": 37
+          "mae": 0.21,
+          "n": 42
         },
         "met_norway": {
-          "mae": 0.08,
-          "n": 40
+          "mae": 2.16,
+          "n": 45
         },
         "ensemble_median": {
-          "mae": 0.12,
-          "n": 34
+          "mae": 0.41,
+          "n": 37
+        }
+      }
+    },
+    "St-Anton": {
+      "models": {
+        "openmeteo_best_match": {
+          "mae": 0.36,
+          "n": 9
+        },
+        "meteofrance_seamless": {
+          "mae": 0.04,
+          "n": 8
+        },
+        "icon_seamless": {
+          "mae": 0.08,
+          "n": 8
+        },
+        "ecmwf_ifs025": {
+          "mae": 1.23,
+          "n": 8
+        },
+        "gfs_seamless": {
+          "mae": 0.69,
+          "n": 8
+        },
+        "met_norway": {
+          "mae": 8.02,
+          "n": 9
+        },
+        "ensemble_median": {
+          "mae": 0.44,
+          "n": 8
         }
       }
     },
@@ -116,27 +164,27 @@
       "models": {
         "openmeteo_best_match": {
           "mae": 0.02,
-          "n": 30
+          "n": 31
+        },
+        "met_norway": {
+          "mae": 7.32,
+          "n": 31
         },
         "meteofrance_seamless": {
-          "mae": 0.13,
-          "n": 20
+          "mae": 0.12,
+          "n": 21
         },
         "icon_seamless": {
           "mae": 0.03,
-          "n": 20
+          "n": 21
         },
         "ecmwf_ifs025": {
           "mae": 0.1,
-          "n": 20
+          "n": 21
         },
         "gfs_seamless": {
-          "mae": 0.08,
-          "n": 20
-        },
-        "met_norway": {
-          "mae": 7.56,
-          "n": 30
+          "mae": 0.07,
+          "n": 21
         },
         "ensemble_median": {
           "mae": 0.01,
@@ -147,32 +195,32 @@
     "La-Plagne": {
       "models": {
         "openmeteo_best_match": {
-          "mae": 0.02,
-          "n": 15
+          "mae": 0.28,
+          "n": 23
         },
         "meteofrance_seamless": {
-          "mae": 0.0,
-          "n": 12
+          "mae": 0.32,
+          "n": 18
         },
         "icon_seamless": {
-          "mae": 0.0,
-          "n": 12
+          "mae": 0.26,
+          "n": 18
         },
         "ecmwf_ifs025": {
-          "mae": 0.0,
-          "n": 12
+          "mae": 0.09,
+          "n": 18
         },
         "gfs_seamless": {
-          "mae": 0.0,
-          "n": 12
+          "mae": 0.35,
+          "n": 18
         },
         "met_norway": {
-          "mae": 0.07,
-          "n": 15
+          "mae": 3.39,
+          "n": 23
         },
         "ensemble_median": {
-          "mae": 0.0,
-          "n": 8
+          "mae": 0.25,
+          "n": 17
         }
       }
     },
@@ -180,15 +228,31 @@
       "models": {
         "openmeteo_best_match": {
           "mae": 0.0,
+          "n": 12
+        },
+        "meteofrance_seamless": {
+          "mae": 0.0,
+          "n": 7
+        },
+        "icon_seamless": {
+          "mae": 0.0,
+          "n": 7
+        },
+        "ecmwf_ifs025": {
+          "mae": 0.0,
+          "n": 7
+        },
+        "gfs_seamless": {
+          "mae": 0.0,
           "n": 7
         },
         "met_norway": {
           "mae": 0.0,
-          "n": 7
+          "n": 12
         },
         "ensemble_median": {
           "mae": 0.0,
-          "n": 5
+          "n": 10
         }
       }
     }

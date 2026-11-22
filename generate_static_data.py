@@ -5,8 +5,11 @@ This script is run by GitHub Actions every 3 hours.
 Combines data from snow-forecast.com and OpenWeatherMap for better accuracy.
 """
 
+import copy
 import json
 import os
+import sys
+import time
 from datetime import datetime
 import requests
 from bs4 import BeautifulSoup
@@ -179,16 +182,58 @@ def fetch_openmeteo_extended(latitude, longitude, resort_name, elevation_m=2800)
         print(f"  ⚠ Could not fetch OpenMeteo extended forecast for {resort_name}: {e}")
         return None
 
+# snow-forecast.com scraping: current browser UA + retries with back-off.
+# The Actions runner (Azure IPs) gets bot-blocked intermittently, so a failed
+# scrape must be diagnosable from the run log: the HTTP status and a short
+# snippet of the returned HTML are logged on every failed attempt.
+SNOW_FORECAST_UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36'
+SNOW_FORECAST_MAX_ATTEMPTS = 3
+SNOW_FORECAST_BACKOFF_SECONDS = (2, 5)  # wait before attempt 2 / 3
+
+
 def fetch_forecast(resort='Val-Thorens', elevation='bot'):
-    """Fetch forecast data for a specific resort and elevation"""
+    """Fetch forecast data for a specific resort and elevation.
+
+    Returns the parsed forecast dict, or None when the scrape fails
+    (bot-block, unexpected HTML, network error) after all retries.
+    """
     url = f'https://www.snow-forecast.com/resorts/{resort}/6day/{elevation}'
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-        'Accept-Language': 'en-US,en;q=0.5',
+        'User-Agent': SNOW_FORECAST_UA,
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Cache-Control': 'no-cache',
+        'Sec-Fetch-Dest': 'document',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-Site': 'none',
+        'Upgrade-Insecure-Requests': '1',
     }
-    
-    response = requests.get(url, headers=headers, timeout=30)
+
+    response = None
+    last_error = None
+    with requests.Session() as session:
+        session.headers.update(headers)
+        for attempt in range(1, SNOW_FORECAST_MAX_ATTEMPTS + 1):
+            try:
+                response = session.get(url, timeout=30)
+            except requests.RequestException as exc:
+                last_error = str(exc)
+                print(f"  ⚠ snow-forecast.com request failed (attempt {attempt}/{SNOW_FORECAST_MAX_ATTEMPTS}): {exc}")
+                response = None
+            else:
+                if response.status_code == 200:
+                    break
+                snippet = ' '.join(response.text[:500].split())
+                print(f"  ⚠ snow-forecast.com HTTP {response.status_code} (attempt {attempt}/{SNOW_FORECAST_MAX_ATTEMPTS}) for {url} — body snippet: {snippet!r}")
+                last_error = f"HTTP {response.status_code}"
+                response = None
+            if attempt < SNOW_FORECAST_MAX_ATTEMPTS:
+                time.sleep(SNOW_FORECAST_BACKOFF_SECONDS[attempt - 1])
+
+    if response is None:
+        print(f"  ✗ snow-forecast.com scrape failed for {resort}/{elevation} after {SNOW_FORECAST_MAX_ATTEMPTS} attempts (last error: {last_error})")
+        return None
+
     soup = BeautifulSoup(response.content, 'html.parser')
     
     # Extract current snow conditions
@@ -208,6 +253,8 @@ def fetch_forecast(resort='Val-Thorens', elevation='bot'):
     # Find forecast table
     forecast_table = soup.find('table', class_='forecast-table__table')
     if not forecast_table:
+        snippet = ' '.join(soup.get_text(' ', strip=True)[:300].split())
+        print(f"  ✗ snow-forecast.com returned HTTP 200 but no forecast table for {resort}/{elevation} — page text snippet: {snippet!r}")
         return None
     
     # Extract all data rows
@@ -219,6 +266,16 @@ def fetch_forecast(resort='Val-Thorens', elevation='bot'):
     snow_row = forecast_table.find('tr', {'data-row': 'snow'})
     rain_row = forecast_table.find('tr', {'data-row': 'rain'})
     wind_row = forecast_table.find('tr', {'data-row': 'wind'})
+
+    missing_rows = [name for name, row in (
+        ('days', days_row), ('time', time_row), ('weather', weather_row),
+        ('temperature-max', temp_row), ('snow', snow_row), ('rain', rain_row),
+        ('wind', wind_row),
+    ) if row is None]
+    if missing_rows:
+        snippet = ' '.join(soup.get_text(' ', strip=True)[:300].split())
+        print(f"  ✗ snow-forecast.com HTML for {resort}/{elevation} is missing rows: {missing_rows} — page text snippet: {snippet!r}")
+        return None
     
     # Parse days
     day_cells = days_row.find_all('td', class_='forecast-table-days__cell')
@@ -365,11 +422,17 @@ def fill_missing_days_from_openmeteo(snow_forecast_data, extended_forecast, targ
     """
     Fill missing days to reach target_days using OpenMeteo extended forecast data.
     Converts OpenMeteo daily data into the snow-forecast.com format with AM/PM/Night periods.
+    Also builds days from scratch when the input has no days at all (e.g. the
+    snow-forecast.com scrape failed): pass {} or a dict without 'days'.
     """
+    if snow_forecast_data is None:
+        snow_forecast_data = {}
     if not extended_forecast or 'extended_forecast' not in extended_forecast:
         return snow_forecast_data
     
-    current_days = snow_forecast_data.get('days', [])
+    # Works from an empty/missing days list too: pass {} (or a dict without
+    # 'days') and it builds all target_days from the extended forecast.
+    current_days = snow_forecast_data.get('days') or []
     if len(current_days) >= target_days:
         return snow_forecast_data  # Already have enough days
     
@@ -380,7 +443,10 @@ def fill_missing_days_from_openmeteo(snow_forecast_data, extended_forecast, targ
             # Convert to full date for comparison
             from datetime import datetime
             today = datetime.now()
-            day_num = int(day['date'])
+            try:
+                day_num = int(str(day['date']).strip())
+            except (TypeError, ValueError):
+                continue
             existing_dates.add(f"{today.year}-{today.month:02d}-{day_num:02d}")
     
     # Map weather codes to conditions
@@ -461,6 +527,28 @@ def fill_missing_days_from_openmeteo(snow_forecast_data, extended_forecast, targ
     snow_forecast_data['days'] = current_days
     return snow_forecast_data
 
+def _load_json_file(path):
+    """Load a JSON file, returning {} when it is missing or unparseable."""
+    try:
+        with open(path) as f:
+            data = json.load(f)
+        return data if isinstance(data, dict) else {}
+    except (OSError, ValueError):
+        return {}
+
+
+def _count_days(all_data):
+    """Total number of forecast days across all resorts/elevations."""
+    total = 0
+    for resort_data in (all_data or {}).values():
+        if not isinstance(resort_data, dict):
+            continue
+        for elev_data in resort_data.values():
+            if isinstance(elev_data, dict):
+                total += len(elev_data.get('days') or [])
+    return total
+
+
 def main():
     """Generate forecast data for all resorts and elevations."""
     
@@ -529,12 +617,24 @@ def main():
             print("⚠ OPENWEATHER_API_KEY not set, using snow-forecast.com only")
     
     all_data = {}
+
+    # Keep-last-good: load the previous published data BEFORE overwriting
+    # anything, so a failed run can fall back to it instead of publishing
+    # days-less entries.
+    prev_data = _load_json_file('data/all-forecasts.json')
+    prev_days = _count_days(prev_data)
+    if prev_days:
+        print(f"ℹ Loaded previous data: {prev_days} days across {len(prev_data)} resorts")
+    new_days_total = 0
+    fallback_elevations = []
+    carried_elevations = []
     
     for resort, elevations in resorts.items():
         all_data[resort] = {}
         
         for elevation in elevations:
             print(f"\nFetching {resort} - {elevation}...")
+            forecast_data = None
             try:
                 # Get the snow-forecast.com name for this resort
                 snow_forecast_name = snow_forecast_names.get(resort, resort)
@@ -553,16 +653,13 @@ def main():
                     except Exception as e:
                         print(f"  ⚠ OpenWeather fetch failed: {e}")
                 
-                if forecast_data and 'days' in forecast_data:
-                    all_data[resort][elevation] = forecast_data
-                    
-                    # Save individual file
-                    filename = f"data/{resort.lower()}-{elevation}.json"
-                    with open(filename, 'w') as f:
-                        json.dump(forecast_data, f, indent=2, default=str)
-                    print(f"  ✓ Saved {filename}")
+                if forecast_data and forecast_data.get('days'):
+                    print(f"  ✓ Scraped {len(forecast_data['days'])} day(s) from snow-forecast.com")
+                elif forecast_data:
+                    print(f"  ⚠ snow-forecast.com returned no days for {resort} - {elevation}")
+                    forecast_data = None
                 else:
-                    print(f"  ✗ No data for {resort} - {elevation}")
+                    print(f"  ✗ No snow-forecast.com data for {resort} - {elevation}")
                     
             except Exception as e:
                 print(f"  ✗ Error fetching {resort} - {elevation}: {e}")
@@ -573,56 +670,109 @@ def main():
             print(f"  → Fetching extended forecast for {elevation}...")
             coords = resort_coords.get(resort)
             elev_height = elevation_heights.get(resort, {}).get(elevation)
+            extended = None
             if coords and elev_height:
                 extended = fetch_openmeteo_extended(coords['lat'], coords['lon'], resort, elevation_m=elev_height)
-                if extended:
-                    # Store extended forecast within the elevation data
-                    if elevation in all_data[resort]:
-                        all_data[resort][elevation]['extended'] = extended
 
-                        # Fill missing days to get 7-day forecast
-                        if 'days' in all_data[resort][elevation]:
-                            all_data[resort][elevation] = fill_missing_days_from_openmeteo(
-                                all_data[resort][elevation],
-                                extended,
-                                target_days=7
-                            )
-                    else:
-                        all_data[resort][elevation] = {'extended': extended}
+            # Build the elevation entry. Days come from the scrape when it
+            # works; otherwise fill_missing_days_from_openmeteo() builds all
+            # 7 days from the OpenMeteo extended forecast (it works from an
+            # empty days list), so an elevation is never published days-less.
+            entry = None
+            fresh_days = 0
+            if forecast_data and forecast_data.get('days'):
+                entry = forecast_data
+            if extended:
+                if entry is None:
+                    entry = {}
+                entry['extended'] = extended
+                days_before = len(entry.get('days') or [])
+                entry = fill_missing_days_from_openmeteo(entry, extended, target_days=7)
+                if days_before == 0 and len(entry.get('days') or []) > 0:
+                    print(f"  ⚠ Scrape failed; built {len(entry['days'])} day(s) from OpenMeteo extended forecast")
+                    fallback_elevations.append(f"{resort}/{elevation}")
 
-                    # Blend independent models into a consensus median + range
-                    if MULTI_MODEL_AVAILABLE:
-                        try:
-                            all_data[resort][elevation] = multi_model.enrich_extended_forecast(
-                                all_data[resort][elevation],
-                                coords['lat'], coords['lon'], elev_height,
-                                resort=resort
-                            )
-                        except Exception as e:
-                            print(f"  ⚠ Multi-model consensus failed: {e}")
+            # Fresh days = scraped days and/or OpenMeteo-fallback days produced
+            # by THIS run. A failed extended fetch alone must not discard a
+            # good scrape (extended is enrichment, not the source of days).
+            fresh_days = len(entry.get('days') or []) if entry else 0
 
-                    # Re-save individual file with complete, enriched forecast
-                    filename = f"data/{resort.lower()}-{elevation}.json"
-                    with open(filename, 'w') as f:
-                        json.dump(all_data[resort][elevation], f, indent=2, default=str)
-                    print(f"  ✓ Updated {filename} with complete forecast")
+            # Keep-last-good (per elevation): if this run produced no fresh
+            # days here, keep the previous run's days (with the new extended
+            # forecast attached when we have one) instead of publishing a
+            # days-less entry.
+            carried = False
+            if fresh_days == 0:
+                prev_entry = (prev_data.get(resort) or {}).get(elevation)
+                if prev_entry and prev_entry.get('days'):
+                    entry = copy.deepcopy(prev_entry)
+                    if extended:
+                        entry['extended'] = extended
+                    carried = True
+                    carried_elevations.append(f"{resort}/{elevation}")
+                    print(f"  ⚠ No fresh days for {resort} - {elevation}; keeping last good days from previous run")
+                else:
+                    print(f"  ✗ No data for {resort} - {elevation} (no previous days to keep)")
+                    continue
+
+            # Blend independent models into a consensus median + range
+            if extended and MULTI_MODEL_AVAILABLE:
+                try:
+                    entry = multi_model.enrich_extended_forecast(
+                        entry,
+                        coords['lat'], coords['lon'], elev_height,
+                        resort=resort
+                    )
+                except Exception as e:
+                    print(f"  ⚠ Multi-model consensus failed: {e}")
+
+            if not carried:
+                new_days_total += len(entry.get('days') or [])
+            all_data[resort][elevation] = entry
     
-    # Save combined file
+    total_days = _count_days(all_data)
+
+    # Keep-last-good (run level): a run that produced no fresh days at all
+    # must not destroy the last good files. Leave them untouched and fail
+    # loudly so the Actions run shows red instead of silently publishing
+    # days-less data and exiting 0.
+    if new_days_total == 0:
+        print("\n✗ FATAL: this run produced 0 fresh days for every resort/elevation "
+              "(snow-forecast.com scrape AND OpenMeteo fallback both failed). "
+              "Previous data files left untouched.")
+        sys.exit(1)
+
+    # Write per-resort files, the combined file and metadata — only now that
+    # the run has been validated as containing fresh days.
+    for resort, elevations in all_data.items():
+        for elevation, entry in elevations.items():
+            filename = f"data/{resort.lower()}-{elevation}.json"
+            with open(filename, 'w') as f:
+                json.dump(entry, f, indent=2, default=str)
+    print("✓ Saved per-resort data files")
+
     with open('data/all-forecasts.json', 'w') as f:
         json.dump(all_data, f, indent=2, default=str)
-    print("\n✓ Saved data/all-forecasts.json")
-    
+    print("✓ Saved data/all-forecasts.json")
+
     # Create metadata file
     metadata = {
         'last_updated': datetime.now().isoformat(),
         'resorts': list(resorts.keys()),
-        'elevations': ['bot', 'mid', 'top']
+        'elevations': ['bot', 'mid', 'top'],
+        'total_days': total_days,
+        'fresh_days': new_days_total,
+        'fallback_elevations': fallback_elevations,
+        'carried_elevations': carried_elevations
     }
     with open('data/metadata.json', 'w') as f:
         json.dump(metadata, f, indent=2)
     print("✓ Saved data/metadata.json")
-    
-    print("\n✅ All forecast data generated successfully!")
+
+    print(f"\n✅ All forecast data generated successfully! ({total_days} days total, "
+          f"{new_days_total} fresh, {len(fallback_elevations)} OpenMeteo-fallback, "
+          f"{len(carried_elevations)} carried from previous run)")
+
 
 if __name__ == '__main__':
     main()

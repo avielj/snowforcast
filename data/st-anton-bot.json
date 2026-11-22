@@ -1,255 +1,510 @@
 {
+  "days": [
+    {
+      "name": "Sunday",
+      "date": "22",
+      "am": {
+        "condition": "part cloud",
+        "temperature": "-3.0",
+        "feels_like": "-11.0",
+        "snow": "0",
+        "rain": "0",
+        "wind": "10.0 km/h N"
+      },
+      "pm": {
+        "condition": "light snow",
+        "temperature": "2.0",
+        "feels_like": "-3.0",
+        "snow": "0",
+        "rain": "1",
+        "wind": "10.0 km/h NW"
+      },
+      "night": {
+        "condition": "mod rain",
+        "temperature": "2.0",
+        "feels_like": "2.0",
+        "snow": "0",
+        "rain": "7",
+        "wind": "5.0 km/h S"
+      }
+    },
+    {
+      "name": "Monday",
+      "date": "23",
+      "am": {
+        "condition": "mod snow",
+        "temperature": "1.0",
+        "feels_like": "-5.0",
+        "snow": "5",
+        "rain": "4",
+        "wind": "5.0 km/h SE"
+      },
+      "pm": {
+        "condition": "light snow",
+        "temperature": "0.0",
+        "feels_like": "-1.0",
+        "snow": "1",
+        "rain": "0",
+        "wind": "5.0 km/h E"
+      },
+      "night": {
+        "condition": "light snow",
+        "temperature": "-1.0",
+        "feels_like": "-2.0",
+        "snow": "4",
+        "rain": "0",
+        "wind": "5.0 km/h SE"
+      }
+    },
+    {
+      "name": "Tuesday",
+      "date": "24",
+      "am": {
+        "condition": "snow showers",
+        "temperature": "-3.0",
+        "feels_like": "-12.0",
+        "snow": "2",
+        "rain": "0",
+        "wind": "5.0 km/h NE"
+      },
+      "pm": {
+        "condition": "clear",
+        "temperature": "1.0",
+        "feels_like": "-2.0",
+        "snow": "0",
+        "rain": "0",
+        "wind": "5.0 km/h N"
+      },
+      "night": {
+        "condition": "clear",
+        "temperature": "-5.0",
+        "feels_like": "-14.0",
+        "snow": "0",
+        "rain": "0",
+        "wind": "5.0 km/h NW"
+      }
+    },
+    {
+      "name": "Wednesday",
+      "date": "25",
+      "am": {
+        "condition": "part cloud",
+        "temperature": "-8.0",
+        "feels_like": "-16.0",
+        "snow": "0",
+        "rain": "0",
+        "wind": "10.0 km/h N"
+      },
+      "pm": {
+        "condition": "part cloud",
+        "temperature": "2.0",
+        "feels_like": "-5.0",
+        "snow": "0",
+        "rain": "0",
+        "wind": "10.0 km/h NW"
+      },
+      "night": {
+        "condition": "part cloud",
+        "temperature": "-2.0",
+        "feels_like": "-9.0",
+        "snow": "0",
+        "rain": "0",
+        "wind": "5.0 km/h NW"
+      }
+    },
+    {
+      "name": "Thursday",
+      "date": "26",
+      "am": {
+        "condition": "cloud",
+        "temperature": "-3.0",
+        "feels_like": "-8.0",
+        "snow": "0",
+        "rain": "0",
+        "wind": "5.0 km/h E"
+      },
+      "pm": {
+        "condition": "cloud",
+        "temperature": "0.0",
+        "feels_like": "-3.0",
+        "snow": "0",
+        "rain": "0",
+        "wind": "0.0 km/h N"
+      },
+      "night": {
+        "condition": "light snow",
+        "temperature": "-2.0",
+        "feels_like": "-2.0",
+        "snow": "0",
+        "rain": "0",
+        "wind": "5.0 km/h S"
+      }
+    },
+    {
+      "name": "Friday",
+      "date": "27",
+      "am": {
+        "condition": "cloud",
+        "temperature": "-6.1",
+        "feels_like": "-9.1",
+        "snow": "0",
+        "rain": "0.0",
+        "wind": "10.0 km/h W"
+      },
+      "pm": {
+        "condition": "cloud",
+        "temperature": "-1.4",
+        "feels_like": "-3.4",
+        "snow": "0",
+        "rain": "0.0",
+        "wind": "10.0 km/h W"
+      },
+      "night": {
+        "condition": "cloud",
+        "temperature": "-3.8",
+        "feels_like": "-7.8",
+        "snow": "0",
+        "rain": "0.0",
+        "wind": "5.0 km/h W"
+      }
+    },
+    {
+      "name": "Saturday",
+      "date": "28",
+      "am": {
+        "condition": "cloud",
+        "temperature": "-6.0",
+        "feels_like": "-9.0",
+        "snow": "0",
+        "rain": "0.0",
+        "wind": "10.0 km/h W"
+      },
+      "pm": {
+        "condition": "cloud",
+        "temperature": "6.1",
+        "feels_like": "4.1",
+        "snow": "0",
+        "rain": "0.0",
+        "wind": "10.0 km/h W"
+      },
+      "night": {
+        "condition": "cloud",
+        "temperature": "0.0",
+        "feels_like": "-4.0",
+        "snow": "0",
+        "rain": "0.0",
+        "wind": "5.0 km/h W"
+      }
+    }
+  ],
+  "last_updated": "2026-11-22T08:49:18.185576",
+  "resort": "St-Anton",
+  "elevation": "bot",
+  "snow_conditions": {
+    "Top snow depth": "\u2014",
+    "Bottom snow depth": "\u2014",
+    "Fresh snowfall depth": "24cm",
+    "Last snowfall": "20 Nov 2026",
+    "Snow Alerts": "Create Alert"
+  },
   "extended": {
     "extended_forecast": [
       {
         "date": "2026-11-22",
         "day_name": "Sunday",
-        "temp_max": 3.6,
-        "temp_min": -3.2,
-        "precipitation": 18.0,
-        "rain": 18.0,
+        "temp_max": 3.3,
+        "temp_min": -1.4,
+        "precipitation": 11.6,
+        "rain": 11.4,
         "snowfall": 0.0,
         "weather_code": 63,
-        "freezing_level_min": 1640.0,
-        "freezing_level_max": 2240.0,
+        "freezing_level_min": 1520.0,
+        "freezing_level_max": 2280.0,
         "snowfall_range": [
           0.0,
-          50.0
+          4.8
         ],
-        "snowfall_sources": 7,
+        "snowfall_sources": 11,
         "snowfall_models": {
           "openmeteo_best_match": 0.0,
           "meteofrance_seamless": 0.0,
           "icon_seamless": 0.0,
           "ecmwf_ifs025": 0.0,
           "gfs_seamless": 0.0,
-          "met_norway": 50.0,
-          "ensemble_median": 0.0
-        }
+          "gem_seamless": 0.0,
+          "jma_seamless": 0.0,
+          "ukmo_seamless": 0.0,
+          "met_norway": 4.8,
+          "ensemble_median": 0.0,
+          "ecmwf_ensemble_median": 0.0
+        },
+        "snowfall_outliers": []
       },
       {
         "date": "2026-11-23",
         "day_name": "Monday",
-        "temp_max": 1.6,
-        "temp_min": -5.2,
-        "precipitation": 8.53,
-        "rain": 7.52,
+        "temp_max": 1.0,
+        "temp_min": -4.6,
+        "precipitation": 17.55,
+        "rain": 5.4,
         "snowfall": 2.3,
-        "weather_code": 71,
-        "freezing_level_min": 1110.0,
-        "freezing_level_max": 1610.0,
+        "weather_code": 86,
+        "freezing_level_min": 1360.0,
+        "freezing_level_max": 1490.0,
         "snowfall_range": [
-          0.3,
-          79.9
+          0.7,
+          12.8
         ],
-        "snowfall_sources": 7,
+        "snowfall_sources": 11,
         "snowfall_models": {
-          "openmeteo_best_match": 0.7,
-          "meteofrance_seamless": 0.33,
-          "icon_seamless": 2.22,
-          "ecmwf_ifs025": 13.79,
-          "gfs_seamless": 7.91,
-          "met_norway": 79.9,
-          "ensemble_median": 2.3
-        }
+          "openmeteo_best_match": 8.58,
+          "meteofrance_seamless": 0.7,
+          "icon_seamless": 12.08,
+          "ecmwf_ifs025": 5.67,
+          "gfs_seamless": 4.34,
+          "gem_seamless": 0.84,
+          "jma_seamless": 1.82,
+          "ukmo_seamless": 1.75,
+          "met_norway": 4.8,
+          "ensemble_median": 2.3,
+          "ecmwf_ensemble_median": 4.0
+        },
+        "snowfall_outliers": []
       },
       {
         "date": "2026-11-24",
         "day_name": "Tuesday",
         "temp_max": 1.7,
+        "temp_min": -7.6,
+        "precipitation": 1.75,
+        "rain": 0.0,
+        "snowfall": 0.0,
+        "weather_code": 85,
+        "freezing_level_min": 1350.0,
+        "freezing_level_max": 1870.0,
+        "snowfall_range": [
+          0.0,
+          2.4
+        ],
+        "snowfall_sources": 11,
+        "snowfall_models": {
+          "openmeteo_best_match": 1.23,
+          "meteofrance_seamless": 0.35,
+          "icon_seamless": 1.23,
+          "ecmwf_ifs025": 0.35,
+          "gfs_seamless": 0.0,
+          "gem_seamless": 0.0,
+          "jma_seamless": 0.28,
+          "ukmo_seamless": 0.0,
+          "met_norway": 0.6,
+          "ensemble_median": 0.0,
+          "ecmwf_ensemble_median": 0.0
+        },
+        "snowfall_outliers": []
+      },
+      {
+        "date": "2026-11-25",
+        "day_name": "Wednesday",
+        "temp_max": 3.7,
+        "temp_min": -4.8,
+        "precipitation": 0.3,
+        "rain": 0.3,
+        "snowfall": 0.1,
+        "weather_code": 61,
+        "freezing_level_min": 1610.0,
+        "freezing_level_max": 1920.0,
+        "snowfall_range": [
+          0.0,
+          3.1
+        ],
+        "snowfall_sources": 11,
+        "snowfall_models": {
+          "openmeteo_best_match": 0.0,
+          "meteofrance_seamless": 0.07,
+          "icon_seamless": 0.0,
+          "ecmwf_ifs025": 0.56,
+          "gfs_seamless": 0.0,
+          "gem_seamless": 0.21,
+          "jma_seamless": 0.14,
+          "ukmo_seamless": 0.0,
+          "met_norway": 3.1,
+          "ensemble_median": 0.0,
+          "ecmwf_ensemble_median": 1.0
+        },
+        "snowfall_outliers": []
+      },
+      {
+        "date": "2026-11-26",
+        "day_name": "Thursday",
+        "temp_max": 0.6,
+        "temp_min": -2.8,
+        "precipitation": 2.7,
+        "rain": 0.3,
+        "snowfall": 1.7,
+        "weather_code": 71,
+        "freezing_level_min": 1480.0,
+        "freezing_level_max": 1700.0,
+        "snowfall_range": [
+          0.0,
+          9.2
+        ],
+        "snowfall_sources": 10,
+        "snowfall_models": {
+          "openmeteo_best_match": 1.68,
+          "icon_seamless": 1.68,
+          "ecmwf_ifs025": 4.62,
+          "gfs_seamless": 0.0,
+          "gem_seamless": 0.14,
+          "jma_seamless": 1.54,
+          "ukmo_seamless": 2.45,
+          "met_norway": 5.4,
+          "ensemble_median": 0.1,
+          "ecmwf_ensemble_median": 4.2
+        },
+        "snowfall_outliers": []
+      },
+      {
+        "date": "2026-11-27",
+        "day_name": "Friday",
+        "temp_max": -0.9,
         "temp_min": -8.3,
         "precipitation": 0.0,
         "rain": 0.0,
         "snowfall": 0.0,
         "weather_code": 3,
-        "freezing_level_min": 1230.0,
-        "freezing_level_max": 1830.0,
+        "freezing_level_min": 1250.0,
+        "freezing_level_max": 1540.0,
         "snowfall_range": [
           0.0,
-          0.9
+          1.5
         ],
-        "snowfall_sources": 7,
-        "snowfall_models": {
-          "openmeteo_best_match": 0.0,
-          "meteofrance_seamless": 0.14,
-          "icon_seamless": 0.0,
-          "ecmwf_ifs025": 0.14,
-          "gfs_seamless": 0.35,
-          "met_norway": 0.0,
-          "ensemble_median": 0.0
-        }
-      },
-      {
-        "date": "2026-11-25",
-        "day_name": "Wednesday",
-        "temp_max": 4.2,
-        "temp_min": -4.8,
-        "precipitation": 0.0,
-        "rain": 0.0,
-        "snowfall": 0.0,
-        "weather_code": 61,
-        "freezing_level_min": 1700.0,
-        "freezing_level_max": 2110.0,
-        "snowfall_range": [
-          0.0,
-          3.1
-        ],
-        "snowfall_sources": 6,
-        "snowfall_models": {
-          "openmeteo_best_match": 0.0,
-          "icon_seamless": 0.0,
-          "ecmwf_ifs025": 0.91,
-          "gfs_seamless": 0.0,
-          "met_norway": 3.1,
-          "ensemble_median": 0.0
-        }
-      },
-      {
-        "date": "2026-11-26",
-        "day_name": "Thursday",
-        "temp_max": 1.3,
-        "temp_min": -4.7,
-        "precipitation": 9.45,
-        "rain": 7.5,
-        "snowfall": 1.3,
-        "weather_code": 71,
-        "freezing_level_min": 1360.0,
-        "freezing_level_max": 1720.0,
-        "snowfall_range": [
-          0.0,
-          5.4
-        ],
-        "snowfall_sources": 6,
-        "snowfall_models": {
-          "openmeteo_best_match": 1.37,
-          "icon_seamless": 1.3,
-          "ecmwf_ifs025": 4.41,
-          "gfs_seamless": 0.0,
-          "met_norway": 5.4,
-          "ensemble_median": 0.6
-        }
-      },
-      {
-        "date": "2026-11-27",
-        "day_name": "Friday",
-        "temp_max": 0.6,
-        "temp_min": -7.7,
-        "precipitation": 0.0,
-        "rain": 0.0,
-        "snowfall": 0.0,
-        "weather_code": 45,
-        "freezing_level_min": 1130.0,
-        "freezing_level_max": 1500.0,
-        "snowfall_range": [
-          0.0,
-          2.2
-        ],
-        "snowfall_sources": 6,
-        "snowfall_models": {
-          "openmeteo_best_match": 0.0,
-          "icon_seamless": 0.0,
-          "ecmwf_ifs025": 2.17,
-          "gfs_seamless": 0.0,
-          "met_norway": 0.6,
-          "ensemble_median": 0.0
-        }
-      },
-      {
-        "date": "2026-11-28",
-        "day_name": "Saturday",
-        "temp_max": 2.7,
-        "temp_min": -6.9,
-        "precipitation": 0.0,
-        "rain": 0.0,
-        "snowfall": 0.0,
-        "weather_code": 2,
-        "freezing_level_min": 1187.5,
-        "freezing_level_max": 1730.0,
-        "snowfall_range": [
-          0.0,
-          0.2
-        ],
-        "snowfall_sources": 6,
+        "snowfall_sources": 10,
         "snowfall_models": {
           "openmeteo_best_match": 0.0,
           "icon_seamless": 0.0,
           "ecmwf_ifs025": 0.0,
           "gfs_seamless": 0.0,
+          "gem_seamless": 0.0,
+          "jma_seamless": 0.07,
+          "ukmo_seamless": 0.0,
+          "met_norway": 0.6,
+          "ensemble_median": 0.0,
+          "ecmwf_ensemble_median": 0.2
+        },
+        "snowfall_outliers": []
+      },
+      {
+        "date": "2026-11-28",
+        "day_name": "Saturday",
+        "temp_max": 2.8,
+        "temp_min": -7.3,
+        "precipitation": 0.0,
+        "rain": 0.0,
+        "snowfall": 0.0,
+        "weather_code": 3,
+        "freezing_level_min": 1260.0,
+        "freezing_level_max": 2570.0,
+        "snowfall_range": [
+          0.0,
+          1.0
+        ],
+        "snowfall_sources": 9,
+        "snowfall_models": {
+          "openmeteo_best_match": 0.0,
+          "icon_seamless": 0.0,
+          "ecmwf_ifs025": 0.0,
+          "gfs_seamless": 0.0,
+          "gem_seamless": 0.0,
+          "jma_seamless": 0.0,
           "met_norway": 0.0,
-          "ensemble_median": 0.0
-        }
+          "ensemble_median": 0.0,
+          "ecmwf_ensemble_median": 0.0
+        },
+        "snowfall_outliers": []
       },
       {
         "date": "2026-11-29",
         "day_name": "Sunday",
         "temp_max": 6.5,
-        "temp_min": -6.2,
-        "precipitation": 2.2,
-        "rain": 2.2,
+        "temp_min": -5.8,
+        "precipitation": 1.6,
+        "rain": 1.6,
         "snowfall": 0.0,
         "weather_code": 51,
-        "freezing_level_min": 120.0,
-        "freezing_level_max": 3010.0,
+        "freezing_level_min": 1030.0,
+        "freezing_level_max": 2665.0,
         "snowfall_range": [
           0.0,
-          0.8
+          1.7
         ],
-        "snowfall_sources": 5,
+        "snowfall_sources": 8,
         "snowfall_models": {
           "openmeteo_best_match": 0.0,
           "ecmwf_ifs025": 0.0,
           "gfs_seamless": 0.0,
+          "gem_seamless": 0.0,
+          "jma_seamless": 0.0,
           "met_norway": 0.8,
-          "ensemble_median": 0.0
-        }
+          "ensemble_median": 0.0,
+          "ecmwf_ensemble_median": 0.0
+        },
+        "snowfall_outliers": []
       },
       {
         "date": "2026-11-30",
         "day_name": "Monday",
-        "temp_max": 7.1,
+        "temp_max": 6.4,
         "temp_min": -1.5,
         "precipitation": 3.2,
         "rain": 3.2,
         "snowfall": 0.0,
         "weather_code": 51,
-        "freezing_level_min": 80.0,
-        "freezing_level_max": 2800.0,
+        "freezing_level_min": 920.0,
+        "freezing_level_max": 2760.0,
         "snowfall_range": [
           0.0,
-          0.2
+          4.2
         ],
-        "snowfall_sources": 5,
+        "snowfall_sources": 8,
         "snowfall_models": {
           "openmeteo_best_match": 0.0,
           "ecmwf_ifs025": 0.0,
           "gfs_seamless": 0.0,
+          "gem_seamless": 0.56,
+          "jma_seamless": 0.0,
           "met_norway": 0.0,
-          "ensemble_median": 0.0
-        }
+          "ensemble_median": 0.0,
+          "ecmwf_ensemble_median": 0.3
+        },
+        "snowfall_outliers": []
       },
       {
         "date": "2026-12-01",
         "day_name": "Tuesday",
-        "temp_max": 6.2,
-        "temp_min": -1.6,
+        "temp_max": 6.0,
+        "temp_min": -2.4,
         "precipitation": 3.0,
         "rain": 3.0,
         "snowfall": 0.0,
         "weather_code": 51,
-        "freezing_level_min": 40.0,
-        "freezing_level_max": 1670.0,
+        "freezing_level_min": 870.0,
+        "freezing_level_max": 2990.0,
         "snowfall_range": [
           0.0,
-          0.6
+          2.4
         ],
-        "snowfall_sources": 5,
+        "snowfall_sources": 8,
         "snowfall_models": {
           "openmeteo_best_match": 0.0,
           "ecmwf_ifs025": 0.07,
           "gfs_seamless": 0.0,
+          "gem_seamless": 0.14,
+          "jma_seamless": 0.0,
           "met_norway": 0.0,
-          "ensemble_median": 0.0
-        }
+          "ensemble_median": 0.0,
+          "ecmwf_ensemble_median": 0.0
+        },
+        "snowfall_outliers": []
       },
       {
         "date": "2026-12-02",
@@ -260,19 +515,22 @@
         "rain": 8.0,
         "snowfall": 0.0,
         "weather_code": 53,
-        "freezing_level_min": 220.0,
-        "freezing_level_max": 1750.0,
+        "freezing_level_min": 650.0,
+        "freezing_level_max": 2660.0,
         "snowfall_range": [
           0.0,
-          0.2
+          1.7
         ],
-        "snowfall_sources": 4,
+        "snowfall_sources": 6,
         "snowfall_models": {
           "openmeteo_best_match": 0.0,
           "ecmwf_ifs025": 0.0,
           "gfs_seamless": 0.0,
-          "ensemble_median": 0.0
-        }
+          "jma_seamless": 0.0,
+          "ensemble_median": 0.0,
+          "ecmwf_ensemble_median": 0.0
+        },
+        "snowfall_outliers": []
       },
       {
         "date": "2026-12-03",
@@ -283,42 +541,46 @@
         "rain": 23.0,
         "snowfall": 0.0,
         "weather_code": 61,
-        "freezing_level_min": 700.0,
-        "freezing_level_max": 2090.0,
+        "freezing_level_min": 560.0,
+        "freezing_level_max": 2130.0,
         "snowfall_range": [
           0.0,
-          1.7
+          3.5
         ],
-        "snowfall_sources": 4,
+        "snowfall_sources": 5,
         "snowfall_models": {
           "openmeteo_best_match": 0.0,
           "ecmwf_ifs025": 0.0,
-          "gfs_seamless": 0.0,
-          "ensemble_median": 0.0
-        }
+          "gfs_seamless": 0.42,
+          "ensemble_median": 0.0,
+          "ecmwf_ensemble_median": 0.0
+        },
+        "snowfall_outliers": []
       },
       {
         "date": "2026-12-04",
         "day_name": "Friday",
-        "temp_max": 4.8,
-        "temp_min": -2.3,
+        "temp_max": 4.3,
+        "temp_min": -1.4,
         "precipitation": 2.4,
         "rain": 2.0,
         "snowfall": 0.0,
         "weather_code": 55,
-        "freezing_level_min": 1020.0,
-        "freezing_level_max": 3060.0,
+        "freezing_level_min": 1450.0,
+        "freezing_level_max": 1990.0,
         "snowfall_range": [
           0.0,
-          1.0
+          2.8
         ],
-        "snowfall_sources": 4,
+        "snowfall_sources": 5,
         "snowfall_models": {
           "openmeteo_best_match": 0.0,
           "ecmwf_ifs025": 0.0,
           "gfs_seamless": 0.0,
-          "ensemble_median": 0.0
-        }
+          "ensemble_median": 0.0,
+          "ecmwf_ensemble_median": 0.0
+        },
+        "snowfall_outliers": []
       },
       {
         "date": "2026-12-05",
@@ -329,55 +591,68 @@
         "rain": 11.8,
         "snowfall": 0.0,
         "weather_code": 73,
-        "freezing_level_min": 1220.0,
-        "freezing_level_max": 1790.0,
+        "freezing_level_min": 1480.0,
+        "freezing_level_max": 1950.0,
         "snowfall_range": [
           0.0,
-          1.0
+          5.1
         ],
-        "snowfall_sources": 4,
+        "snowfall_sources": 5,
         "snowfall_models": {
           "openmeteo_best_match": 0.98,
           "ecmwf_ifs025": 0.42,
           "gfs_seamless": 0.0,
-          "ensemble_median": 0.0
-        }
+          "ensemble_median": 0.0,
+          "ecmwf_ensemble_median": 0.0
+        },
+        "snowfall_outliers": []
       },
       {
         "date": "2026-12-06",
         "day_name": "Sunday",
-        "temp_max": 2.1,
-        "temp_min": -5.0,
-        "precipitation": 13.05,
-        "rain": 0.6,
-        "snowfall": 2.8,
-        "weather_code": 85,
-        "freezing_level_min": 810.0,
-        "freezing_level_max": 1530.0,
+        "temp_max": 1.9,
+        "temp_min": -3.9,
+        "precipitation": 11.95,
+        "rain": 1.5,
+        "snowfall": 0.6,
+        "weather_code": 75,
+        "freezing_level_min": 1020.0,
+        "freezing_level_max": 1470.0,
         "snowfall_range": [
-          2.8,
-          8.4
+          0.6,
+          7.0
         ],
         "snowfall_sources": 2,
         "snowfall_models": {
-          "openmeteo_best_match": 8.43,
-          "gfs_seamless": 2.8
-        }
+          "openmeteo_best_match": 7.04,
+          "gfs_seamless": 0.63
+        },
+        "snowfall_outliers": []
       },
       {
         "date": "2026-12-07",
         "day_name": "Monday",
-        "temp_max": null,
-        "temp_min": null,
-        "precipitation": null,
-        "rain": null,
-        "snowfall": null,
-        "weather_code": null,
-        "freezing_level_min": 30.0,
-        "freezing_level_max": 1220.0
+        "temp_max": 2.1,
+        "temp_min": -2.6,
+        "precipitation": 40.1,
+        "rain": 31.4,
+        "snowfall": 5.0,
+        "weather_code": 86,
+        "freezing_level_min": 990.0,
+        "freezing_level_max": 1510.0,
+        "snowfall_range": [
+          5.0,
+          5.0
+        ],
+        "snowfall_sources": 2,
+        "snowfall_models": {
+          "openmeteo_best_match": 4.97,
+          "gfs_seamless": 4.97
+        },
+        "snowfall_outliers": []
       }
     ],
-    "last_updated": "2026-11-22T00:48:51.478707",
+    "last_updated": "2026-11-22T08:49:18.683350",
     "source": "OpenMeteo",
     "elevation": 1304.0,
     "elevation_used": 1304
@@ -390,8 +665,12 @@
       "icon_seamless",
       "ecmwf_ifs025",
       "gfs_seamless",
+      "gem_seamless",
+      "jma_seamless",
+      "ukmo_seamless",
       "met_norway",
-      "ensemble_median"
+      "ensemble_median",
+      "ecmwf_ensemble_median"
     ],
     "skill_weights": {
       "openmeteo_best_match": 0.617,
@@ -402,6 +681,6 @@
       "met_norway": 0.211,
       "ensemble_median": 0.806
     },
-    "generated": "2026-11-22T00:48:52.765370"
+    "generated": "2026-11-22T08:49:21.866091"
   }
 }

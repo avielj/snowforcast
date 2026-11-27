@@ -1,0 +1,15 @@
+/* sf-hub.css — weather chip + weather pane on the map pages.
+   Uses the map pages' own tokens (map-shared.css / sf-tokens.css):
+   --sf-* / --line / --text / --muted / --accent. Nothing floats over the
+   map: the chip sits in #statusRow with the other chips, the table lives
+   inside the bottom sheet pane. */
+#sfHubWeatherChip small{font-weight:600;color:var(--muted)}
+#pane-weather .sf-hub-body{padding:2px 0 8px}
+#pane-weather .seg{display:flex;gap:4px;margin:6px 0 10px}
+#pane-weather .seg button{flex:1;padding:6px 4px;font-size:.8rem}
+.sf-hub-table{width:100%;border-collapse:collapse;font-size:.88rem;margin:6px 0 10px}
+.sf-hub-table th,.sf-hub-table td{padding:7px 6px;border-bottom:1px solid var(--line);text-align:start}
+.sf-hub-table th{color:var(--muted);font-size:.78rem;font-weight:800}
+.sf-hub-table td b{font-weight:900}
+#pane-weather .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+#pane-weather .note{font-size:.82rem;color:var(--muted);line-height:1.6}

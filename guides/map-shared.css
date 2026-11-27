@@ -1,0 +1,302 @@
+/* map-shared.css — SnowForecast shared map shell (Round 2).
+   Map-first: the map fills the screen; controls live in the top pill,
+   a status chip row, the bottom bar, or bottom sheets — never floating
+   over the map. All interactive controls are >=48px tall (ski-glove
+   friendly; also the ws5 harness touch audit). Uses logical properties
+   so RTL (HE) <-> LTR (EN) never breaks layout. */
+
+/* ---- app shell ---- */
+html,body{height:100%;}
+body{margin:0;background:var(--sf-bg);color:var(--sf-text);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  overflow:hidden;}
+#app{height:100vh;height:100dvh;display:flex;flex-direction:column;}
+#mapWrap{position:relative;flex:1;min-height:0;display:flex;flex-direction:column;}
+#map{flex:1;min-height:0;background:var(--sf-map-bg);z-index:0;}
+.leaflet-container{font-family:inherit;background:var(--sf-map-bg);}
+
+/* Leaflet chrome: zoom to top-right below the pill, 48px targets,
+   attribution lifted above the bottom bar. */
+.leaflet-control-zoom{display:none!important;} /* hidden by design: pinch zoom only (ws3) */
+.leaflet-bar a{width:48px!important;height:48px!important;line-height:48px!important;
+  font-size:24px!important;background:var(--sf-pill-bg)!important;color:var(--sf-text)!important;
+  border-color:var(--sf-border)!important;}
+.leaflet-bottom.leaflet-right{bottom:calc(64px + env(safe-area-inset-bottom,0px) + 4px);}
+#mapWrap.has-route .leaflet-bottom.leaflet-right{bottom:calc(64px + env(safe-area-inset-bottom,0px) + 92px);}
+.leaflet-control-attribution{background:var(--sf-chip-bg)!important;color:var(--sf-text-2)!important;}
+.leaflet-control-attribution a{color:var(--sf-accent)!important;}
+.leaflet-popup-content-wrapper{background:var(--sf-surface);color:var(--sf-text);}
+.leaflet-popup-tip{background:var(--sf-surface);}
+
+/* ---- top pill (replaces header) ---- */
+#topPill{position:absolute;top:calc(8px + env(safe-area-inset-top,0px));inset-inline:8px;z-index:500;
+  display:flex;align-items:center;gap:8px;
+  background:var(--sf-pill-bg);border:1px solid var(--sf-border);border-radius:999px;
+  box-shadow:var(--sf-shadow);padding:4px 8px;min-height:48px;}
+#topPill .back{flex:0 0 auto;text-decoration:none;color:var(--sf-text);font-size:18px;
+  min-width:48px;min-height:48px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;}
+#topPill .resort{flex:1;min-width:0;font-weight:700;font-size:16px;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis;text-align:start;}
+#topPill .pillbtn{flex:0 0 auto;min-width:48px;min-height:48px;border:1px solid var(--sf-border);
+  background:var(--sf-surface);color:var(--sf-text);border-radius:50%;font-size:17px;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;padding:0 8px;}
+#topPill .pillbtn.has-dot{position:relative;}
+#topPill .pillbtn.has-dot::after{content:"";position:absolute;top:8px;inset-inline-end:8px;
+  width:9px;height:9px;border-radius:50%;background:var(--sf-green);border:2px solid var(--sf-surface);}
+#topPill .liftlink{flex:0 0 auto;text-decoration:none;color:var(--sf-accent);font-size:13px;
+  min-height:48px;display:inline-flex;align-items:center;padding:0 6px;white-space:nowrap;}
+@media (max-width:480px){
+  #topPill .liftlink{font-size:0;min-width:48px;justify-content:center;}
+  #topPill .liftlink::after{content:"↗";font-size:19px;}
+}
+
+/* ---- status chip row (under the pill; always visible) ---- */
+#statusRow{position:absolute;top:calc(64px + env(safe-area-inset-top,0px));inset-inline:8px;z-index:490;
+  display:flex;flex-wrap:wrap;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;}
+#statusRow::-webkit-scrollbar{display:none;}
+.chip{flex:0 0 auto;min-height:48px;display:inline-flex;align-items:center;gap:6px;
+  background:var(--sf-chip-bg);border:1px solid var(--sf-border);border-radius:999px;
+  color:var(--sf-text);font-size:13px;padding:6px 10px;box-shadow:var(--sf-shadow);
+  max-width:72vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+/* Trip chip carries the longest label (resort + dates + sharing switch):
+   cap it so start + trip still share one row at 360-390px and the offline
+   chip lands on a second row instead of off-screen; the label itself
+   ellipsises, the switch keeps its 48px target. (P1-2) */
+#statusRow #tripChip{max-width:40vw;}
+#statusRow #tripChip.no-trip{max-width:72vw;} /* generic "Trip groups" label is short: show it whole */
+#statusRow #tripChip .trip-label{min-width:0;overflow:hidden;text-overflow:ellipsis;}
+button.chip{cursor:pointer;font-family:inherit;}
+.chip .dot{width:9px;height:9px;border-radius:50%;background:var(--sf-green);flex:0 0 auto;}
+.chip .dot.demo{background:var(--sf-amber);}
+.chip small{color:var(--sf-text-2);}
+/* switch inside a chip (trip sharing) */
+.switch{min-width:48px;min-height:48px;border:1px solid var(--sf-border);border-radius:999px;
+  background:var(--sf-surface-2);color:var(--sf-text);font-size:13px;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;padding:4px 10px;}
+.switch[aria-checked="true"]{background:var(--sf-green);color:#fff;border-color:var(--sf-green);}
+
+/* ---- GPS FAB ---- */
+.fab{position:absolute;bottom:12px;inset-inline-end:12px;z-index:520;
+  width:48px;height:48px;border-radius:50%;border:1px solid var(--sf-border);
+  background:var(--sf-pill-bg);color:var(--sf-text);font-size:20px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;box-shadow:var(--sf-shadow);
+  transition:bottom .2s ease,top .2s ease;}
+/* GPS FAB stays reachable (L2): it rides above an open sheet instead of hiding
+   underneath it; hidden only at full detent / in nav mode. (The old
+   #mapWrap.has-route rule was dead — nothing ever sets that class.) */
+#mapWrap:has(#sheet.peek) .fab{bottom:calc(30dvh + 12px);}
+#mapWrap:has(#sheet.half) .fab{bottom:calc(52dvh + 12px);}
+#mapWrap:has(#sheet.full) .fab{display:none;}
+
+/* ---- toast (status) ---- */
+#status.toast{position:absolute;left:50%;transform:translateX(-50%);z-index:540;
+  bottom:calc(76px + env(safe-area-inset-bottom,0px));
+  background:var(--sf-rec-badge);color:#fff;font-size:13px;line-height:1.4;
+  border-radius:999px;padding:10px 16px;max-width:88vw;text-align:center;
+  opacity:0;pointer-events:none;transition:opacity .25s;}
+#status.toast.show{opacity:1;}
+#status.toast.err{background:var(--sf-danger);}
+#mapWrap.has-route #status.toast{bottom:210px;}
+
+/* ---- bottom bar ---- */
+#actionbar{flex:0 0 auto;display:flex;align-items:stretch;z-index:600;
+  background:var(--sf-bar-bg);border-top:1px solid var(--sf-border);
+  padding-bottom:env(safe-area-inset-bottom,0px);}
+#actionbar .navbtn{flex:1;min-height:64px;border:0;background:none;color:var(--sf-text);
+  font-family:inherit;font-size:12px;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  padding:6px 2px;}
+#actionbar .navbtn .ic{font-size:22px;line-height:1;}
+#actionbar .navbtn[aria-pressed="true"]{color:var(--sf-accent);font-weight:700;}
+#actionbar .navbtn.rec{position:relative;padding-top:36px;}
+#actionbar .navbtn.rec .recbtn{position:absolute;left:50%;top:-24px;transform:translateX(-50%);
+  width:64px;height:64px;border-radius:50%;
+  background:var(--sf-record);color:#fff;border:4px solid var(--sf-bar-bg);
+  font-size:26px;display:flex;align-items:center;justify-content:center;
+  box-shadow:var(--sf-shadow);pointer-events:none;}
+#actionbar .navbtn.rec .reclbl{font-size:12px;font-weight:700;}
+#actionbar .navbtn.rec.recording .recbtn{background:var(--sf-danger);animation:recpulse 1.2s infinite;}
+@keyframes recpulse{0%,100%{box-shadow:0 0 0 0 rgba(212,61,42,.45);}50%{box-shadow:0 0 0 10px rgba(212,61,42,0);}}
+#actionbar .navbtn.sosbtn{color:var(--sf-danger);}
+#actionbar .navbtn .bar-sub{font-size:10px;line-height:1.1;color:var(--sf-muted);max-width:72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+#actionbar .navbtn .bar-sub:empty{display:none;}
+#actionbar .navbtn .bar-sub{font-size:10px;line-height:1.1;color:var(--sf-muted);max-width:72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+#actionbar .navbtn .bar-sub:empty{display:none;}
+
+/* ---- route card (peek above the bar) ---- */
+#routeCard{position:absolute;left:8px;right:8px;bottom:36px;z-index:530;display:none;
+  background:var(--sf-pill-bg);border:1px solid var(--sf-border);border-radius:16px;
+  box-shadow:var(--sf-shadow);padding:10px 12px;}
+#routeCard.show{display:block;}
+#routeCard .rc-dest{font-weight:700;font-size:15px;}
+#routeCard .rc-sum{font-size:13px;color:var(--sf-text-2);margin-top:2px;}
+#routeCard .rc-steps{font-size:13px;margin-top:4px;line-height:1.45;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+#routeCard .rc-actions{display:flex;gap:8px;margin-top:8px;}
+#routeCard .rc-actions button{flex:1;min-height:48px;border-radius:12px;border:1px solid var(--sf-border);
+  background:var(--sf-surface);color:var(--sf-text);font-size:14px;font-weight:600;cursor:pointer;}
+#routeCard .rc-actions button.primary{background:var(--sf-accent);color:var(--sf-accent-contrast);border-color:var(--sf-accent);}
+#routeCard .rc-actions button.danger{color:var(--sf-danger);}
+
+/* ---- bottom sheet ----
+   Closed = height:0 + overflow:hidden (NOT display:none): the pane content
+   stays rendered so innerText/focus keep working, and every control inside
+   is >=48px so the touch audit never trips on hidden content. */
+#sheet{position:absolute;left:0;right:0;bottom:0;z-index:560;height:0;overflow:hidden;
+  background:var(--sf-surface);border:0;border-radius:18px 18px 0 0;
+  transition:height .2s ease;}
+#sheet.open{border-top:1px solid var(--sf-border);box-shadow:0 -6px 24px rgba(0,0,0,.25);}
+#sheet.peek{height:30dvh;}
+#sheet.half{height:52dvh;}
+#sheet.full{height:86dvh;}
+#sheet .sheet-handle{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:center;
+  height:28px;min-height:28px;cursor:grab;background:var(--sf-surface);touch-action:none;}
+#sheet .sheet-handle::after{content:"";width:44px;height:5px;border-radius:3px;background:var(--sf-border);}
+#sheet .pane{display:none;height:calc(100% - 28px);overflow-y:auto;overscroll-behavior:contain;
+  padding:0 14px 20px;}
+#sheet .pane.active{display:block;}
+#sheet .pane h2{font-size:17px;margin:4px 0 10px;display:flex;align-items:center;gap:8px;}
+#sheet .pane h2 .x{margin-inline-start:auto;border:1px solid var(--sf-border);background:var(--sf-surface-2);
+  color:var(--sf-text);border-radius:50%;width:48px;height:48px;font-size:18px;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;}
+#scrim{position:absolute;inset:0;z-index:550;background:rgba(0,0,0,.35);display:none;}
+#scrim.show{display:block;}
+
+/* ---- sheet controls (all >=48px) ---- */
+#sheet input[type=text],#sheet input[type=search],#sheet input[type=number],
+#sheet input[type=time],#sheet input[type=url],#sheet input[type=date],#sheet select{
+  font-size:16px;min-height:48px;padding:8px 10px;border:1px solid var(--sf-border);
+  border-radius:10px;background:var(--sf-input-bg);color:var(--sf-text);width:100%;box-sizing:border-box;}
+#sheet button{font-size:15px;min-height:48px;}
+#sheet .tabs{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0;}
+#sheet .tabs button{flex:1;min-height:48px;border:1px solid var(--sf-border);border-radius:10px;
+  background:var(--sf-surface-2);color:var(--sf-text);cursor:pointer;padding:6px 8px;}
+#sheet .tabs button.active{background:var(--sf-accent);color:var(--sf-accent-contrast);border-color:var(--sf-accent);}
+#sheet .chips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0;}
+#sheet .chips button{min-height:48px;border:1px solid var(--sf-border);border-radius:999px;
+  background:var(--sf-surface-2);color:var(--sf-text);cursor:pointer;padding:6px 12px;}
+#sheet .chips button.active{background:var(--sf-accent);color:var(--sf-accent-contrast);border-color:var(--sf-accent);}
+#sheet .seg{display:flex;gap:6px;margin:8px 0;}
+#sheet .seg button{flex:1;min-height:48px;border:1px solid var(--sf-border);border-radius:10px;
+  background:var(--sf-surface-2);color:var(--sf-text);cursor:pointer;}
+#sheet .seg button.active{background:var(--sf-accent);color:var(--sf-accent-contrast);border-color:var(--sf-accent);}
+#sheet .row{display:flex;gap:8px;align-items:center;margin:8px 0;}
+#sheet .row>*{flex:1;}
+#sheet .row>label{flex:0 0 auto;font-size:14px;}
+#sheet .card{background:var(--sf-surface-2);border:1px solid var(--sf-border);border-radius:12px;padding:10px 12px;margin:8px 0;}
+#sheet .card h3{margin:0 0 6px;font-size:15px;}
+#sheet .muted{color:var(--sf-text-2);font-size:13px;line-height:1.5;}
+#sheet .res{padding:12px 10px;border-bottom:1px solid var(--sf-border);cursor:pointer;min-height:48px;
+  display:flex;align-items:center;gap:8px;}
+#sheet .res:active{background:var(--sf-hover);}
+#sheet .res b{font-weight:600;}
+#sheet .res .kind{color:var(--sf-text-2);font-size:12px;}
+#sheet .steps{white-space:pre-wrap;font-size:14px;line-height:1.55;}
+#sheet .steps .lift{color:var(--sf-accent);font-weight:600;}
+#sheet .steps .piste{color:var(--sf-green);}
+#sheet .warn{background:rgba(199,121,0,.14);border:1px solid var(--sf-amber);border-radius:10px;
+  padding:8px 10px;font-size:13px;margin:8px 0;}
+#sheet .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  min-height:48px;border-radius:12px;border:1px solid var(--sf-border);
+  background:var(--sf-surface);color:var(--sf-text);cursor:pointer;padding:8px 14px;
+  text-decoration:none;font-size:15px;}
+#sheet .btn.primary{background:var(--sf-accent);color:var(--sf-accent-contrast);border-color:var(--sf-accent);}
+#sheet .btn.danger{color:var(--sf-danger);}
+#sheet .btn.block{width:100%;}
+#sheet .legend{font-size:13px;line-height:1.6;}
+#sheet .legend .sw{display:inline-block;width:16px;height:6px;border-radius:3px;vertical-align:middle;margin-inline-end:6px;}
+#sheet .kv{display:flex;justify-content:space-between;gap:10px;font-size:14px;padding:6px 0;
+  border-bottom:1px solid var(--sf-border);}
+#sheet .kv b{font-weight:700;}
+#sheet .member{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--sf-border);}
+#sheet .member .who{flex:1;min-width:0;}
+#sheet .member .who b{display:block;font-size:14px;}
+#sheet .member .who small{color:var(--sf-text-2);font-size:12px;}
+#sheet .member .switch{flex:0 0 auto;}
+#sheet input[type=checkbox].sr-only{display:none;}
+
+/* ---- shared components used by page content ---- */
+.big112{display:flex;align-items:center;justify-content:center;min-height:56px;font-size:1.2rem;
+  font-weight:900;background:#dc2626;color:#fff;border-radius:14px;text-decoration:none;margin:8px 0;}
+.segToggle{display:flex;border:1px solid var(--sf-border);border-radius:999px;overflow:hidden;flex:none;}
+.segToggle button{border:0;border-radius:0;padding:6px 12px;min-height:48px;background:transparent;
+  margin:0;color:var(--sf-text);font-weight:700;cursor:pointer;font-size:14px;}
+.segToggle button[aria-pressed="true"]{background:var(--sf-accent);color:var(--sf-accent-contrast);}
+
+/* ---- friend markers ---- */
+.friend-marker{background:none;border:0;}
+.friend-marker .fm-pin{width:44px;height:44px;border-radius:50% 50% 50% 6px;transform:rotate(-45deg);
+  background:var(--sf-accent);color:#fff;border:3px solid #fff;box-shadow:var(--sf-shadow);
+  display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;}
+.friend-marker .fm-pin span{transform:rotate(45deg);}
+.friend-marker .fm-name{position:absolute;top:46px;left:50%;transform:translateX(-50%);
+  background:var(--sf-pill-bg);border:1px solid var(--sf-border);border-radius:999px;
+  font-size:11px;font-weight:600;padding:3px 8px;white-space:nowrap;color:var(--sf-text);}
+.friend-marker .fm-demo{position:absolute;top:-8px;inset-inline-end:-8px;background:var(--sf-amber);
+  color:#fff;font-size:9px;font-weight:700;border-radius:999px;padding:2px 6px;}
+/* ws7 ?f= friend points: coloured initials circle (36px), stale dimming + clock badge */
+.friend-marker .fm-wrap{position:relative;display:block;width:44px;height:64px;}
+.friend-marker .fm-wrap.stale{opacity:.55;}
+.friend-marker .fm-circle{width:36px;height:36px;margin:0 auto;border-radius:50%;
+  border:2px solid #fff;box-shadow:var(--sf-shadow);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:15px;font-weight:800;}
+.friend-marker .fm-wrap .fm-name{top:38px;}
+.friend-marker .fm-clock{position:absolute;top:-4px;inset-inline-end:0;font-size:13px;line-height:1;
+  background:var(--sf-pill-bg);border-radius:50%;padding:1px;}
+.friend-marker .fm-meet{font-size:30px;line-height:1;text-align:center;
+  text-shadow:0 1px 3px rgba(0,0,0,.4);}
+/* Friends sheet: share URL text */
+#friendsBody .share-url{word-break:break-all;font-size:13px;background:var(--sf-surface-2);
+  border:1px solid var(--sf-border);border-radius:10px;padding:8px 10px;margin:8px 0;
+  direction:ltr;text-align:left;}
+.start-dot{width:16px;height:16px;border-radius:50%;background:#1c8a3c;border:3px solid #fff;
+  box-shadow:0 0 0 2px rgba(0,0,0,.25);}
+
+/* ---- navigation mode (WS6 phase 1) ---- */
+#navCard{position:absolute;top:calc(10px + env(safe-area-inset-top,0px));left:10px;right:10px;z-index:580;
+  display:none;background:var(--sf-pill-bg);border:1px solid var(--sf-border);border-radius:16px;
+  box-shadow:var(--sf-shadow);padding:10px 12px;}
+#app.navmode #navCard{display:block;}
+#navCard .nc-badge{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.04em;
+  background:var(--sf-accent);color:#fff;border-radius:6px;padding:3px 8px;}
+#navCard .nc-badge.lift{background:#7a5c00;}
+#navCard .nc-badge.preview{background:var(--sf-amber);}
+#navCard .nc-dist{font-size:26px;font-weight:800;line-height:1.1;margin-top:4px;}
+#navCard .nc-dist small{font-size:14px;font-weight:600;color:var(--sf-text-2);}
+#navCard .nc-inst{font-size:15px;margin-top:2px;}
+#navCard .nc-then{font-size:13px;color:var(--sf-text-2);margin-top:2px;}
+#navCard .nc-actions{display:flex;gap:8px;margin-top:8px;}
+#navCard .nc-actions button{flex:1;min-height:48px;border-radius:10px;border:1px solid var(--sf-border);
+  background:var(--sf-surface);color:var(--sf-text);font-size:14px;cursor:pointer;}
+#navStrip{flex:0 0 auto;display:none;align-items:stretch;gap:10px;z-index:600;
+  background:var(--sf-bar-bg);border-top:1px solid var(--sf-border);
+  padding:8px 12px calc(8px + env(safe-area-inset-bottom,0px));}
+#app.navmode #navStrip{display:flex;}
+#navStrip .ns-nums{flex:1;min-width:0;}
+#navStrip .ns-time{font-size:24px;font-weight:800;line-height:1.1;}
+#navStrip .ns-time small{font-size:13px;font-weight:600;color:var(--sf-text-2);}
+#navStrip .ns-sub{font-size:12px;color:var(--sf-text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#navStrip .ns-end{min-width:56px;min-height:56px;border-radius:50%;border:0;background:var(--sf-danger);
+  color:#fff;font-size:22px;cursor:pointer;align-self:center;}
+#offRouteBanner{position:absolute;left:10px;right:10px;bottom:8px;z-index:570;display:none;
+  background:#fff3cd;color:#664d03;border:1px solid #ffda6a;border-radius:12px;
+  padding:10px 12px;font-size:14px;box-shadow:var(--sf-shadow);}
+#offRouteBanner.show{display:block;}
+#offRouteBanner button{margin-top:8px;min-height:48px;width:100%;border-radius:10px;
+  border:1px solid #664d03;background:#fff;color:#664d03;font-size:15px;font-weight:600;cursor:pointer;}
+#gpsBanner{position:absolute;left:50%;transform:translateX(-50%);
+  top:calc(140px + env(safe-area-inset-top,0px));z-index:570;display:none;
+  background:var(--sf-rec-badge);color:#fff;border-radius:999px;padding:8px 14px;font-size:13px;white-space:nowrap;}
+#gpsBanner.show{display:block;}
+#sosFab{position:absolute;bottom:calc(76px + env(safe-area-inset-bottom,0px) + 12px);
+  inset-inline-end:12px;z-index:580;display:none;
+  width:56px;height:56px;border-radius:50%;border:0;background:var(--sf-danger);color:#fff;
+  font-size:24px;cursor:pointer;box-shadow:var(--sf-shadow);}
+#app.navmode #sosFab{display:flex;align-items:center;justify-content:center;}
+#app.navmode:not(.sos-over-nav) #topPill,#app.navmode:not(.sos-over-nav) #statusRow,
+#app.navmode:not(.sos-over-nav) #actionbar,#app.navmode:not(.sos-over-nav) #routeCard,
+#app.navmode:not(.sos-over-nav) #sheet,#app.navmode:not(.sos-over-nav) #scrim,
+#app.navmode .fab{display:none!important;}
+#app.navmode:not(.sos-over-nav) #sheet{height:0!important;}
+#app.navmode #mapWrap.has-route .leaflet-bottom.leaflet-right{bottom:calc(76px + env(safe-area-inset-bottom,0px) + 4px);}

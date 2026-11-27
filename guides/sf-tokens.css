@@ -1,0 +1,66 @@
+/* sf-tokens.css — SnowForecast design tokens (light + dark).
+   Applied by <html data-theme="light|dark"> (set by the head boot script and
+   SF.theme). Falls back to prefers-color-scheme when no data-theme is set. */
+:root{
+  color-scheme: light dark;
+  --sf-accent:#1e7ac8;
+  --sf-accent-contrast:#fff;
+  --sf-danger:#d43d2a;
+  --sf-danger-contrast:#fff;
+  --sf-green:#1c8a3c;
+  --sf-amber:#c77900;
+  --sf-record:#e0218a;
+}
+:root, :root[data-theme="light"]{
+  color-scheme: light;
+  --sf-bg:#eef2f5;
+  --sf-map-bg:#dfe8ee;
+  --sf-surface:#ffffff;
+  --sf-surface-2:#f3f5f7;
+  --sf-text:#12222e;
+  --sf-text-2:#5a6b78;
+  --sf-border:#d7dee4;
+  --sf-shadow:0 4px 18px rgba(10,30,45,.16);
+  --sf-pill-bg:rgba(255,255,255,.96);
+  --sf-bar-bg:#ffffff;
+  --sf-chip-bg:rgba(255,255,255,.94);
+  --sf-input-bg:#ffffff;
+  --sf-hover:rgba(20,90,140,.08);
+  --sf-rec-badge:rgba(0,0,0,.55);
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --sf-bg:#06111f;
+  --sf-map-bg:#0a1a2b;
+  --sf-surface:#0f2233;
+  --sf-surface-2:#163047;
+  --sf-text:#e8f0f6;
+  --sf-text-2:#9db2c0;
+  --sf-border:#24465c;
+  --sf-shadow:0 4px 18px rgba(0,0,0,.5);
+  --sf-pill-bg:rgba(15,34,51,.95);
+  --sf-bar-bg:#0f2233;
+  --sf-chip-bg:rgba(15,34,51,.93);
+  --sf-input-bg:#0f2233;
+  --sf-hover:rgba(120,190,255,.12);
+  --sf-rec-badge:rgba(0,0,0,.65);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme]){
+    color-scheme: dark;
+    --sf-bg:#06111f;
+    --sf-map-bg:#0a1a2b;
+    --sf-surface:#0f2233;
+    --sf-surface-2:#163047;
+    --sf-text:#e8f0f6;
+    --sf-text-2:#9db2c0;
+    --sf-border:#24465c;
+    --sf-shadow:0 4px 18px rgba(0,0,0,.5);
+    --sf-pill-bg:rgba(15,34,51,.95);
+    --sf-bar-bg:#0f2233;
+    --sf-chip-bg:rgba(15,34,51,.93);
+    --sf-input-bg:#0f2233;
+    --sf-hover:rgba(120,190,255,.12);
+    --sf-rec-badge:rgba(0,0,0,.65);
+  }
+}

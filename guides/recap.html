@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>try{var _l=localStorage.getItem('sf-lang')||'he';document.documentElement.lang=_l;document.documentElement.dir=_l==='en'?'ltr':'rtl';var _t=localStorage.getItem('sf-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<link rel="icon" href="favicon.svg">
+<link rel="stylesheet" href="sf-tokens.css">
+<link rel="stylesheet" href="sf-me.css">
+<script src="guide-i18n.js"></script>
+<script src="supabase-config.js"></script>
+<script src="sf-auth.js"></script>
+<script src="sf-stats.js"></script>
+<script src="sf-vacations.js"></script>
+<script src="sf-recap.js"></script>
+<script src="sf-friends.js"></script>
+<script src="sf-share.js"></script>
+<title>סיכומי גלישה — SnowForecast</title>
+<meta name="description" content="סיכומי גלישה, חופשות, לוח תוצאות פרטי וניהול חברים — SnowForecast.">
+</head>
+<body>
+<main class="sfme-shell">
+  <div class="sfme-topbar">
+    <a class="sfme-brand" href="/"><span class="sfme-brand-mark">❄️</span><span>SnowForecast</span></a>
+    <div class="segToggle" role="group" aria-label="Language / שפה" style="display:flex;border:1px solid var(--sf-border);border-radius:999px;overflow:hidden;flex:none"><button data-lang-seg data-lang="he" aria-pressed="true" onclick="GuideI18n.setLang('he')" style="border:0;padding:6px 12px;min-height:44px;background:transparent;color:var(--sf-text);font-weight:700;cursor:pointer">HE</button><button data-lang-seg data-lang="en" aria-pressed="false" onclick="GuideI18n.setLang('en')" style="border:0;padding:6px 12px;min-height:44px;background:transparent;color:var(--sf-text);font-weight:700;cursor:pointer">EN</button></div>
+  </div>
+  <h1 style="margin:0 0 6px" data-i18n="r1">הסיכומים שלי 📊</h1>
+  <p class="sfme-muted" data-i18n="r2">ימי גלישה, חופשות, לוח תוצאות פרטי וחברים — הכל מההקלטות במכשיר הזה. שום דבר לא משותף החוצה בלי לחיצה מפורשת שלכם.</p>
+  <div class="sfme-tabs" role="tablist">
+    <button data-view="days" aria-pressed="true" data-i18n="r3">📅 ימים</button>
+    <button data-view="vacations" aria-pressed="false" data-i18n="r4">🏔️ חופשות ולוח</button>
+    <button data-view="friends" aria-pressed="false" data-i18n="r5">👥 חברים</button>
+  </div>
+
+  <section id="view-days"></section>
+  <section id="view-vacations" hidden></section>
+  <section id="view-friends" hidden></section>
+</main>
+<script>
+/* R_STR — recap.html strings (GuideI18n applies data-i18n). */
+window.GUIDE_STR={"he": {"r1": "הסיכומים שלי 📊", "r2": "ימי גלישה, חופשות, לוח תוצאות פרטי וחברים — הכל מההקלטות במכשיר הזה. שום דבר לא משותף החוצה בלי לחיצה מפורשת שלכם.", "r3": "📅 ימים", "r4": "🏔️ חופשות ולוח", "r5": "👥 חברים", "title": "סיכומי גלישה — SnowForecast", "description": "סיכומי גלישה, חופשות, לוח תוצאות פרטי וניהול חברים — SnowForecast."}, "en": {"r1": "My recaps 📊", "r2": "Ski days, vacations, a private leaderboard and friends — all from the tracks on this device. Nothing is shared out without an explicit tap from you.", "r3": "📅 Days", "r4": "🏔️ Vacations & board", "r5": "👥 Friends", "title": "Ski recaps — SnowForecast", "description": "Ski recaps, vacations, a private leaderboard and friends management — SnowForecast."}};
+if(window.GuideI18n)GuideI18n.init(window.GUIDE_STR);
+(function(){
+'use strict';
+var R = window.SFRecap, V = window.SFVacations, F = window.SFFriends, SH = window.SFShare;
+var lang=function(){ return (document.documentElement.getAttribute('lang')||'he').indexOf('en')===0?'en':'he'; };
+var state={tracks:[], days:[], vacations:[], view:'days', boards:{}};
+
+function showView(v){
+  state.view=v;
+  document.querySelectorAll('[data-view]').forEach(function(b){ b.setAttribute('aria-pressed', b.getAttribute('data-view')===v?'true':'false'); });
+  ['days','vacations','friends'].forEach(function(x){ document.getElementById('view-'+x).hidden = (x!==v); });
+  if(v==='vacations') renderVacations();
+  if(v==='friends') renderFriends();
+}
+document.querySelectorAll('[data-view]').forEach(function(b){
+  b.addEventListener('click', function(){ showView(b.getAttribute('data-view')); });
+});
+function qp(name){ try{ var m=location.search.match(new RegExp('[?&]'+name+'=([^&]+)')); return m?decodeURIComponent(m[1]):null; }catch(e){ return null; } }
+
+/* ---------- days view ---------- */
+function renderDays(){
+  var el=document.getElementById('view-days');
+  if(!state.days.length){
+    el.innerHTML='<div class="sfme-card"><p class="sfme-muted">'+R.esc(R.t('rec.noTracks'))+'</p></div>';
+    return;
+  }
+  var h='<p class="sfme-note">'+R.esc(R.t('rec.localOnly'))+'</p>';
+  state.days.forEach(function(d){ h+=R.dayCard(d); });
+  el.innerHTML=h;
+  bindDayButtons(el);
+}
+function bindDayButtons(root){
+  root.querySelectorAll('[data-act]').forEach(function(b){
+    if(b.getAttribute('data-sf-bound')) return;
+    b.setAttribute('data-sf-bound','1');
+    b.addEventListener('click', function(){
+      var day=b.getAttribute('data-day');
+      var d=state.days.find(function(x){ return x.date===day; });
+      if(!d) return;
+      var act=b.getAttribute('data-act');
+      if(act==='detail'){
+        var box=root.querySelector('[data-detail="'+day+'"]');
+        if(box){ box.hidden=!box.hidden; if(!box.hidden) box.innerHTML=R.detailHtml(d); bindDayButtons(box); }
+      } else if(act==='share-day'){ SH.shareDay(d); }
+      else if(act==='card-day'){
+        SH.dayCardPNG(d, d.resort).then(function(blob){
+          if(!blob) return;
+          var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='snowforecast-'+day+'.png';
+          document.body.appendChild(a); a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+        });
+      } else if(act==='gpx-day'){ R.download('snowforecast-'+day+'.gpx', R.gpxForDay(d)); }
+    });
+  });
+}
+
+/* ---------- vacations + leaderboard ---------- */
+function renderVacations(){
+  var el=document.getElementById('view-vacations');
+  var opt=R.getOptIn();
+  var h='<div class="sfme-card"><h2>'+R.esc(R.t('rec.shareStatsOptIn'))+'</h2>'
+    +'<p class="sfme-muted">'+R.esc(R.t('rec.shareStatsNote'))+'</p>'
+    +'<div class="sfme-row"><button class="sfme-btn '+(opt.enabled?'primary':'')+'" id="optInToggle">'
+    +(opt.enabled?R.esc(R.t('rec.shareOn')):R.esc(R.t('rec.shareOff')))+'</button></div>'
+    +'<p class="sfme-note" id="optInStatus"></p></div>';
+  if(!state.vacations.length){
+    h+='<div class="sfme-card"><p class="sfme-muted">'+R.esc(R.t('rec.noTracks'))+'</p></div>';
+    el.innerHTML=h; bindOptIn(el); return;
+  }
+  state.vacations.forEach(function(vac){
+    h+='<div class="sfme-card" data-vac="'+vac.id+'"><h2>'+R.esc(vac.name)+'</h2>'
+      +'<p class="sfme-muted">'+R.esc(vac.startDate)+' – '+R.esc(vac.endDate)+' · '+R.esc(vac.totals.days)+' '+R.esc(R.t('rec.vacDays'))+'</p>'
+      +R.statGrid({distance:vac.totals.distance, gain:vac.totals.gain, topSpeed:vac.totals.topSpeed,
+          longestRun:vac.totals.longestRun, runs:vac.totals.runs, skiTime:vac.totals.skiTime,
+          liftTime:vac.totals.liftTime, duration:vac.totals.duration})
+      +'<div class="sfme-row">'
+      +'<button class="sfme-btn" data-act="rename-vac" data-vac="'+vac.id+'">'+R.esc(R.t('rec.rename'))+'</button>'
+      +'<button class="sfme-btn" data-act="share-vac" data-vac="'+vac.id+'">↗️ Share</button>'
+      +'<button class="sfme-btn" data-act="board-vac" data-vac="'+vac.id+'">'+R.esc(R.t('rec.cumulative'))+'</button>'
+      +'</div><div data-board="'+vac.id+'"></div></div>';
+  });
+  el.innerHTML=h;
+  bindOptIn(el);
+  el.querySelectorAll('[data-act]').forEach(function(b){
+    b.addEventListener('click', function(){
+      var vac=state.vacations.find(function(x){ return x.id===b.getAttribute('data-vac'); });
+      if(!vac) return;
+      var act=b.getAttribute('data-act');
+      if(act==='share-vac'){ SH.shareVacation(vac); }
+      else if(act==='rename-vac'){
+        var name=prompt(lang()==='en'?'Vacation name:':'שם החופשה:', vac.customName||vac.name);
+        if(name!=null){ V.setName(vac.id, name); reload(); }
+      } else if(act==='board-vac'){ renderBoard(vac); }
+    });
+  });
+}
+function bindOptIn(el){
+  var btn=el.querySelector('#optInToggle'); if(!btn) return;
+  btn.addEventListener('click', function(){
+    var opt=R.setOptIn(!R.getOptIn().enabled);
+    var st=el.querySelector('#optInStatus');
+    if(opt.enabled){
+      R.uploadMyDayStats().then(function(s){
+        if(st) st.textContent = s==='ok' ? R.t('rec.uploaded') : (s==='no-table' ? R.t('rec.noRemote') : R.t('rec.uploadFailed'));
+      });
+    } else {
+      if(st) st.textContent=R.t('rec.shareOff');
+    }
+    renderVacations();
+  });
+}
+function renderBoard(vac){
+  var box=document.querySelector('[data-board="'+vac.id+'"]'); if(!box) return;
+  box.innerHTML='<p class="sfme-note">…</p>';
+  var myDays=state.days.filter(function(d){ return vac.days.some(function(vd){ return vd.date===d.date; }); });
+  var tripId=vac.trip || R.tripLocalIdForDay(vac.startDate, vac.resort);
+  R.fetchBoardRows(tripId).then(function(res){
+    var board=R.buildBoard(myDays, res.rows||[], R.myName());
+    var opt=R.getOptIn();
+    var h='<h3>'+R.esc(R.t('rec.dailyWinners'))+'</h3>';
+    if(res.status==='no-table') h+='<p class="sfme-note">'+R.esc(R.t('rec.noRemote'))+'</p>';
+    else if(res.status==='no-client') h+='<p class="sfme-note">'+R.esc(R.t('rec.notSignedIn'))+'</p>';
+    if(!board.participants){ h+='<p class="sfme-muted">'+R.esc(R.t('rec.noParticipants'))+'</p>'; }
+    else {
+      if(board.participants===1 && opt.enabled) h+='<p class="sfme-note">'+R.esc(R.t('rec.onlySharer'))+'</p>';
+      board.daily.forEach(function(dy){
+        h+='<h3>'+R.esc(dy.day)+'</h3><table class="sfme-table"><tbody>';
+        R.CATS.forEach(function(c){
+          var w=dy.winners[c.key];
+          if(!w) return;
+          h+='<tr data-act="board-row" data-day="'+R.esc(dy.day)+'" data-name="'+R.esc(w.entry.name)+'" data-me="'+(w.entry.isMe?'1':'0')+'"><td>🏆 '+R.esc(c.label())+'</td><td><b>'+R.esc(w.entry.name)+'</b> '+(w.entry.isMe?'<span class="sfme-badge">'+R.esc(R.t('rec.bestToday',{what:c.label()}))+'</span>':'')+'</td><td><b>'+R.esc(c.fmt(w.value))+'</b></td></tr>';
+        });
+        h+='</tbody></table>';
+      });
+      h+='<h3>'+R.esc(R.t('rec.cumulative'))+'</h3><table class="sfme-table"><thead><tr><th>#</th><th></th><th>'+R.esc(R.t('rec.distance'))+'</th><th>'+R.esc(R.t('rec.vertical'))+'</th><th>'+R.esc(R.t('rec.topSpeed'))+'</th></tr></thead><tbody>';
+      var ranked=board.cumulative.slice().sort(function(a,b){ return b.distance-a.distance; });
+      ranked.forEach(function(c,i){
+        h+='<tr data-act="board-row" data-name="'+R.esc(c.name)+'" data-me="'+(c.isMe?'1':'0')+'"><td>'+(i+1)+'</td><td><b>'+R.esc(c.name)+'</b>'+(c.isMe?' <span class="sfme-badge">'+R.esc(R.t('rec.me'))+'</span>':'')+'</td><td>'+R.esc(R.fmtDist(c.distance))+'</td><td>'+Math.round(c.vertical)+' '+R.esc(R.t('rec.m'))+'</td><td>'+((c.topSpeed*3.6).toFixed(0))+' '+R.esc(R.t('rec.kmh'))+'</td></tr>';
+      });
+      h+='</tbody></table>';
+      h+='<div class="sfme-row"><button class="sfme-btn" data-act="share-board" data-vac="'+vac.id+'">↗️ Share board</button></div>';
+      h+='<div class="sfme-detail" data-board-detail="'+vac.id+'" hidden></div>';
+    }
+    box.innerHTML=h;
+    box.querySelectorAll('[data-act]').forEach(function(row){
+      row.addEventListener('click', function(){
+        var act=row.getAttribute('data-act');
+        if(act==='share-board'){
+          var lines=ranked.map(function(c,i){ return (i+1)+'. '+c.name+' — '+R.fmtDist(c.distance); });
+          // Server vacation uuid when synced (C3: mints a revocable
+          // leaderboard link); without it the share is stage A.
+          var vacSid = vac.serverId || (window.SFSync && SFSync.getVacationId ? SFSync.getVacationId(vac.resort, vac.startDate) : null);
+          SH.shareLeaderboard(vac.name, lines, vacSid||null); return;
+        }
+        var det=box.querySelector('[data-board-detail="'+vac.id+'"]');
+        if(!det) return;
+        var isMe=row.getAttribute('data-me')==='1';
+        var day=row.getAttribute('data-day');
+        var name=row.getAttribute('data-name');
+        if(isMe && day){
+          var d=state.days.find(function(x){ return x.date===day; });
+          det.hidden=false;
+          det.innerHTML=d?('<h3>'+R.esc(R.t('rec.dayDetail'))+' — '+R.esc(day)+'</h3>'+R.detailHtml(d)):'';
+        } else {
+          det.hidden=false;
+          det.innerHTML='<p class="sfme-muted">'+R.esc(R.t('rec.friendStatsOnly',{name:name||''}))+'</p>';
+        }
+      });
+    });
+  });
+}
+
+/* ---------- friends view ---------- */
+function renderFriends(){
+  var el=document.getElementById('view-friends');
+  var h='<div class="sfme-card"><div id="sfAuthBox"></div>'
+    +'<p class="sfme-note">'+F.esc(F.t('fr.syncLocal'))+'</p></div>';
+  /* My sharing per trip */
+  var sharing=F.mySharing(), trips=F.trips();
+  h+='<div class="sfme-card"><h2>'+F.esc(F.t('fr.mySharing'))+'</h2>'
+    +'<p class="sfme-muted">'+F.esc(F.t('fr.stopSharingNote'))+'</p>';
+  if(!trips.length) h+='<p class="sfme-muted">'+F.esc(F.t('fr.noTripPeople'))+'</p>';
+  trips.forEach(function(tr){
+    var on=!!sharing[tr];
+    h+='<div class="sfme-kv"><span>'+F.esc(tr)+'</span><b>'+F.esc(on?F.t('fr.sharingOn'):F.t('fr.sharingOff'))+'</b></div>';
+  });
+  h+='<p class="sfme-note">'+F.esc(F.t('fr.stopSharingMapHint'))+'</p></div>';
+  /* People in trips */
+  var people=F.tripPeople();
+  h+='<div class="sfme-card"><h2>'+F.esc(F.t('fr.inTrips'))+'</h2>';
+  if(!people.length) h+='<p class="sfme-muted">'+F.esc(F.t('fr.noTripPeople'))+'</p>';
+  people.forEach(function(p){
+    var blocked=F.isBlockedFriend(p);
+    h+='<div class="sfme-member"><div class="sfme-avatar">'+F.esc((p.name||'?').trim().charAt(0).toUpperCase())+'</div>'
+      +'<div class="who"><b>'+F.esc(p.name)+'</b><small>'+F.esc(F.t('fr.fromTrip'))+' · '+F.esc(p.trip)+(blocked?' · '+F.esc(F.t('fr.blocked')):'')+'</small></div>'
+      +'<button class="sfme-btn" data-fact="'+(blocked?'unblock':'block')+'" data-fname="'+F.esc(p.name)+'" data-fid="'+F.esc(p.fid||'')+'">'+F.esc(blocked?F.t('fr.unblock'):F.t('fr.block'))+'</button></div>';
+  });
+  h+='</div>';
+  /* My friends list */
+  var list=F.list();
+  h+='<div class="sfme-card"><h2>'+F.esc(F.t('fr.myList'))+'</h2>';
+  if(!list.length) h+='<p class="sfme-muted">'+F.esc(F.t('fr.noFriends'))+'</p>';
+  list.forEach(function(fr){
+    var blocked=F.isBlockedFriend(fr);
+    h+='<div class="sfme-member"><div class="sfme-avatar">'+F.esc((fr.name||'?').trim().charAt(0).toUpperCase())+'</div>'
+      +'<div class="who"><b>'+F.esc(fr.name)+'</b><small>'+F.esc(fr.email||'')+(fr.status==='invited'?' · '+F.esc(F.t('fr.invited')):'')+(blocked?' · '+F.esc(F.t('fr.blocked')):'')+'</small></div>'
+      +'<button class="sfme-btn" data-fact="'+(blocked?'unblock':'block')+'" data-fid="'+F.esc(fr.id)+'">'+F.esc(blocked?F.t('fr.unblock'):F.t('fr.block'))+'</button>'
+      +'<button class="sfme-btn danger" data-fact="remove" data-fid="'+F.esc(fr.id)+'">'+F.esc(F.t('fr.remove'))+'</button></div>';
+  });
+  h+='<h3>'+F.esc(F.t('fr.addByEmail'))+'</h3><div class="sfme-row"><input type="text" id="frName" placeholder="'+F.esc(F.t('fr.name'))+'" style="flex:1;min-width:120px"><input type="email" id="frEmail" placeholder="'+F.esc(F.t('fr.emailPh'))+'" style="flex:2;min-width:160px"></div>'
+    +'<div class="sfme-row"><button class="sfme-btn primary" id="frAddEmail">'+F.esc(F.t('fr.add'))+'</button></div>'
+    +'<h3>'+F.esc(F.t('fr.addByLink'))+'</h3><div class="sfme-row"><input type="text" id="frLink" placeholder="'+F.esc(F.t('fr.linkPh'))+'"></div>'
+    +'<div class="sfme-row"><button class="sfme-btn primary" id="frAddLink">'+F.esc(F.t('fr.add'))+'</button></div>'
+    +'<p class="sfme-note" id="frMsg"></p></div>';
+  /* My shared links */
+  var links=SH.myLinks();
+  h+='<div class="sfme-card"><h2>'+SH.esc(SH.t('sh.myLinks'))+'</h2>';
+  if(!links.length) h+='<p class="sfme-muted">'+SH.esc(SH.t('sh.noLinks'))+'</p>';
+  links.forEach(function(lk){
+    h+='<div class="sfme-member"><div class="who"><b>'+SH.esc(lk.title||lk.kind)+'</b><small>'+SH.esc(lk.url)+'<br>'+SH.esc(lk.stage==='B'?SH.t('sh.stageB'):SH.t('sh.stageA'))+(lk.revoked?' · '+SH.esc(SH.t('sh.revoked')):'')+'</small></div>'
+      +(lk.stage==='B'&&!lk.revoked?'<button class="sfme-btn danger" data-fact="revoke" data-fid="'+SH.esc(lk.id)+'">'+SH.esc(SH.t('sh.revoke'))+'</button>':'')
+      +'</div>';
+  });
+  h+='</div>';
+  el.innerHTML=h;
+  if(window.SFAuth) SFAuth.render();
+  el.querySelectorAll('[data-fact]').forEach(function(b){
+    b.addEventListener('click', function(){
+      var act=b.getAttribute('data-fact'), fid=b.getAttribute('data-fid'), fname=b.getAttribute('data-fname');
+      if(act==='remove'){ F.removeFriend(fid); renderFriends(); }
+      else if(act==='block'||act==='unblock'){
+        var target=null;
+        if(fid){ target=F.list().find(function(x){ return x.id===fid; }) || {name:fname||'', fid:fid}; }
+        else target={name:fname||'', fid:''};
+        if(target) F.setBlocked(target, act==='block');
+        renderFriends();
+      } else if(act==='revoke'){
+        SH.revokeLink(fid).then(function(){ renderFriends(); });
+      }
+    });
+  });
+  var addEmail=el.querySelector('#frAddEmail');
+  if(addEmail) addEmail.addEventListener('click', function(){
+    var name=el.querySelector('#frName').value.trim(), email=el.querySelector('#frEmail').value.trim();
+    var msg=el.querySelector('#frMsg');
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ if(msg) msg.textContent=F.t('fr.emailBad'); return; }
+    F.addFriend({name:name||email.split('@')[0], email:email, source:'manual', status:'invited'});
+    if(msg) msg.textContent=F.t('fr.added');
+    renderFriends();
+  });
+  var addLink=el.querySelector('#frAddLink');
+  if(addLink) addLink.addEventListener('click', function(){
+    var msg=el.querySelector('#frMsg');
+    var r=F.addFromLink(el.querySelector('#frLink').value.trim());
+    if(msg) msg.textContent=r.ok?F.t('fr.added'):F.t('fr.linkBad');
+    if(r.ok) renderFriends();
+  });
+}
+
+/* ---------- boot ---------- */
+function reload(){
+  R.loadTracks().then(function(tracks){
+    state.tracks=tracks;
+    state.days=R.groupDays(tracks);
+    state.vacations=V.buildVacations(state.tracks, state.days, lang());
+    renderDays();
+    if(state.view==='vacations') renderVacations();
+    if(state.view==='friends') renderFriends();
+  });
+}
+document.addEventListener('guide-lang', function(){ reload(); });
+var v0=qp('view');
+if(v0==='friends'||v0==='vacations') showView(v0);
+reload();
+})();
+</script>
+</body>
+</html>

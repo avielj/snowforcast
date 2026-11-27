@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>try{var _l=localStorage.getItem('sf-lang')||'he';document.documentElement.lang=_l;document.documentElement.dir=_l==='en'?'ltr':'rtl';var _t=localStorage.getItem('sf-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<link rel="icon" href="favicon.svg">
+<link rel="stylesheet" href="sf-tokens.css">
+<link rel="stylesheet" href="sf-me.css">
+<script src="supabase-config.js"></script>
+<title>שיתוף — SnowForecast</title>
+<meta name="description" content="פריט ששותף מ-SnowForecast — לצפייה בלבד.">
+</head>
+<body>
+<main class="sfme-shell">
+  <div class="sfme-topbar">
+    <a class="sfme-brand" href="/"><span class="sfme-brand-mark">❄️</span><span>SnowForecast</span></a>
+  </div>
+  <div id="shareBody"><p class="sfme-muted">…</p></div>
+  <p class="sfme-note" id="shareNote"></p>
+  <div class="sfme-row"><a class="sfme-btn" href="/">SnowForecast ←</a></div>
+</main>
+<script>
+/* guides/share.html — read-only viewer for shared items.
+   Two stages (see guides/sf-share.js):
+   - ?d=<b64url> (stage A): the item is encoded in the URL itself.
+     Expiry is checked here (payload.exp). CANNOT be revoked — the
+     page says so honestly.
+   - ?t=<token> (stage B, landed v1.2): the item lives in
+     ski.share_links, read ONLY via the SECURITY DEFINER function
+     ski.resolve_share_link(token) — anon may execute it (C4: anon
+     has USAGE on schema ski); anon can never list rows, only fetch
+     one whitelisted item by exact token. Unknown / revoked / expired
+     tokens all return NULL — the page shows "not found" for all of
+     them, never a reason. (The old stage-B target,
+     ski.public_shares + ski.get_public_share from the superseded
+     proposal, was never created — C3, independent review 2026-11-27.)
+     A legacy ?s= token is accepted the same way.
+   The viewer shows ONLY the shared item — never the owner's account
+   and never anything else. No sign-in is required or requested here. */
+(function(){
+'use strict';
+var SUPABASE_CDN='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
+var STR={
+he:{'loading':'טוען…','invalid':'הקישור לא תקין.','expired':'הקישור פג תוקפו.','revoked':'הקישור בוטל על ידי המשתף.','notfound':'הפריט לא נמצא — ייתכן שהקישור בוטל או שפג תוקפו.','stageA':'קישור ישיר — אי אפשר לבטל אותו אחרי שנשלח.','stageB':'קישור ניתן לביטול — המשתף יכול לבטל אותו בכל רגע.','sharedBy':'שותף מ־SnowForecast',
+'distance':'מרחק','vertical':'גובה מצטבר','topSpeed':'מהירות מרבית','longestRun':'הריצה הארוכה ביותר','runs':'ריצות','skiTime':'זמן גלישה','liftTime':'זמן ליפטים','duration':'משך כולל','days':'ימי גלישה','points':'נקודות מסלול','recording':'הקלטת גלישה','dayStats':'סיכום יום גלישה','vacation':'חופשת סקי','leaderboard':'לוח תוצאות','trip':'טיול סקי','route':'מסלול גלישה'},
+en:{'loading':'Loading…','invalid':'This link is not valid.','expired':'This link has expired.','revoked':'This link was revoked by the sharer.','notfound':'Item not found — the link may have been revoked or expired.','stageA':'Direct link — it cannot be revoked once sent.','stageB':'Revocable link — the sharer can revoke it at any time.','sharedBy':'Shared from SnowForecast',
+'distance':'Distance','vertical':'Vertical','topSpeed':'Top speed','longestRun':'Longest run','runs':'Runs','skiTime':'Ski time','liftTime':'Lift time','duration':'Total time','days':'Ski days','points':'Route points','recording':'Ski recording','dayStats':'Ski day summary','vacation':'Ski vacation','leaderboard':'Leaderboard','trip':'Ski trip','route':'Ski route'}};
+function lang(){ try{ var l=document.documentElement.getAttribute('lang')||'he'; return l.indexOf('en')===0?'en':'he'; }catch(e){ return 'he'; } }
+function t(k){ var L=STR[lang()]||STR.he; return L[k]!=null?L[k]:(STR.en[k]!=null?STR.en[k]:k); }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+function qp(n){ try{ var m=location.search.match(new RegExp('[?&]'+n+'=([^&]+)')); return m?decodeURIComponent(m[1]):null; }catch(e){ return null; } }
+function b64urlDecode(str){
+  try{ var s=String(str).replace(/-/g,'+').replace(/_/g,'/');
+    while(s.length%4) s+='=';
+    var bin=atob(s), bytes=new Uint8Array(bin.length);
+    for(var i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
+    return new TextDecoder().decode(bytes); }catch(e){ return null; }
+}
+function show(payload, stage){
+  var body=document.getElementById('shareBody');
+  var note=document.getElementById('shareNote');
+  if(payload.exp && Date.now()>payload.exp){ body.innerHTML='<div class="sfme-card"><p class="sfme-muted">'+esc(t('expired'))+'</p></div>'; return; }
+  var d=payload.data||{};
+  var h='<div class="sfme-card"><h2>'+esc(payload.title||'SnowForecast')+'</h2>';
+  if(payload.text) h+='<p class="sfme-muted" style="white-space:pre-wrap">'+esc(payload.text)+'</p>';
+  if(d.distance!=null||d.gain!=null||d.topSpeed!=null){
+    h+='<div class="sfme-grid">'
+      +(d.distance!=null?'<div class="sfme-stat"><small>Distance</small><b>'+esc(d.distance)+' m</b></div>':'')
+      +(d.gain!=null?'<div class="sfme-stat"><small>Vertical</small><b>'+esc(d.gain)+' m</b></div>':'')
+      +(d.topSpeed!=null?'<div class="sfme-stat"><small>Top speed</small><b>'+esc(d.topSpeed)+' km/h</b></div>':'')
+      +(d.longestRun!=null?'<div class="sfme-stat"><small>Longest run</small><b>'+esc(d.longestRun)+' m</b></div>':'')
+      +(d.runs!=null?'<div class="sfme-stat"><small>Runs</small><b>'+esc(d.runs)+'</b></div>':'')
+      +'</div>';
+  }
+  h+='<p class="sfme-note">'+esc(t('sharedBy'))+'</p></div>';
+  body.innerHTML=h;
+  if(note) note.textContent = stage==='B' ? t('stageB') : t('stageA');
+}
+function fail(msg){ document.getElementById('shareBody').innerHTML='<div class="sfme-card"><p class="sfme-muted">'+esc(msg)+'</p></div>'; }
+function fmtDist(m){ if(m==null) return '—'; return m>=1000 ? (m/1000).toFixed(1)+' km' : Math.round(m)+' m'; }
+function fmtDur(sec){ if(sec==null) return '—'; sec=Math.round(sec); var h=Math.floor(sec/3600), m=Math.round((sec%3600)/60);
+  return h>0 ? h+':'+('0'+m).slice(-2) : m+' min'; }
+function fmtKmh(ms){ return ms==null ? '—' : (ms*3.6).toFixed(0)+' km/h'; }
+/* Render one resolve_share_link envelope (whitelisted fields only —
+   the resolver never returns user ids, other users' data, or GPS
+   points except for 'route'). Field names differ per item_type, so
+   each branch normalises to the same stats grid. */
+function showEnvelope(env){
+  var body=document.getElementById('shareBody');
+  var note=document.getElementById('shareNote');
+  var type=env.item_type||'';
+  var titles={recording:'recording', route:'route', vacation:'vacation',
+    daily_stats:'dayStats', leaderboard:'leaderboard', trip:'trip'};
+  var title=t(titles[type]||'recording');
+  var sub='';
+  if(env.name) sub=env.name;
+  else if(env.vacation_name) sub=env.vacation_name;
+  if(env.resort) sub+=(sub?' · ':'')+env.resort;
+  if(env.ski_day) sub+=(sub?' · ':'')+env.ski_day;
+  else if(env.start_date) sub+=(sub?' · ':'')+env.start_date+(env.end_date&&env.end_date!==env.start_date?'–'+env.end_date:'');
+  var h='<div class="sfme-card"><h2>'+esc(sub||title)+'</h2>';
+  if(sub && title) h+='<p class="sfme-muted">'+esc(title)+'</p>';
+  // Normalised stats: recording/route use plain names, vacation /
+  // daily_stats use total_* / max_* names.
+  var dist=(env.total_distance_m!=null?env.total_distance_m:env.distance_m);
+  var gain=(env.total_vertical_gain_m!=null?env.total_vertical_gain_m:env.vertical_gain_m);
+  var top=(env.max_top_speed_ms!=null?env.max_top_speed_ms:env.top_speed_ms);
+  var longest=(env.longest_run_m!=null?env.longest_run_m:null);
+  var runs=(env.total_runs!=null?env.total_runs:env.run_count);
+  var skiT=(env.total_ski_time_s!=null?env.total_ski_time_s:env.ski_time_s);
+  var liftT=(env.total_lift_time_s!=null?env.total_lift_time_s:env.lift_time_s);
+  var dur=(env.total_duration_s!=null?env.total_duration_s:env.duration_s);
+  if(type!=='trip'){
+    h+='<div class="sfme-grid">'
+      +'<div class="sfme-stat"><small>'+esc(t('distance'))+'</small><b>'+esc(fmtDist(dist))+'</b></div>'
+      +'<div class="sfme-stat"><small>'+esc(t('vertical'))+'</small><b>'+(gain==null?'—':esc(Math.round(gain)+' m'))+'</b></div>'
+      +'<div class="sfme-stat"><small>'+esc(t('topSpeed'))+'</small><b>'+esc(fmtKmh(top))+'</b></div>'
+      +'<div class="sfme-stat"><small>'+esc(t('longestRun'))+'</small><b>'+esc(fmtDist(longest))+'</b></div>'
+      +'<div class="sfme-stat"><small>'+esc(t('runs'))+'</small><b>'+(runs==null?'—':esc(String(runs)))+'</b></div>'
+      +'<div class="sfme-stat"><small>'+esc(t('skiTime'))+'</small><b>'+esc(fmtDur(skiT))+'</b></div>'
+      +'<div class="sfme-stat"><small>'+esc(t('liftTime'))+'</small><b>'+esc(fmtDur(liftT))+'</b></div>'
+      +'<div class="sfme-stat"><small>'+esc(t('duration'))+'</small><b>'+esc(fmtDur(dur))+'</b></div>'
+      +'</div>';
+  }
+  if(type==='route' && env.points){
+    var n=Array.isArray(env.points)?env.points.length:0;
+    h+='<p class="sfme-muted">'+esc(t('points'))+': '+esc(String(n))+'</p>';
+  }
+  if(type==='leaderboard' && Array.isArray(env.entries)){
+    if(!env.entries.length) h+='<p class="sfme-muted">'+esc(t('notfound'))+'</p>';
+    else {
+      h+='<table class="sfme-table"><tbody>';
+      env.entries.forEach(function(e,i){
+        h+='<tr><td>'+esc(String(i+1))+'</td><td><b>'+esc(e.display_name||'')+'</b></td><td>'+esc(fmtDist(e.total_distance_m))+'</td><td>'+esc(fmtKmh(e.max_top_speed_ms))+'</td></tr>';
+      });
+      h+='</tbody></table>';
+    }
+  }
+  if(env.day_count!=null) h+='<p class="sfme-muted">'+esc(String(env.day_count))+' '+esc(t('days'))+'</p>';
+  h+='<p class="sfme-note">'+esc(t('sharedBy'))+'</p></div>';
+  body.innerHTML=h;
+  if(note) note.textContent=t('stageB');
+}
+function loadStageB(token){
+  var cfg=window.SF_SUPABASE||{};
+  if(!cfg.url||!cfg.anonKey){ fail(t('notfound')); return; }
+  function query(){
+    try{
+      var client=window.supabase.createClient(cfg.url, cfg.anonKey, {db:{schema:'ski'}});
+      client.rpc('resolve_share_link', {p_token: token})
+        .then(function(res){
+          // resolve returns ONE jsonb envelope, or NULL for unknown /
+          // revoked / expired — no reason is ever given (no oracle).
+          if(res.error||!res.data){ fail(t('notfound')); return; }
+          showEnvelope(res.data);
+        }).catch(function(){ fail(t('notfound')); });
+    }catch(e){ fail(t('notfound')); }
+  }
+  if(window.supabase&&window.supabase.createClient){ query(); return; }
+  var s=document.createElement('script'); s.src=SUPABASE_CDN; s.async=true;
+  s.onload=query; s.onerror=function(){ fail(t('notfound')); };
+  document.head.appendChild(s);
+}
+var d=qp('d'), s=qp('t')||qp('s');
+if(d){
+  var raw=b64urlDecode(d), p=null;
+  try{ p=raw?JSON.parse(raw):null; }catch(e){ p=null; }
+  if(!p||!p.kind) fail(t('invalid'));
+  else show(p, 'A');
+} else if(s){
+  // Server tokens are 64 hex chars (256-bit); accept 32-hex too and
+  // let the resolver answer NULL for anything unknown.
+  if(!/^[0-9a-f]{32}$/.test(s) && !/^[0-9a-f]{64}$/.test(s)) fail(t('invalid'));
+  else loadStageB(s);
+} else {
+  fail(t('invalid'));
+}
+})();
+</script>
+</body>
+</html>

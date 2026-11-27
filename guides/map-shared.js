@@ -23,8 +23,8 @@ he:{
   search:'חיפוש', route:'מסלול', record:'הקלטה', plan:'תכנון', sos:'SOS', settings:'הגדרות',
   'bar.search':'חיפוש', 'bar.route':'מסלול', 'bar.plan':'תכנון', 'bar.sos':'SOS',
   'settings.themeAuto':'לפי המכשיר', 'settings.themeLight':'בהיר', 'settings.themeDark':'כהה',
-  close:'סגירה', cancel:'ביטול', back:'חזרה', demo:'דמו',
-  startPoint:'נקודת התחלה', villageDemo:'הכפר (דמו)', myLocation:'המיקום שלי',
+  close:'סגירה', cancel:'ביטול', back:'חזרה',
+  startPoint:'נקודת התחלה', myLocation:'המיקום שלי',
   gpsSearching:'מחפש GPS…', gpsError:'לא ניתן לקבל מיקום',
   saveOffline:'שמור מפה לאופליין', savedOffline:'המפה נשמרה לאופליין', savingOffline:'שומר מפה…',
   offlineSavedOn:'נשמר', offlineClear:'מחק מפה שמורה',
@@ -40,12 +40,13 @@ he:{
   shareMyLocation:'שיתוף המיקום שלי', linkCopied:'הקישור הועתק', friendAdded:'החבר נוסף',
   invalidLink:'לא נמצאו קואורדינטות בקישור', tapMapToPlace:'הקש על המפה כדי למקם את החבר',
   navigateTo:'נווט אל', noFriends:'אין חברים עדיין — הוסף חבר או הזמן חבר לקבוצה.',
-  demoFriendNote:'חבר דמו — הקש על הסמן במפה כדי לנווט אליו.',
+  friendNote:'נקודות של חברים מגיעות מקישורי שיתוף — תמונת מצב, לא מעקב חי — ופגות אחרי 60 דקות. הקישו על סמן של חבר במפה כדי לנווט אליו.',
   trips:'קבוצות טיול', tripGroups:'קבוצות טיול', mySharing:'שיתוף המיקום שלי',
   sharingOn:'משתף', sharingOff:'כבוי', members:'חברים בקבוצה', invite:'הזמנה לקבוצה',
   inviteCopied:'קישור ההזמנה הועתק', joinTrip:'הצטרפות לקבוצה', addMember:'הוספת חבר',
   memberName:'שם', you:'אתה', locationOff:'מיקום כבוי', pickTripFirst:'בחר קבוצה קודם',
   tripActive:'קבוצה פעילה', noMembers:'אין חברים נוספים עדיין.',
+  shareStats:'שיתוף סטטיסטיקות הגלישה שלי', shareStatsNote:'כבוי כברירת מחדל — הסטטיסטיקות שלך מופיעות בלוח התוצאות של הקבוצה רק אם תפעיל את זה.',
   liveSyncNote:'המיקומים הם תמונת מצב מרגע השיתוף, לא מעקב חי. הם פגים אחרי 60 דקות.',
   'friends.title':'חברים וטיולים 👥',
   'friends.openRow':'👥 חברים וטיולים',
@@ -114,14 +115,29 @@ he:{
   sosShare:'שיתוף מיקום', sosWhatsapp:'שליחה בוואטסאפ', recents:'אחרונים', noResults:'לא נמצאו תוצאות',
   searchPlaceholder:'חיפוש יעד, מסלול או מעלית…', routeTo:'מסלול אל', details:'פרטים',
   endNav:'סיום ניווט', clearRoute:'ניקוי מסלול', planReturn:'תכנון חזרה',
-  km:'ק״מ', min:'דקות', m:'מ׳', kmh:'קמ״ש'
+  km:'ק״מ', min:'דקות', m:'מ׳', kmh:'קמ״ש',
+  'auth.title':'👤 חשבון', 'auth.guest':'מצב אורח',
+  'auth.guestNote':'הכל נשמר רק במכשיר הזה — טיולים, חברים והקלטות לא עוברים בין מכשירים.',
+  'auth.notConfigured':'התחברות וסנכרון עדיין לא הוגדרו. כדי להפעיל אותם, מלאו את ה־URL וה־anon key ב־supabase-config.js.',
+  'auth.unavailable':'החיבור ל־Supabase לא זמין כרגע — ממשיכים כאורח, הכל נשמר מקומית.',
+  'auth.loading':'טוען את החשבון…',
+  'auth.signInGoogle':'התחברות עם Google', 'auth.signInApple':'התחברות עם Apple',
+  'auth.appleNotEnabled':'כניסה עם Apple עדיין לא הופעלה בפרויקט — תיפתח כשתופעל בדשבורד (דורש חשבון Apple Developer). בינתיים הכניסה עם Google עובדת.',
+  'auth.signInNote':'התחברות מאפשרת סנכרון טיולים, שיתוף מיקום והקלטות בין מכשירים — רק עם חברי הטיול שלכם.',
+  'auth.signedInAs':'מחובר כ־', 'auth.signOut':'התנתקות',
+  'auth.syncOff':'סנכרון כבוי', 'auth.syncPending':'ממתינים לסנכרון: {n}',
+  'auth.synced':'מסונכרן ✓', 'auth.offline':'אין קליטה — השינויים יישלחו כשתחזרו לאינטרנט',
+  'auth.syncError':'הסנכרון נכשל — ננסה שוב אוטומטית',
+  'auth.syncTablesMissing':'טבלאות הסנכרון (ski) עדיין לא נוצרו בפרויקט — האפליקציה ממשיכה מקומית בלבד עד שה־SQL יורץ בדשבורד.',
+  'auth.signInError':'ההתחברות נכשלה — נסו שוב.',
+  'auth.providerDisabled':'כניסה דרך {provider} עדיין לא הופעלה בפרויקט — נסו ספק אחר, או הפעילו אותו בדשבורד (Authentication → Providers).'
 },
 en:{
   search:'Search', route:'Route', record:'Record', plan:'Plan', sos:'SOS', settings:'Settings',
   'bar.search':'Search', 'bar.route':'Route', 'bar.plan':'Plan', 'bar.sos':'SOS',
   'settings.themeAuto':'Device', 'settings.themeLight':'Light', 'settings.themeDark':'Dark',
-  close:'Close', cancel:'Cancel', back:'Back', demo:'demo',
-  startPoint:'Start point', villageDemo:'Village (demo)', myLocation:'My location',
+  close:'Close', cancel:'Cancel', back:'Back',
+  startPoint:'Start point', myLocation:'My location',
   gpsSearching:'Searching for GPS…', gpsError:'Could not get location',
   saveOffline:'Save map for offline', savedOffline:'Map saved for offline', savingOffline:'Saving map…',
   offlineSavedOn:'Saved', offlineClear:'Delete saved map',
@@ -137,12 +153,13 @@ en:{
   shareMyLocation:'Share my location', linkCopied:'Link copied', friendAdded:'Friend added',
   invalidLink:'No coordinates found in the link', tapMapToPlace:'Tap the map to place the friend',
   navigateTo:'Navigate to', noFriends:'No friends yet — add one or invite someone to the trip.',
-  demoFriendNote:'Demo friend — tap the marker on the map to navigate to them.',
+  friendNote:"Friends' points arrive from share links — a snapshot, not live tracking — and expire after 60 minutes. Tap a friend's marker on the map to navigate to them.",
   trips:'Trip groups', tripGroups:'Trip groups', mySharing:'Share my location',
   sharingOn:'Sharing', sharingOff:'Off', members:'Group members', invite:'Invite to group',
   inviteCopied:'Invite link copied', joinTrip:'Join group', addMember:'Add member',
   memberName:'Name', you:'You', locationOff:'Location off', pickTripFirst:'Pick a group first',
   tripActive:'Active group', noMembers:'No other members yet.',
+  shareStats:'Share my ski stats', shareStatsNote:'Off by default — your stats appear on the group leaderboard only if you turn this on.',
   liveSyncNote:'Positions are snapshots from when they were shared, not live tracking. They expire after 60 minutes.',
   'friends.title':'Friends & trips 👥',
   'friends.openRow':'👥 Friends & trips',
@@ -211,7 +228,22 @@ en:{
   sosShare:'Share location', sosWhatsapp:'Send on WhatsApp', recents:'Recent', noResults:'No results',
   searchPlaceholder:'Search a place, piste or lift…', routeTo:'Route to', details:'Details',
   endNav:'End navigation', clearRoute:'Clear route', planReturn:'Plan return',
-  km:'km', min:'min', m:'m', kmh:'km/h'
+  km:'km', min:'min', m:'m', kmh:'km/h',
+  'auth.title':'👤 Account', 'auth.guest':'Guest mode',
+  'auth.guestNote':'Everything stays on this device only — trips, friends and tracks do not move between devices.',
+  'auth.notConfigured':'Sign-in and sync are not set up yet. To enable them, fill in the URL and anon key in supabase-config.js.',
+  'auth.unavailable':'Could not reach Supabase right now — continuing as a guest, everything stays local.',
+  'auth.loading':'Loading account…',
+  'auth.signInGoogle':'Sign in with Google', 'auth.signInApple':'Sign in with Apple',
+  'auth.appleNotEnabled':'Sign in with Apple is not enabled in the project yet — it will work once it is enabled in the dashboard (needs a paid Apple Developer account). Google sign-in works in the meantime.',
+  'auth.signInNote':'Signing in syncs trips, shared positions and tracks across devices — only with your trip members.',
+  'auth.signedInAs':'Signed in as ', 'auth.signOut':'Sign out',
+  'auth.syncOff':'Sync off', 'auth.syncPending':'Waiting to sync: {n}',
+  'auth.synced':'Synced ✓', 'auth.offline':'No connection — changes will be sent when you are back online',
+  'auth.syncError':'Sync failed — will retry automatically',
+  'auth.syncTablesMissing':'The sync tables (ski) have not been created in the project yet — the app keeps working locally only until the SQL is run in the dashboard.',
+  'auth.signInError':'Sign-in failed — please try again.',
+  'auth.providerDisabled':'Sign-in with {provider} is not enabled in the project yet — try another provider, or enable it in the dashboard (Authentication → Providers).'
 }};
 window.SF_STR = SF_STR;
 
@@ -325,19 +357,22 @@ function initSheetDrag(){
 }
 
 /* ================= config / state ================= */
-var cfg = { slug:'', resortName:'', demoFriend:null, trips:[], activeTrip:null };
+var cfg = { slug:'', resortName:'', trips:[], activeTrip:null };
 var TRIPS = {
   'alpe-2027':   { id:'alpe-2027',   resort:'alpe-d-huez', he:'אלפ דואז · 8–15 בינואר',        en:"Alpe d'Huez · 8–15 Jan" },
   'laplagne-2027':{ id:'laplagne-2027',resort:'la-plagne',   he:'לה פלאן · 31 בינואר – 7 בפברואר', en:'La Plagne · 31 Jan – 7 Feb' }
 };
 function tripName(tr){ return lang()==='en'?tr.en:tr.he; }
-function tripsState(){ return read('sf-trips', {active:null, mySharing:{}, members:{}, joined:{}}); }
+function tripsState(){ return read('sf-trips', {active:null, mySharing:{}, shareStats:{}, members:{}, joined:{}}); }
 function saveTripsState(s){ store('sf-trips', s); }
 
-/* ================= start label / demo badge ================= */
-function setStartLabel(text, isDemo){
+/* ================= start label =================
+   GPS-only start: the label shows the real start (a GPS fix or a point the
+   user tapped on the map) or that there is no start yet — never a fake
+   pre-set start. */
+function setStartLabel(text){
   var el = $('startLabel'); if(!el) return;
-  el.innerHTML = '<span class="dot'+(isDemo?' demo':'')+'"></span><span>'+esc(text)+'</span>';
+  el.innerHTML = '<span class="dot"></span><span>'+esc(text)+'</span>';
 }
 
 /* ================= offline badge ================= */
@@ -400,10 +435,11 @@ var Rec = (function(){
   function onFixErr(){ /* keep recording; points resume when GPS returns */ }
 
   function saveCurrent(){
-    if(!rec.points.length) return;
+    if(!rec.points.length) return null;
     var track = { id: rec.id, resort: cfg.slug, startTs: rec.startTs, endTs: Date.now(),
       points: rec.points, stats: computeStats(rec.points, rec.startTs, Date.now()) };
     idbPut(track);
+    return track;
   }
   function computeStats(points, startTs, endTs){
     var st = { distance:0, duration: Math.max(0,(endTs-startTs)/1000), gain:0, loss:0, topSpeed:0, longestRun:0, n: points.length };
@@ -459,7 +495,10 @@ var Rec = (function(){
     if(rec.watchId!=null && 'geolocation' in navigator){ try{ navigator.geolocation.clearWatch(rec.watchId); }catch(e){} rec.watchId=null; }
     if(rec.lock){ try{ var p=rec.lock.release(); if(p&&p.catch) p.catch(function(){}); }catch(e){} rec.lock=null; }
     setRecUI(false);
-    saveCurrent();
+    var finalTrack = saveCurrent();
+    /* sync hook (sf-sync.js): queue the finished track for upload when
+       signed in; no-op in guest mode or when sf-sync.js is absent. */
+    if(finalTrack && window.SFSync && SFSync.onLocalRecording) SFSync.onLocalRecording(finalTrack);
     toast(t('recSaved'));
     renderSummary();
     openSheet('summary','peek');
@@ -561,12 +600,12 @@ var Rec = (function(){
    the user sends themselves (Web Share / copy / wa.me). "Stop sharing"
    deletes the local record only — links already sent keep working until
    they expire. Trip ids stay the code's own (alpe-2027, laplagne-2027).
-   Demo friend + #friend= / #trip= hash imports are kept as-is. */
+   #friend= / #trip= hash imports are kept as-is. */
 var Friends = (function(){
   /* ---- pure payload functions (no DOM, no Leaflet, no storage) ---- */
   var FRESH_MS = 15*60*1000, STALE_MS = 60*60*1000, DAY_MS = 24*60*60*1000;
   var PALETTE = ['#7dd3fc','#f87171','#4ade80','#facc15','#c084fc','#fb923c','#2dd4bf','#f472b6','#a3e635'];
-  var RESORT_FILES = {'alpe-d-huez':'map-alpe-d-huez.html','la-plagne':'map-la-plagne.html','val-thorens':'map-val-thorens.html'};
+  var RESORT_FILES = {'alpe-d-huez':'map-alpe-d-huez','la-plagne':'map-la-plagne','val-thorens':'map-val-thorens'}; // suffix-less: live /guides/*.html 404s (Vercel routes)
   var RESORT_NAMES = {'alpe-d-huez':"Alpe d'Huez",'la-plagne':'La Plagne','val-thorens':'Val Thorens'};
 
   var markers = {};       // id -> {marker, acc}
@@ -639,7 +678,7 @@ var Friends = (function(){
   function ageText(ts, now){ var n=ageMin(ts,now); return lang()==='he' ? ('לפני '+n+' דק׳') : (n+' min ago'); }
   function shareUrl(resort, payload){
     var enc=encodePayload(payload); if(!enc) return null;
-    var file = RESORT_FILES[resort]||('map-'+resort+'.html');
+    var file = RESORT_FILES[resort]||('map-'+resort);
     var dir = '/guides/';
     try{ var pa=location.pathname||''; var i=pa.lastIndexOf('/'); if(i>=0) dir=pa.slice(0,i+1); }catch(e){}
     return location.origin+dir+file+'?f='+enc;
@@ -709,7 +748,9 @@ var Friends = (function(){
   function pruneExpired(now){
     now=(typeof now==='number')?now:Date.now();
     var l=list(), kept=[], n=0;
-    l.forEach(function(f){ if(f.ts!=null&&freshness(f.ts,now)==='expired') n++; else kept.push(f); });
+    // legacy demo friends (removed 27 Nov 2026) are dropped here too, so a
+    // device that seeded one never shows it again.
+    l.forEach(function(f){ if(f.demo) n++; else if(f.ts!=null&&freshness(f.ts,now)==='expired') n++; else kept.push(f); });
     if(n) save(kept);
     var rec=loadShare();
     if(rec&&rec.ts!=null&&freshness(rec.ts,now)==='expired'){ lastShareExpiredAt=rec.ts; clearShare(); if(shareState==='shared') shareState='idle'; }
@@ -747,6 +788,9 @@ var Friends = (function(){
     var p=buildSharePayload(lat, lon, acc, ts, tripId);
     var url=shareUrl(cfg.slug, p);
     saveShare({trip:tripId, lat:lat, lon:lon, acc:(acc==null?null:Math.round(acc)), ts:ts, url:url, fromCentre:!!fromCentre, name:myName()});
+    /* sync hook (sf-sync.js): queue my position for trip members when
+       signed in; no-op in guest mode or when sf-sync.js is absent. */
+    if(window.SFSync && SFSync.onLocalShare) SFSync.onLocalShare({trip:tripId, lat:lat, lon:lon, acc:acc, ts:ts, name:myName(), fid:myFid(tripId), kind:'friend', source:fromCentre?'map-centre':'gps'});
     shareState='shared'; justStopped=false; lastShareExpiredAt=null;
     renderSheet(); render();
   }
@@ -773,7 +817,12 @@ var Friends = (function(){
     doShareFix(c.lat, c.lng, null, Date.now(), true);
   }
   function stopSharing(){
-    clearShare(); shareState='idle'; justStopped=true; renderSheet(); render();
+    var tripId = shareRec ? shareRec.trip : null;
+    clearShare(); shareState='idle'; justStopped=true;
+    /* sync hook: remove my server-side share (links already sent keep
+       working until they expire). No-op in guest mode. */
+    if(tripId && window.SFSync && SFSync.onLocalShareStop) SFSync.onLocalShareStop(tripId);
+    renderSheet(); render();
   }
   function shareTextFor(rec){ return tf('friends.shareText',{name:rec.name||myName(), resort:cfg.resortName||cfg.slug, url:rec.url}); }
   function copyText(txt, okMsg){
@@ -794,6 +843,9 @@ var Friends = (function(){
     var c=map.getCenter();
     var p=meetPayload(tripId, c.lat, c.lng, label||null);
     var r=upsertFriend(p,'manual'); justOpened[r.entry.id]=true;
+    /* sync hook: meeting points sync like shares (is_meeting_point=true
+       server-side); no-op in guest mode. */
+    if(window.SFSync && SFSync.onLocalShare) SFSync.onLocalShare({trip:tripId, lat:c.lat, lon:c.lng, acc:null, ts:p.ts, name:myName(), kind:'meet', label:(label||null), source:'map-centre'});
     meetShare={url:shareUrl(cfg.slug, p), label:(label||tf('friends.meetLabel')), ts:p.ts};
     renderSheet(); render();
   }
@@ -806,19 +858,12 @@ var Friends = (function(){
     if(!f||f.lat==null||f.lon==null) return false;
     if(f.resort&&cfg.slug&&f.resort!==cfg.slug) return false;
     if(f.ts!=null&&freshness(f.ts)==='expired') return false;
-    if(f.demo) return true;
     if(!f.trip) return true;
     if(activeTripForResort()===f.trip) return true;
     if(justOpened[f.id]) return true;
     return false;
   }
   function visibleList(){ return list().filter(isVisible); }
-  function markerHtml(f){
-    var initial=(f.name||'?').trim().charAt(0).toUpperCase();
-    return '<div class="fm-pin"><span>'+esc(initial)+'</span></div>'
-      +'<div class="fm-name">'+esc(f.name||t('friend'))+'</div>'
-      +(f.demo?'<span class="fm-demo">'+esc(t('demo').toUpperCase())+'</span>':'');
-  }
   function circleHtml(f, stale){
     if(f.kind==='meet'){
       return '<div class="fm-wrap'+(stale?' stale':'')+'"><div class="fm-meet">📍</div>'
@@ -848,16 +893,10 @@ var Friends = (function(){
         clearMarkers();
         visibleList().forEach(function(f){
           var stale=f.ts!=null&&freshness(f.ts)==='stale';
-          var mk;
-          if(f.demo){
-            mk=L.marker([f.lat,f.lon],{icon:L.divIcon({className:'friend-marker',html:markerHtml(f),iconSize:[44,64],iconAnchor:[22,52]})}).addTo(map);
-            mk.on('click',function(){ navigateTo(f); });
-          }else{
-            mk=L.marker([f.lat,f.lon],{icon:L.divIcon({className:'friend-marker',html:circleHtml(f,stale),iconSize:[44,64],iconAnchor:[22,52]})}).addTo(map);
-            mk.on('click',function(){ openPeek(f.id); });
-          }
+          var mk=L.marker([f.lat,f.lon],{icon:L.divIcon({className:'friend-marker',html:circleHtml(f,stale),iconSize:[44,64],iconAnchor:[22,52]})}).addTo(map);
+          mk.on('click',function(){ openPeek(f.id); });
           var el=mk.getElement&&mk.getElement();
-          if(el){ el.setAttribute('aria-label','Friend '+(f.name||'')+(f.demo?' (demo)':'')+(stale?' (stale)':'')); el.setAttribute('role','button'); }
+          if(el){ el.setAttribute('aria-label','Friend '+(f.name||'')+(stale?' (stale)':'')); el.setAttribute('role','button'); }
           var rec={marker:mk, acc:null};
           if(f.acc!=null&&f.acc>50){
             try{ rec.acc=L.circle([f.lat,f.lon],{radius:f.acc,color:f.color||'#38bdf8',weight:1,fillOpacity:0.15,interactive:false}).addTo(map); }catch(e){ rec.acc=null; }
@@ -887,14 +926,14 @@ var Friends = (function(){
   }
   function renderList(){
     var box=$('friendList');
-    var n=visibleList().filter(function(f){ return !f.demo; }).length;
+    var n=visibleList().length;
     var er=$('friendsEntryRoute'); if(er) er.textContent = n>0?tf('friends.openRowCount',{n:n}):tf('friends.openRow');
     var es=$('friendsEntrySettings'); if(es) es.textContent=tf('friends.openRow');
     if(!box) return;
     var l=visibleList();
     var html=l.length?'':'<p class="muted">'+esc(t('noFriends'))+'</p>';
     l.forEach(function(f){
-      var sub=f.demo?esc(f.place||'')+(f.demo?' · '+esc(t('demo')):''):esc(ageLine(f));
+      var sub=esc(ageLine(f));
       html+='<div class="member"><div class="who"><b>'+esc(f.name||t('friend'))+'</b>'
         +'<small>'+sub+'</small></div>'
         +'<button class="btn primary" data-fnav="'+esc(f.id)+'">'+esc(t('navigateTo'))+'</button>'
@@ -918,7 +957,7 @@ var Friends = (function(){
 
   /* ---- Friends sheet ---- */
   function hopUrl(resort, enc){
-    var file=RESORT_FILES[resort]||('map-'+resort+'.html');
+    var file=RESORT_FILES[resort]||('map-'+resort);
     var dir='/guides/';
     try{ var pa=location.pathname||''; var i=pa.lastIndexOf('/'); if(i>=0) dir=pa.slice(0,i+1); }catch(e){}
     return location.origin+dir+file+'?f='+enc;
@@ -996,7 +1035,7 @@ var Friends = (function(){
     var tripId=activeTripForResort();
     var h='<h3>'+esc(tf('friends.onMountain'))+'</h3>';
     if(!tripId) return h+'<p class="muted">'+esc(tf('friends.noTrip'))+'</p>';
-    var pts=visibleList().filter(function(f){ return f.trip===tripId&&!f.demo; });
+    var pts=visibleList().filter(function(f){ return f.trip===tripId; });
     var mem=(typeof Trips!=='undefined'&&Trips.members)?Trips.members(tripId):[];
     var rec=loadShare();
     var meLine=(shareState==='shared'&&rec&&rec.trip===tripId)?tf('friends.youSharing',{time:fmtClock(rec.ts)}):tf('friends.youNotSharing');
@@ -1265,22 +1304,9 @@ var Friends = (function(){
     var tm = h.match(/#trip=([a-z0-9-]+)/);
     if(tm && TRIPS[tm[1]]){ Trips.join(tm[1]); try{ history.replaceState(null,'',location.pathname+location.search); }catch(e){} }
   }
-  function ensureDemo(){
-    if(!cfg.demoFriend) return;
-    // 'sf-friends' is shared across the three resort pages (same origin), so a
-    // demo friend left by another resort must be replaced, not reused — otherwise
-    // this resort shows a friend 200 km away, off-screen (L3).
-    var l = list();
-    var cur = null;
-    for(var i=0;i<l.length;i++){ if(l[i].demo){ cur=l[i]; break; } }
-    if(cur && (cur.lat!==cfg.demoFriend.lat || cur.lon!==cfg.demoFriend.lon)){ remove(cur.id); }
-    if(!list().some(function(x){ return x.demo; })){
-      add({name: cfg.demoFriend.name, lat: cfg.demoFriend.lat, lon: cfg.demoFriend.lon, place: cfg.demoFriend.place||'', demo:true, resort: cfg.slug||''});
-    }
-  }
   return { list:list, add:add, remove:remove, render:render, navigateTo:navigateTo,
     parseLink:parseLink, startPlacing:startPlacing, onMapTap:onMapTap,
-    shareMyLocation:shareMyLocation, importFromHash:importFromHash, ensureDemo:ensureDemo,
+    shareMyLocation:shareMyLocation, importFromHash:importFromHash,
     encodePayload:encodePayload, decodePayload:decodePayload, validatePayload:validatePayload,
     freshness:freshness, ageText:ageText, shareUrl:shareUrl, meetPayload:meetPayload,
     loadFriends:loadFriends, saveFriends:saveFriends, upsertFriend:upsertFriend,
@@ -1312,6 +1338,19 @@ var Trips = (function(){
     var s = tripsState(); s.mySharing[tripId]=!!on; saveTripsState(s);
     renderChip(); renderSettings();
   }
+  /* share_stats (leaderboard opt-in, OFF by default): my per-day /
+     vacation stats are visible to trip members only when this is on.
+     Local-first (sf-trips state); synced to trip_members.share_stats
+     via SFSync when signed in. Non-sharers never appear on the board. */
+  function shareStats(tripId){
+    var s = tripsState();
+    return !!(s.shareStats && s.shareStats[tripId]);
+  }
+  function setShareStats(tripId, on){
+    var s = tripsState(); s.shareStats=s.shareStats||{}; s.shareStats[tripId]=!!on; saveTripsState(s);
+    if(window.SFSync && SFSync.onLocalShareStats) SFSync.onLocalShareStats(tripId, !!on);
+    renderSettings();
+  }
   function members(tripId){ var s=tripsState(); return s.members[tripId]||[]; }
   function addMember(tripId, name){
     var s = tripsState(); s.members[tripId]=s.members[tripId]||[];
@@ -1324,6 +1363,8 @@ var Trips = (function(){
   }
   function join(tripId){
     var s = tripsState(); s.joined[tripId]=true; s.active=tripId; saveTripsState(s);
+    /* sync hook: create the trip server-side + add me as a member when signed in. */
+    if(window.SFSync && SFSync.onLocalTrip) SFSync.onLocalTrip(tripId);
     renderChip(); renderSettings();
     toast(tripName(TRIPS[tripId]));
   }
@@ -1352,6 +1393,8 @@ var Trips = (function(){
     s.joined=s.joined||{}; s.joined[id]=true; s.active=id;
     saveTripsState(s);
     TRIPS[id]=rec;
+    /* sync hook: create the custom trip server-side when signed in. */
+    if(window.SFSync && SFSync.onLocalTrip) SFSync.onLocalTrip(id);
     renderChip(); renderSettings();
     return id;
   }
@@ -1385,10 +1428,14 @@ var Trips = (function(){
     Object.keys(TRIPS).forEach(function(id){
       var tr = TRIPS[id];
       var on = mySharing(id);
+      var ss = shareStats(id);
       var mem = members(id);
       html += '<div class="card"><h3>👥 '+esc(tripName(tr))+'</h3>'
         + '<div class="row"><span>'+esc(t('mySharing'))+'</span>'
         + '<button class="switch" role="switch" aria-checked="'+(on?'true':'false')+'" data-trip-share="'+id+'" aria-label="'+esc(t('mySharing'))+' — '+esc(tripName(tr))+'">'+esc(on?t('sharingOn'):t('sharingOff'))+'</button></div>'
+        + '<div class="row"><span>'+esc(t('shareStats'))+'</span>'
+        + '<button class="switch" role="switch" aria-checked="'+(ss?'true':'false')+'" data-trip-share-stats="'+id+'" aria-label="'+esc(t('shareStats'))+' — '+esc(tripName(tr))+'">'+esc(ss?t('sharingOn'):t('sharingOff'))+'</button></div>'
+        + '<p class="muted">'+esc(t('shareStatsNote'))+'</p>'
         + '<div class="row"><span>'+esc(t('members'))+'</span></div>'
         + '<div class="member"><div class="who"><b>'+esc(t('you'))+'</b><small>'+esc(on?t('sharingOn'):t('locationOff'))+'</small></div></div>';
       mem.forEach(function(m){
@@ -1403,6 +1450,7 @@ var Trips = (function(){
     });
     box.innerHTML = html;
     box.querySelectorAll('[data-trip-share]').forEach(function(b){ b.addEventListener('click', function(){ var id=b.getAttribute('data-trip-share'); setMySharing(id, !mySharing(id)); }); });
+    box.querySelectorAll('[data-trip-share-stats]').forEach(function(b){ b.addEventListener('click', function(){ var id=b.getAttribute('data-trip-share-stats'); setShareStats(id, !shareStats(id)); }); });
     box.querySelectorAll('[data-member-share]').forEach(function(b){ b.addEventListener('click', function(){
       var parts=b.getAttribute('data-member-share').split(':'); var m=members(parts[0]).find(function(x){ return x.id===parts[1]; });
       if(m) setMemberSharing(parts[0], parts[1], !m.sharing); }); });
@@ -1413,6 +1461,7 @@ var Trips = (function(){
     box.querySelectorAll('[data-trip-activate]').forEach(function(b){ b.addEventListener('click', function(){ setActive(b.getAttribute('data-trip-activate')); }); });
   }
   return { activeId:activeId, activeTrip:activeTrip, mySharing:mySharing, setMySharing:setMySharing,
+    shareStats:shareStats, setShareStats:setShareStats,
     members:members, addMember:addMember, setMemberSharing:setMemberSharing, join:join,
     setActive:setActive, inviteLink:inviteLink, copyInvite:copyInvite,
     loadCustom:loadCustom, addCustomTrip:addCustomTrip, removeCustom:removeCustom,
@@ -1633,6 +1682,7 @@ var SOS = {
 /* ================= dynamic re-render on language change ================= */
 function renderDynamic(){
   Trips.renderChip(); Trips.renderSettings(); Friends.render();
+  if(window.SFAuth && SFAuth.render) SFAuth.render(); // account card re-render on language flip
   if(sheetPane==='friends') Friends.renderSheet();
   var rb=$('recBtn'); if(rb){ var lbl=rb.querySelector('.reclbl'); if(lbl) lbl.textContent = Rec.isActive()?t('recStop'):t('record'); }
   renderOfflineBadge();
@@ -1658,7 +1708,6 @@ function closeSheetIfOpen(){
 /* ================= init ================= */
 function init(config){
   cfg = config||{};
-  cfg.demoFriend = cfg.demoFriend||null;
   Trips.loadCustom();
   applyTheme();
   if(window.matchMedia){
@@ -1726,7 +1775,6 @@ function init(config){
   // SOS
   SOS.wire();
   // friends / trips / hash
-  Friends.ensureDemo();
   Friends.render();
   Trips.renderChip(); Trips.renderSettings();
   renderOfflineBadge();

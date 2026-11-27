@@ -67,7 +67,6 @@ body{margin:0;background:var(--sf-bg);color:var(--sf-text);
 #statusRow #tripChip .trip-label{min-width:0;overflow:hidden;text-overflow:ellipsis;}
 button.chip{cursor:pointer;font-family:inherit;}
 .chip .dot{width:9px;height:9px;border-radius:50%;background:var(--sf-green);flex:0 0 auto;}
-.chip .dot.demo{background:var(--sf-amber);}
 .chip small{color:var(--sf-text-2);}
 /* switch inside a chip (trip sharing) */
 .switch{min-width:48px;min-height:48px;border:1px solid var(--sf-border);border-radius:999px;
@@ -232,8 +231,6 @@ button.chip{cursor:pointer;font-family:inherit;}
 .friend-marker .fm-name{position:absolute;top:46px;left:50%;transform:translateX(-50%);
   background:var(--sf-pill-bg);border:1px solid var(--sf-border);border-radius:999px;
   font-size:11px;font-weight:600;padding:3px 8px;white-space:nowrap;color:var(--sf-text);}
-.friend-marker .fm-demo{position:absolute;top:-8px;inset-inline-end:-8px;background:var(--sf-amber);
-  color:#fff;font-size:9px;font-weight:700;border-radius:999px;padding:2px 6px;}
 /* ws7 ?f= friend points: coloured initials circle (36px), stale dimming + clock badge */
 .friend-marker .fm-wrap{position:relative;display:block;width:44px;height:64px;}
 .friend-marker .fm-wrap.stale{opacity:.55;}
@@ -300,3 +297,10 @@ button.chip{cursor:pointer;font-family:inherit;}
 #app.navmode .fab{display:none!important;}
 #app.navmode:not(.sos-over-nav) #sheet{height:0!important;}
 #app.navmode #mapWrap.has-route .leaflet-bottom.leaflet-right{bottom:calc(76px + env(safe-area-inset-bottom,0px) + 4px);}
+
+/* ---- account card (sf-auth.js, rendered into #sfAuthBox in Settings) ---- */
+#sfAuthBox .sf-auth-avatar{flex:0 0 auto;width:48px;height:48px;border-radius:50%;
+  background:var(--sf-accent);color:var(--sf-accent-contrast);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;font-weight:800;}
+#sfAuthBox .card .row{margin:8px 0;}

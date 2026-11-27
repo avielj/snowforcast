@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>לה פלאן — מדריך סקי וניווט | SnowForecast</title>
+<meta name="description" content="מדריך סקי בעברית ללה פלאן: ניווט צעד אחר צעד בין פלאן סנטר, גרנד רושט, רוש דה מיו, שאמפני ומון־שאבן, מעבר Vanoise Express ללי זארק, סקי פס 2026/27, הגעה ותחזית חיה.">
+<style>
+:root{color-scheme:dark;--bg:#06111f;--card:rgba(16,38,61,.74);--line:rgba(255,255,255,.14);--text:#f6fbff;--muted:#9fb3c8;--accent:#7dd3fc;--green:#8ef7bd;--yellow:#facc15;--red:#fb7185}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;background:radial-gradient(circle at 0% 0%,rgba(56,189,248,.26),transparent 34rem),linear-gradient(135deg,#06111f 0%,#081827 48%,#10121e 100%);color:var(--text)}
+a{color:var(--accent)}
+.shell{width:min(1100px,calc(100% - 32px));margin:0 auto;padding:24px 0 56px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px;flex-wrap:wrap}
+.brand{display:inline-flex;align-items:center;gap:12px;font-size:1.25rem;font-weight:900;text-decoration:none;color:var(--text)}
+.brand-mark{width:44px;height:44px;display:grid;place-items:center;border-radius:16px;background:linear-gradient(135deg,rgba(125,211,252,.95),rgba(14,165,233,.55))}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:12px 18px;border-radius:999px;font-weight:900;text-decoration:none;color:#06111f;background:linear-gradient(135deg,#e0f7ff,var(--accent));border:0;cursor:pointer}
+.btn.secondary{color:var(--text);background:rgba(255,255,255,.09);border:1px solid var(--line)}
+h1{font-size:clamp(2rem,5vw,3rem);line-height:1.1;margin:0 0 8px}
+.lead{color:#c9d8e8;font-size:1.05rem;line-height:1.6}
+.live{background:linear-gradient(135deg,rgba(125,211,252,.16),rgba(255,255,255,.05));border:1px solid rgba(125,211,252,.35);border-radius:24px;padding:20px;margin:20px 0}
+.live h2{margin:0 0 12px;font-size:1.05rem}
+.live-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media(max-width:760px){.live-grid{grid-template-columns:1fr}}
+.live-cell{background:rgba(5,16,30,.55);border:1px solid var(--line);border-radius:16px;padding:14px}
+.live-cell .v{font-size:1.9rem;font-weight:950;margin-top:4px}
+.live-cell .n{color:var(--muted);font-size:.85rem;margin-top:4px}
+.label{color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;font-weight:900}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0}
+.toc a{color:var(--text);background:rgba(255,255,255,.07);border:1px solid var(--line);border-radius:999px;padding:8px 14px;text-decoration:none;font-size:.9rem;font-weight:700}
+section.panel{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:22px;margin-top:16px;line-height:1.75}
+section.panel h2{margin-top:0;font-size:1.35rem}
+.muted{color:var(--muted)}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:.95rem}
+th,td{border:1px solid var(--line);padding:9px 10px;text-align:right}
+th{background:rgba(255,255,255,.07)}
+.route{border:1px solid var(--line);border-radius:16px;padding:16px;margin:12px 0;background:rgba(255,255,255,.04)}
+.route h3{margin:0 0 8px}
+.route ol{margin:6px 0;padding-right:20px;line-height:2}
+.route ol li::marker{font-weight:900;color:var(--accent)}
+.warn{border:1px solid rgba(250,204,21,.5);background:rgba(250,204,21,.08);border-radius:16px;padding:16px;margin:12px 0}
+.warn h3{margin:0 0 6px;color:var(--yellow)}
+ul{line-height:1.9}
+.note{font-size:.9rem;color:var(--muted)}
+.pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:.85rem;font-weight:800;color:var(--muted);margin:2px}
+</style>
+</head>
+<body>
+<main class="shell">
+  <div class="topbar">
+    <a class="brand" href="/"><span class="brand-mark">❄️</span><span>SnowForecast</span></a>
+    <div><a class="btn secondary" href="/guides/">מדריכים</a> <a class="btn secondary" href="/#La-Plagne/bot">תחזית מלאה</a></div>
+  </div>
+
+  <h1>לה פלאן 🏔️</h1>
+  <p class="lead">La Plagne · Paradiski, צרפת — לא אתר אחד אלא קערה ענקית עם זרועות, ועשרה כפרים בגבהים שונים. רוב הגלישה בכחולים רחבים ונוחים — והאתגר האמיתי כאן הוא הניווט: לדעת באיזה כפר אתם ישנים, באיזה מסלול חוזרים אליו, ואיך לא נתקעים בצד הלא נכון של הרכס.</p>
+
+  <div class="live" id="live-banner">
+    <h2>❄️ תחזית חיה — שלג צפוי ב־7 הימים הקרובים <span class="muted">(נתוני SnowForecast)</span></h2>
+    <div class="live-grid" id="live-grid"><p class="muted">טוען תחזית…</p></div>
+    <p class="note" id="live-note"></p>
+    <p><a class="btn secondary" href="/#La-Plagne/bot">פתחו את התחזית המלאה ←</a>
+    <a class="btn secondary" href="https://en.la-plagne.com/discover/ski-area" target="_blank" rel="noopener">🚡 מפת מסלולים וסטטוס מעליות — האתר הרשמי ↗</a></p>
+  </div>
+
+  <nav class="toc">
+    <a href="#nav">🧭 ניווט</a><a href="#facts">בקצרה</a><a href="#pass">סקי פס</a><a href="#cams">מצלמות ומפות</a><a href="#arrive">הגעה וחניה</a><a href="#stay">לינה</a><a href="#school">הדרכה וציוד</a><a href="#food">בקתות ואפרה</a><a href="#kosher">כשרות ושבת</a><a href="#storm">יום סוער</a><a href="#nearby">אתרים קרובים</a><a href="#sources">מקורות</a>
+  </nav>
+
+  <section class="panel" id="facts">
+    <h2>בקצרה</h2>
+    <p><span class="pill">כפרים: 1,250–2,100 מ׳</span> <span class="pill">פסגה: 3,250 מ׳ (קרחון Bellecôte)</span> <span class="pill">225 ק״מ מקומי</span> <span class="pill">425 ק״מ פרדיסקי</span> <span class="pill">9 ירוק · 78 כחול · 35 אדום · 21 שחור</span></p>
+    <p><b>עונה 2026/27:</b> 12 בדצמבר 2026 – 24 באפריל 2027. הקישור ללי זארק (Paradiski) פתוח עד 17 באפריל 2027; מונטלבר, שאמפני ומון־שאבן נסגרים 17 באפריל.</p>
+    <p><b>איך קוראים את ההר:</b> קערה אחת גדולה עם שלוש זרועות. במרכז — <b>Plagne Centre</b> ו־<b>Aime 2000</b>; מדרום־מזרח — <b>Belle Plagne</b> ו־<b>Plagne Bellecôte</b> למרגלות הקרחון; לצפון־מערב — <b>Montalbert</b> בין העצים; לצפון־מזרח — <b>Montchavin-Les Coches</b> וה־Vanoise Express ללי זארק; מדרום, מעבר לרכס <b>Roche de Mio</b> — <b>Champagny-en-Vanoise</b>. כחולים מקשרים בין הכפרים הגבוהים — כל כפר הוא נקודת מוצא ונקודת חזרה אחרת.</p>
+  </section>
+
+  <section class="panel" id="nav">
+    <h2>🧭 ניווט — מנקודה לנקודה</h2>
+    <p class="muted">כל השמות כאן נבדקו מול מפת המסלולים הרשמית. כלל הזהב בלה פלאן: <b>לפני שיוצאים מהקערה — דעו איך חוזרים</b>. שאמפני, מונטלבר ולי זארק הם כולם ״מעבר לרכס״.</p>
+
+    <div class="route">
+      <h3>1. מפלאן סנטר לגרנד רושט (2,508 מ׳) — התצפית 360°</h3>
+      <ol>
+        <li>מפלאן סנטר: גונדולת <b>Funiplagne</b> ישר לפסגת <b>Grande Rochette</b>.</li>
+        <li>ירידה: כחולים <b>Mira</b> ו־<b>Trieuse</b> חזרה לכיוון פלאן סנטר / בל־פלאן.</li>
+      </ol>
+    </div>
+
+    <div class="route">
+      <h3>2. מפלאן סנטר לקרחון Bellecôte (3,250 מ׳) — הנקודה הגבוהה</h3>
+      <ol>
+        <li>מפלאן סנטר/בל־פלאן: כיסא <b>Arpette</b>, ירידה בכחול <b>Replat</b>.</li>
+        <li>מ־Plagne Bellecôte: גונדולת <b>Glaciers</b> לאזור <b>Live 3000</b> על הקרחון.</li>
+        <li>המסלולים שם גבוהים ומושלגים — וביום בהיר זו הגלישה הכי בטוחה באתר.</li>
+      </ol>
+    </div>
+
+    <div class="route">
+      <h3>3. מבל־פלאן לרוש דה מיו (2,739 מ׳) ושאמפני — הצד שטוף השמש</h3>
+      <ol>
+        <li>מבל־פלאן: גונדולת <b>Roche de Mio</b> (שני מקטעים) עד 2,739 מ׳.</li>
+        <li>מהפסגה: מסלולים לצד שאמפני — צד דרומי, שמשי, התחלה טובה ליום קר.</li>
+        <li>חזרה: חובה לעלות חזרה מעל <b>Roche de Mio</b> — אין דרך אחרת חזרה לקערה. לא לרדת לשאמפני מאוחר.</li>
+      </ol>
+    </div>
+
+    <div class="route">
+      <h3>4. מפלאן סנטר למון־שאבן ולי זארק — ה־Vanoise Express</h3>
+      <ol>
+        <li>מפלאן סנטר: כחול <b>Mont Blanc</b> (כ־8.5 ק״מ, הארוך באתר) לכיוון מון־שאבן.</li>
+        <li>ממון־שאבן: כיסא <b>Montchavin</b>, ואז <b>Pierres Blanches</b> / <b>Crozats</b> — ירידה ב־<b>Teppes</b> (כחול) ו־<b>Marmottes</b> (אדום).</li>
+        <li>מ־Montchavin-Les Coches: רכבל <b>Vanoise Express</b> — קרון דו־קומתי שחוצה את העמק 380 מ׳ מעל הקרקע, ל־Plan Peisey בלי זארק.</li>
+      </ol>
+      <p><b>פס נדרש: Paradiski.</b> עם פס לה פלאן בלבד אין מעבר. אפשר גם להוסיף יום פרדיסקי אחד ב־€28 בקופות.</p>
+    </div>
+
+    <div class="route">
+      <h3>5. סיבוב ״לה פלאן ביום אחד״ — לטעום את כל האתר</h3>
+      <p>מסלול מוכר ומתועד (La Plagne 360): פלאן סנטר ← גרנד רושט ← בל־פלאן ← מון־שאבן ← רוש דה מיו ← שאמפני ← מונטלבר ← חזרה לפלאן סנטר. כחולים מהירים בעיקר, עם עצירות תצפית. לא להתחיל אותו אחרי 10:00 — הוא ארוך.</p>
+    </div>
+
+    <div class="route">
+      <h3>6. חזרה לכפר בסוף היום</h3>
+      <p>לכל כפר גבוה יש מסלול חזרה משלו — ודאו בבוקר איזה מסלול מוביל <i>לכפר שלכם</i> (פלאן סנטר, בל־פלאן, אים 2000, פלאן 1800, מונטלבר, שאמפני…). מי שישן ב־<b>Plagne 1800</b> או <b>Montalbert</b> יורד נמוך יותר — המסלולים לשם ארוכים, לא לצאת אליהם בדקה האחרונה.</p>
+    </div>
+
+    <div class="warn">
+      <h3>⚠️ מלכודות ניווט</h3>
+      <ul>
+        <li><b>Vanoise Express — הקרונות האחרונים חזרה מוקדמים ממה שחושבים.</b> יום בלי זארק = יום מלא; צאו חזרה עם מרווח של שעות, לא של דקות.</li>
+        <li><b>שאמפני — מעבר לרכס.</b> יורדים לשם רק עם תוכנית חזרה מעל Roche de Mio. אין דרך לגלוש משאמפני לפלאן סנטר.</li>
+        <li><b>המעלית החדשה של Roche de Mio</b> לא מופיעה במפות ישנות — עבדו רק עם מפת המסלולים הרשמית העדכנית.</li>
+        <li><b>אזורים למתחילים (CoolSki)</b> מסומנים בורוד ומוגנים — אל תחתכו דרכם במהירות; הם אזורי לימוד.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="panel" id="pass">
+    <h2>🎫 סקי פס — מחירון 2026/27</h2>
+    <p class="muted">מבוגר 13–64. נבדק 27 בנובמבר 2026 מול המחירון הרשמי (skipass-laplagne.com). עונה גבוהה: 19 בדצמ׳ 2026 – 16 באפר׳ 2027.</p>
+    <table>
+      <tr><th>פס</th><th>יום 1</th><th>6 ימים</th><th>הערות</th></tr>
+      <tr><td><b>La Plagne בלבד</b></td><td>€72</td><td><b>€370</b></td><td>ילד 5–12 / 65–74: €296 · עונה נמוכה 6 ימים: €314.50</td></tr>
+      <tr><td><b>Paradiski (עם לי זארק)</b></td><td>€78</td><td><b>€412</b></td><td>ילד 5–12 / 65–74: €330 · עונה נמוכה 6 ימים: €350.50 · Premium: €491</td></tr>
+    </table>
+    <p>הרחבת יום פרדיסקי על פס לה פלאן: <b>€28</b> למבוגר, בקופות בלבד. מתחת לגיל 5 — חינם. פס <b>CoolSki</b> מוזל לאזורי המתחילים. קנייה: <a href="https://skipass-laplagne.com/" target="_blank" rel="noopener">skipass-laplagne.com</a> — שימו לב, יש גם מבצעי מכירה מוקדמת מוזלים בהגרלה שבועית; בדקו את שני הפסים, לפעמים פרדיסקי יוצא זול יותר.</p>
+  </section>
+
+  <section class="panel" id="cams">
+    <h2>📹 מצלמות, מפות וסטטוס</h2>
+    <ul>
+      <li><a href="https://en.la-plagne.com/discover/ski-area/webcams" target="_blank" rel="noopener">מצלמות חיות — la-plagne.com ↗</a> (כולל Live 3000, Grande Rochette והכפרים)</li>
+      <li><a href="https://en.la-plagne.com/discover/ski-area" target="_blank" rel="noopener">מפת מסלולים וסטטוס מעליות רשמית ↗</a></li>
+      <li><a href="https://en.la-plagne.com/" target="_blank" rel="noopener">אתר האתר הרשמי ↗</a></li>
+    </ul>
+  </section>
+
+  <section class="panel" id="arrive">
+    <h2>🚗 הגעה, חניה וחירום</h2>
+    <ul>
+      <li><b>שדות תעופה:</b> ז׳נבה ~2.5–3 שעות (~200 ק״מ); שאמברי הכי קרוב, ~1:45 (~120 ק״מ) אבל טיסות מועטות; ליון ~2.5 שעות; גרנובל ~2–2.5 שעות.</li>
+      <li><b>רכבת:</b> תחנת <b>Aime-la-Plagne</b> הכי קרובה לכפרים הגבוהים (20–30 דק׳ נסיעה); גם <b>Bourg-Saint-Maurice</b> ו־<b>Landry</b> (למון־שאבן/לי קוש). אוטובוס S71 מחבר את תחנת אים לכפרים.</li>
+      <li><b>רכב:</b> צמיגי חורף או שרשראות חובה 1 בנוב׳–31 במרץ. הכפרים הגבוהים בנויים על מדרון — בדקו חניה מראש; בל־פלאן ללא מכוניות.</li>
+      <li><b>חירום:</b> 112 (חירום כללי), 15 (SAMU). על המסלול — פיסטורים או צוות המעלית.</li>
+    </ul>
+  </section>
+
+  <section class="panel" id="stay">
+    <h2>🛏️ איפה להתארח</h2>
+    <p>עשרה כפרים, אופי שונה: <b>Plagne Centre</b> — מרכזי ותוסס, הכי נוח למי שרוצה הכל ברגל; <b>Aime 2000</b> — על מדף מעל הסנטר, ski-in/out; <b>Belle Plagne</b> — שקטה, ללא מכוניות, למרגלות הקרחון; <b>Plagne Bellecôte</b> — ליד הקרחון; <b>Plagne 1800</b> — נמוכה ושקטה יותר; <b>Montalbert</b> ו־<b>Montchavin-Les Coches</b> — כפריים, בין עצים, משפחתיים; <b>Champagny-en-Vanoise</b> — כפר אמיתי דרומי, שמשי. הבחירה בכפר קובעת את מסלול החזרה שלכם כל ערב — בדקו אותו במפה לפני שמזמינים. יש גם את מסלול הבובסלי האולימפי (1992) מתחת לפלאן 1800 — Bob Rafting בערב.</p>
+  </section>
+
+  <section class="panel" id="school">
+    <h2>🎿 הדרכת סקי וציוד</h2>
+    <ul>
+      <li><b>בתי ספר:</b> ESF בכל כפר (קבוצות לפי גיל, פרטי, סנובורד, אוף־פיסט מודרך), ו־<b>Oxygène</b> (קבוצות קטנות, סנובורד, אוף־פיסט) — נקודת המפגש בפלאן סנטר מתחת לכיסא Colorado. הזמינו מראש; מחירים באתר בית הספר.</li>
+      <li><b>מתחילים:</b> לכל כפר גבוה אזור לימוד משלו; <b>16 מעליות מתחילים חינמיות</b> באתר, ואזורי CoolSki מוגנים בוורוד. פס CoolSki מוזל מכסה אותם.</li>
+      <li><b>השכרת ציוד:</b> חנויות בכל כפר, ליד המעלית הקרובה. הזמינו אונליין מראש בעונה. קסדה חובה לילדים, מומלצת לכולם.</li>
+    </ul>
+  </section>
+
+  <section class="panel" id="food">
+    <h2>🍽️ בקתות ואפרה־סקי</h2>
+    <ul>
+      <li><b>La Roche de Mio</b> — מסעדת הרים בפסגת Roche de Mio (2,739 מ׳), נוף למון בלאן.</li>
+      <li><b>Chalet de la Grande Rochette</b> — על הפסגה; <b>Chalet du Plan Bois</b> — בלי קוש; <b>Chalet Verdons Sud</b> — ב־Verdons, שאמפני.</li>
+      <li><b>אפרה:</b> פלאן סנטר מרכזי ותוסס (כולל בר Bergerie); הכפרים הנמוכים והכפריים שקטים יותר. רשימה מלאה — באתר הרשמי.</li>
+    </ul>
+  </section>
+
+  <section class="panel" id="kosher">
+    <h2>✡️ כשרות ושבת</h2>
+    <p>לא נמצאה מסעדה כשרה מאומתת בלה פלאן (נבדק 27 בנוב׳ 2026). המעשי: דירה עם מטבח ולהביא אוכל / לקנות מצרכים בסופר (יש סופרים בפלאן סנטר ובכפרים). זמני שבת — <a href="https://www.myzmanim.com/" target="_blank" rel="noopener">MyZmanim ↗</a>. המעליות פועלות בשבת כרגיל. ביטוח נסיעות עם הרחבת ספורט חורף — חובה.</p>
+  </section>
+
+  <section class="panel" id="storm">
+    <h2>🌨️ יום סוער / מחוץ למסלולים</h2>
+    <p>כשהקערה הגבוהה אפורה וסוערת — יורדים לעצים: הכחולים המיוערים של <b>Montalbert</b> ו־<b>Montchavin-Les Coches</b> קריאים בהרבה כשהראות אפס. גם צד שאמפני, דרומי ומוגן, עובד ביום קר. מחוץ למסלולים: מסלול הבובסלי האולימפי (Bob Rafting / Speed Luge בערב), החלקה על הקרח בבל־פלאן, ובריכות/ספא בכפרים. אוף־פיסט — רק עם מדריך (יש מסלולי Natur מסומנים ולא מגודרים).</p>
+  </section>
+
+  <section class="panel" id="nearby">
+    <h2>🏔️ אתרים קרובים</h2>
+    <p>עם פס פרדיסקי: <b>Les Arcs</b> (דרך Vanoise Express — 425 ק״מ יחד). בלי הפס — נשארים בלה פלאן (225 ק״מ, די והותר לשבוע).</p>
+  </section>
+
+  <section class="panel" id="sources">
+    <h2>מקורות</h2>
+    <p class="note">נבדק 27 בנובמבר 2026: מחירון רשמי — skipass-laplagne.com (דרך winteride / visiting-france / bookandski המצטטים את המחירון); עונה וקישור — paradiski.com / skipass-laplagne.com; מפת מסלולים, ליפטים ומסלולים — מפת המסלולים הרשמית (דרך snow-scanner / skitally / laplagne360); הגעה — thatslaplagne.com, ultimate-ski.com, visiting-france.com; תחזית חיה — נתוני SnowForecast. מחירים עשויים להשתנות — אמתו בחנות הרשמית לפני תשלום.</p>
+  </section>
+</main>
+<script>
+(function(){
+  var DATA_URL='https://raw.githubusercontent.com/avielj/snowforcast/refs/heads/main/data/all-forecasts.json';
+  var RESORT='La-Plagne';
+  var ELEV={bot:['Bottom','1,250m'],mid:['Mid','2,250m'],top:['Top','3,250m']};
+  function num(v){if(v==null)return 0;var m=String(v).replace(',','.').match(/-?\d+(\.\d+)?/);return m?Number(m[0]):0;}
+  function daySnow(d){if(!d)return 0;if(d.average_snow!=null)return num(d.average_snow);var s=0;['am','pm','night'].forEach(function(p){if(d[p])s+=num(d[p].snow);});return s;}
+  function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+  fetch(DATA_URL,{cache:'no-store'}).then(function(r){if(!r.ok)throw new Error(r.status);return r.json();}).then(function(all){
+    var R=all[RESORT]||{};var html='';var best=null,bestSnow=-1;var temps=[];
+    Object.keys(ELEV).forEach(function(e){
+      var d=R[e]||{};var days=Array.isArray(d.days)?d.days:[];
+      var total=days.reduce(function(s,x){return s+daySnow(x);},0);
+      days.forEach(function(x){['am','pm','night'].forEach(function(p){if(x[p]&&x[p].temperature!=null)temps.push(num(x[p].temperature));});if(x.temp_min!=null)temps.push(num(x.temp_min));if(x.temp_max!=null)temps.push(num(x.temp_max));});
+      days.forEach(function(x){var s=daySnow(x);if(s>bestSnow){bestSnow=s;best={day:x.name||x.date||'',snow:s,elev:e};}});
+      html+='<div class="live-cell"><div class="label">'+ELEV[e][0]+' · '+ELEV[e][1]+'</div><div class="v">'+(Math.round(total*10)/10)+' cm</div><div class="n">שלג צפוי · '+days.length+' ימי תחזית</div></div>';
+    });
+    document.getElementById('live-grid').innerHTML=html;
+    var note='';
+    if(best)note='החלון הכי מושלג: <b>'+esc(best.day)+'</b> — '+bestSnow+' ס״מ ('+ELEV[best.elev][0]+'). ';
+    if(temps.length)note+='טמפרטורה: '+Math.round(Math.min.apply(null,temps))+'° עד '+Math.round(Math.max.apply(null,temps))+'°.';
+    var upd=(R.bot&&R.bot.last_updated)||(R.top&&R.top.last_updated)||'';
+    if(upd)note+=' עודכן: '+esc(upd.slice(0,16).replace('T',' '))+'.';
+    document.getElementById('live-note').innerHTML=note;
+  }).catch(function(){
+    document.getElementById('live-grid').innerHTML='<p class="muted">התחזית לא נטענה כרגע — <a href="/#La-Plagne/bot">פתחו את דף התחזית המלא</a>.</p>';
+  });
+})();
+</script>
+</body>
+</html>

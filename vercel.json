@@ -39,6 +39,26 @@
         {
             "src": "guides/sw-lp.js",
             "use": "@vercel/static"
+        },
+        {
+            "src": "guides/sf-tokens.css",
+            "use": "@vercel/static"
+        },
+        {
+            "src": "guides/map-shared.css",
+            "use": "@vercel/static"
+        },
+        {
+            "src": "guides/map-shared.js",
+            "use": "@vercel/static"
+        },
+        {
+            "src": "guides/favicon.svg",
+            "use": "@vercel/static"
+        },
+        {
+            "src": "guides/guide-i18n.js",
+            "use": "@vercel/static"
         }
     ],
     "routes": [
@@ -97,6 +117,26 @@
         {
             "dest": "/guides/sw-lp.js",
             "src": "/guides/sw-lp.js"
+        },
+        {
+            "dest": "/guides/sf-tokens.css",
+            "src": "/guides/sf-tokens.css"
+        },
+        {
+            "dest": "/guides/map-shared.css",
+            "src": "/guides/map-shared.css"
+        },
+        {
+            "dest": "/guides/map-shared.js",
+            "src": "/guides/map-shared.js"
+        },
+        {
+            "dest": "/guides/favicon.svg",
+            "src": "/guides/favicon.svg"
+        },
+        {
+            "dest": "/guides/guide-i18n.js",
+            "src": "/guides/guide-i18n.js"
         },
         {
             "dest": "app.py",

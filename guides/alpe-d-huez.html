@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>אלפ דואז — מדריך סקי וניווט | SnowForecast</title>
+<meta name="description" content="מדריך סקי בעברית לאלפ דואז: ניווט צעד אחר צעד לפיק בלאן, סרן, אוריס, אוז ווז׳אני, סקי פס 2026/27, הגעה דרך גרנובל, מצלמות ותחזית חיה.">
+<style>
+:root{color-scheme:dark;--bg:#06111f;--card:rgba(16,38,61,.74);--line:rgba(255,255,255,.14);--text:#f6fbff;--muted:#9fb3c8;--accent:#7dd3fc;--green:#8ef7bd;--yellow:#facc15;--red:#fb7185}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;background:radial-gradient(circle at 0% 0%,rgba(56,189,248,.26),transparent 34rem),linear-gradient(135deg,#06111f 0%,#081827 48%,#10121e 100%);color:var(--text)}
+a{color:var(--accent)}
+.shell{width:min(1100px,calc(100% - 32px));margin:0 auto;padding:24px 0 56px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px;flex-wrap:wrap}
+.brand{display:inline-flex;align-items:center;gap:12px;font-size:1.25rem;font-weight:900;text-decoration:none;color:var(--text)}
+.brand-mark{width:44px;height:44px;display:grid;place-items:center;border-radius:16px;background:linear-gradient(135deg,rgba(125,211,252,.95),rgba(14,165,233,.55))}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:12px 18px;border-radius:999px;font-weight:900;text-decoration:none;color:#06111f;background:linear-gradient(135deg,#e0f7ff,var(--accent));border:0;cursor:pointer}
+.btn.secondary{color:var(--text);background:rgba(255,255,255,.09);border:1px solid var(--line)}
+h1{font-size:clamp(2rem,5vw,3rem);line-height:1.1;margin:0 0 8px}
+.lead{color:#c9d8e8;font-size:1.05rem;line-height:1.6}
+.live{background:linear-gradient(135deg,rgba(125,211,252,.16),rgba(255,255,255,.05));border:1px solid rgba(125,211,252,.35);border-radius:24px;padding:20px;margin:20px 0}
+.live h2{margin:0 0 12px;font-size:1.05rem}
+.live-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media(max-width:760px){.live-grid{grid-template-columns:1fr}}
+.live-cell{background:rgba(5,16,30,.55);border:1px solid var(--line);border-radius:16px;padding:14px}
+.live-cell .v{font-size:1.9rem;font-weight:950;margin-top:4px}
+.live-cell .n{color:var(--muted);font-size:.85rem;margin-top:4px}
+.label{color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;font-weight:900}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0}
+.toc a{color:var(--text);background:rgba(255,255,255,.07);border:1px solid var(--line);border-radius:999px;padding:8px 14px;text-decoration:none;font-size:.9rem;font-weight:700}
+section.panel{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:22px;margin-top:16px;line-height:1.75}
+section.panel h2{margin-top:0;font-size:1.35rem}
+.muted{color:var(--muted)}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:.95rem}
+th,td{border:1px solid var(--line);padding:9px 10px;text-align:right}
+th{background:rgba(255,255,255,.07)}
+.route{border:1px solid var(--line);border-radius:16px;padding:16px;margin:12px 0;background:rgba(255,255,255,.04)}
+.route h3{margin:0 0 8px}
+.route ol{margin:6px 0;padding-right:20px;line-height:2}
+.route ol li::marker{font-weight:900;color:var(--accent)}
+.warn{border:1px solid rgba(250,204,21,.5);background:rgba(250,204,21,.08);border-radius:16px;padding:16px;margin:12px 0}
+.warn h3{margin:0 0 6px;color:var(--yellow)}
+ul{line-height:1.9}
+.note{font-size:.9rem;color:var(--muted)}
+.pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:.85rem;font-weight:800;color:var(--muted);margin:2px}
+</style>
+</head>
+<body>
+<main class="shell">
+  <div class="topbar">
+    <a class="brand" href="/"><span class="brand-mark">❄️</span><span>SnowForecast</span></a>
+    <div><a class="btn secondary" href="/guides/">מדריכים</a> <a class="btn secondary" href="/#Alpe-d-Huez/bot">תחזית מלאה</a></div>
+  </div>
+
+  <h1>אלפ דואז 🏔️</h1>
+  <p class="lead">Alpe d'Huez · Grand Domaine (Espace Alpe d'Huez), צרפת — ״האי בשמש״: מדף דרומי רחב בגובה 1,860 מ׳, מעליו הפסגה המחודדת של Pic Blanc (3,330 מ׳), ומסביב ארבעה כפרי לוויין מקושרים. הניווט כאן הוא משחק של ״לאן המסלול הזה באמת מסתיים״ — בעיקר בסרן.</p>
+
+  <div class="live" id="live-banner">
+    <h2>❄️ תחזית חיה — שלג צפוי ב־7 הימים הקרובים <span class="muted">(נתוני SnowForecast)</span></h2>
+    <div class="live-grid" id="live-grid"><p class="muted">טוען תחזית…</p></div>
+    <p class="note" id="live-note"></p>
+    <p><a class="btn secondary" href="/#Alpe-d-Huez/bot">פתחו את התחזית המלאה ←</a>
+    <a class="btn secondary" href="https://www.alpedhuez.com/en/ski-area/lifts-slopes/" target="_blank" rel="noopener">🚡 סטטוס מעליות ומסלולים — האתר הרשמי ↗</a></p>
+  </div>
+
+  <nav class="toc">
+    <a href="#nav">🧭 ניווט</a><a href="#facts">בקצרה</a><a href="#pass">סקי פס</a><a href="#cams">מצלמות ומפות</a><a href="#arrive">הגעה וחניה</a><a href="#stay">לינה</a><a href="#school">הדרכה וציוד</a><a href="#food">בקתות ואפרה</a><a href="#kosher">כשרות ושבת</a><a href="#storm">יום סוער</a><a href="#nearby">אתרים קרובים</a><a href="#sources">מקורות</a>
+  </nav>
+
+  <section class="panel" id="facts">
+    <h2>בקצרה</h2>
+    <p><span class="pill">כפר: 1,860 מ׳</span> <span class="pill">פסגה: 3,330 מ׳ (Pic Blanc)</span> <span class="pill">250 ק״מ</span> <span class="pill">111 מסלולים: 34 ירוק · 31 כחול · 30 אדום · 16 שחור</span> <span class="pill">5 כפרים מקושרים</span></p>
+    <p><b>עונה 2026/27:</b> 5 בדצמבר 2026 – 25 באפריל 2027.</p>
+    <p><b>איך קוראים את ההר:</b> קערה דרומית רחבה שהכפר במרכזה, ו״שפיץ״ אחד בצד — ה־Pic Blanc. ארבעת כפרי הלוויין תלויים על שולי המפה: <b>Auris-en-Oisans</b> מדרום־מזרח, <b>Villard-Reculas</b> ממזרח־מטה, <b>Oz-en-Oisans</b> ו־<b>Vaujany</b> ממערב. כל כפר לוויין מחובר בליפט משלו — וכל אחד מהם הוא גם מלכודת חזרה אם יוצאים אליו מאוחר.</p>
+  </section>
+
+  <section class="panel" id="nav">
+    <h2>🧭 ניווט — מנקודה לנקודה</h2>
+    <p class="muted">כל השמות כאן נבדקו מול מפת המסלולים הרשמית. שימו לב במיוחד למסלול 2 — זו המלכודת הכי מפורסמת באתר.</p>
+
+    <div class="route">
+      <h3>1. מהכפר לפסגת Pic Blanc (3,330 מ׳)</h3>
+      <ol>
+        <li>מהכפר: גונדולת <b>DMC</b> (מקטע Pic Blanc 1) כלפי מעלה.</li>
+        <li>ממשיכים: גונדולת <b>Pic Blanc 2</b>, ואז רכבל <b>Pic Blanc 3</b> עד הפסגה.</li>
+        <li>מסלול עוקף לתור: גונדולות <b>Marmottes 1 ←→ Marmottes 2</b> מהצד של Les Bergers — אותו אזור גבוה, בלי התור של ה־DMC.</li>
+      </ol>
+      <p>הרכבל לפסגה הוא תא בודד — ביום בהיר צפו לתור. מעליות הפיק בלאן נבנות מחדש בשלבים (פרויקט Altitude 3300) — בדקו סטטוס מעליות כל בוקר לפני יום פסגה.</p>
+    </div>
+
+    <div class="route">
+      <h3>2. מפיק בלאן — מסלול Sarenne (16 ק״מ, שחור)</h3>
+      <ol>
+        <li>מהפסגה: מסלול <b>Sarenne</b> יורד דרך ערוץ מבודד, כ־16 ק״מ — השחור הארוך באלפים.</li>
+        <li><b>הוא לא חוזר לאלפ דואז.</b> הסרן מסתיים בכפר <b>Auris-en-Oisans</b>.</li>
+        <li>מאוריס חזרה: כיסא <b>Alpauris</b> (או כיסא Chalvet) חזרה לתוך אזור אלפ דואז.</li>
+      </ol>
+      <p>תכננו את הסרן כטיול של חצי יום: יוצאים מוקדם אחרי גירוף, עם זמן לחזרה מאוריס. לא יורדים אותו בסוף היום.</p>
+    </div>
+
+    <div class="route">
+      <h3>3. מהכפר לאוריס (Auris-en-Oisans) — הצד המיוער</h3>
+      <ol>
+        <li>מהכפר: אזור <b>Signal de l'Homme</b>, ומשם כיסא <b>Alpauris</b> לאוריס.</li>
+        <li>באוריס: אדומים <b>Le Rosai</b> ו־<b>Les Rhodos</b> וכחול ארוך <b>Pré-rond</b> — כולם דרך יער.</li>
+        <li>חזרה: אותו כיסא Alpauris חזרה.</li>
+      </ol>
+    </div>
+
+    <div class="route">
+      <h3>4. מהכפר לאוז ווז׳אני (Oz / Vaujany) — הקצה המערבי</h3>
+      <ol>
+        <li>מהכפר: חוצים את <b>Alpette</b> לכיוון מערב.</li>
+        <li>לאוז: גונדולת <b>Poutran</b> מ־Oz 3300; לאוז׳אני: רכבל <b>Vaujany-Alpette</b> עד Alpette, ומשם רכבל שני ל־<b>Dôme des Petites Rousses</b> (2,800 מ׳). ירידה לווז׳אני ברכבל עד מרכז הכפר.</li>
+        <li>חזרה לאלפ דואז: גונדולת <b>Alpette</b> חזרה מזרחה.</li>
+      </ol>
+      <p>הרכבל מווז׳אני עמוס אחר הצהריים — חצו חזרה מעל Alpette מבעוד מועד.</p>
+    </div>
+
+    <div class="route">
+      <h3>5. מהכפר לווילאר־רקולה (Villard-Reculas) — הצד השקט</h3>
+      <ol>
+        <li>מהכפר: כיסא <b>Villarais</b> עד <b>Signal</b> (2,100 מ׳).</li>
+        <li>משם יורדים לווילאר־רקולה; השחור <b>La Forêt</b> הוא מסלול עצים לגולשים טובים.</li>
+        <li>חזרה: אותו כיסא Villarais.</li>
+      </ol>
+    </div>
+
+    <div class="route">
+      <h3>6. מתחילים — אזור הלימוד בכפר</h3>
+      <ol>
+        <li>אזור הלימוד ענק, שטוח ושמשי, ממש בכפר — והליפטים בו <b>חינמיים</b>: שטיח <b>Grenouille</b>, כיסא <b>Ecole 1</b>, ושטיחי <b>Petit / Grand Rif Nel</b>.</li>
+        <li>השלב הבא: אזור <b>Signal</b> — הגבעה העדינה בצד המערבי, כמעט הכל מתון שם.</li>
+      </ol>
+    </div>
+
+    <div class="warn">
+      <h3>⚠️ מלכודות ניווט</h3>
+      <ul>
+        <li><b>סרן מסתיים באוריס, לא בכפר.</b> מי שיורד אותו בלי תוכנית חזרה — נתקע בכפר אחר, בלי רכב.</li>
+        <li><b>ווז׳אני — תור החזרה.</b> הרכבל מהכפר עמוס אחר הצהריים; חזרה מעל Alpette מוקדם.</li>
+        <li><b>המדרון הדרומי נמס אחר הצהריים.</b> במרץ, המסלולים הנמוכים בקערה הופכים לעיסה בצהריים — תכננו את הבוקר גבוה (פיק בלאן) ואת אחר הצהריים בצל/בצפון.</li>
+        <li><b>יום עננות/רוח:</b> המדרונות הגבוהים שטוחים, קרים ולעתים סגורים. אל תתעקשו על פסגה ביום כזה — רדו לעצים באוריס.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="panel" id="pass">
+    <h2>🎫 סקי פס — מחירון 2026/27</h2>
+    <p class="muted">מבוגר 13–64, פס Espace Alpe d'Huez (לשעבר Grand Domaine) — כל 5 הכפרים. נבדק 27 בנובמבר 2026 מול המחירון הרשמי (skipass.alpedhuez.com). כרטיס רב־פעמי: +€2.</p>
+    <table>
+      <tr><th>פס</th><th>יום 1</th><th>6 ימים</th><th>הערות</th></tr>
+      <tr><td><b>Grand Domaine</b></td><td>€68</td><td><b>€336.50</b></td><td>ילד 5–12: €264 · 65–71: €289 · 72+: €108</td></tr>
+      <tr><td>שבועות זולים</td><td>€58 / €54.50</td><td><b>€286 / €269</b></td><td>5–18 בדצמ׳ / 10–25 באפר׳</td></tr>
+    </table>
+    <p>הצעות מוזלות: <b>משפחה</b> — 4+ אנשים כולל 2 ילדים, כולם במחיר ילד (€264 ל־6 ימים בעונה הגבוהה), בהזמנה 3+ ימים מראש; <b>קבוצה 3+</b> — €316.50 לאדם ל־6 ימים. פס שבת מוזל בהזמנה עד חמישי בחצות. קנייה: <a href="https://skipass.alpedhuez.com/" target="_blank" rel="noopener">skipass.alpedhuez.com</a>. פסים מקומיים זולים יותר (Auris, Oz-Vaujany) קיימים — אבל לא תקפים בכל האזור.</p>
+  </section>
+
+  <section class="panel" id="cams">
+    <h2>📹 מצלמות, מפות וסטטוס</h2>
+    <ul>
+      <li><a href="https://www.alpedhuez.com/en/webcams/" target="_blank" rel="noopener">מצלמות חיות — alpedhuez.com ↗</a></li>
+      <li><a href="https://www.alpedhuez.com/en/ski-area/ski-map/" target="_blank" rel="noopener">מפת מסלולים רשמית ↗</a></li>
+      <li><a href="https://www.alpedhuez.com/en/ski-area/lifts-slopes/" target="_blank" rel="noopener">סטטוס מעליות ומסלולים ↗</a></li>
+      <li><a href="https://www.alpedhuez.com/en/" target="_blank" rel="noopener">אתר האתר הרשמי ↗</a></li>
+    </ul>
+  </section>
+
+  <section class="panel" id="arrive">
+    <h2>🚗 הגעה, חניה וחירום</h2>
+    <ul>
+      <li><b>גרנובל:</b> העיר הכי קרובה — כשעה נסיעה (A480 ואז D1091). שדה התעופה גרנובל (GNB) כ־100 ק״מ, ~1.5 שעות. ליון ~2.5 שעות, ז׳נבה ~2:45.</li>
+      <li><b>רכבת + אוטובוס:</b> תחנת גרנובל, ומשם אוטובוס אקספרס ישיר לאלפ דואז (~1:45, פעמיים ביום בחורף) או קו T75 ל־Bourg-d'Oisans (~1:30) ואז T76 למעלה.</li>
+      <li><b>העלייה האחרונה:</b> מ־Bourg-d'Oisans — כביש 21 הסיבובים המפורסם של הטור דה פראנס, ~20 דקות. בחורף: צמיגי חורף או שרשראות חובה (עד 31 במרץ). חניה בכפר מוגבלת ולעתים בתשלום לכל השבוע — בדקו מראש אם הלינה כוללת חניה.</li>
+      <li><b>חירום:</b> 112 (חירום כללי), 15 (SAMU). על המסלול — פיסטורים או צוות המעלית.</li>
+    </ul>
+  </section>
+
+  <section class="panel" id="stay">
+    <h2>🛏️ איפה להתארח</h2>
+    <p>הכפר מחולק לרבעים: <b>Centre</b> (רחובות הקניות, משטח ההחלקה, Télécentre), <b>Les Bergers</b> (מזרח, סביב מדרונות הלימוד ומעליות Marmottes), <b>Vieil Alpe</b> (הכפר הישן, שקט יותר), <b>L'Éclose</b> (שכונה חדשה, כ־200 מ׳ ממעלית Bergers). אוטובוסים חינמיים מקשרים בין הרבעים. מי שרוצה שקט וזול יותר: <b>Vaujany</b> או <b>Oz-en-Oisans</b> — אותו פס, חצי מההמולה. שאלו לפני הזמנה: מרחק למעלית, חניה, מחסן ציוד.</p>
+  </section>
+
+  <section class="panel" id="school">
+    <h2>🎿 הדרכת סקי וציוד</h2>
+    <ul>
+      <li><b>בתי ספר:</b> ESF Alpe d'Huez — קבוצות, פרטי, ילדים, סנובורד (באנגלית). שיעורים בבוקר, 09:15–12:00 בדרך כלל. הזמינו חודשים מראש לשבועות עמוסים.</li>
+      <li><b>מתחילים:</b> הליפטים באזור הלימוד חינמיים (Grenouille, Ecole 1, Rif Nel) — לא צריך פס ביום הראשון.</li>
+      <li><b>השכרת ציוד:</b> חנויות בכל רובע, כולל ב־Les Bergers ובמרכז. הזמינו אונליין מראש בעונה. סנובורד לילדים, קסדות ומגני גב — זמינים להשכרה.</li>
+    </ul>
+  </section>
+
+  <section class="panel" id="food">
+    <h2>🍽️ בקתות ואפרה־סקי</h2>
+    <ul>
+      <li>בקתות הרים פזורות על הקערה ועל הפסגה; בסרן — עצירת צהריים בכפר הקטן בתחתית הערוץ, חלק מהחוויה של המסלול.</li>
+      <li><b>אפרה:</b> מרכז הכפר תוסס — ברים ומועדונים סביב הרחוב הראשי ומשטח ההחלקה; Les Bergers שקטה יותר. רשימה מלאה — באתר הרשמי.</li>
+    </ul>
+  </section>
+
+  <section class="panel" id="kosher">
+    <h2>✡️ כשרות ושבת</h2>
+    <p>לא נמצאה מסעדה כשרה מאומתת באלפ דואז (נבדק 27 בנוב׳ 2026). המעשי: דירה עם מטבח ולהביא אוכל / לקנות מצרכים בסופר בכפר ובגרנובל בדרך (יש סופר גדול ב־Bourg-d'Oisans). זמני שבת — <a href="https://www.myzmanim.com/" target="_blank" rel="noopener">MyZmanim ↗</a>. המעליות פועלות בשבת כרגיל. ביטוח נסיעות עם הרחבת ספורט חורף — חובה (שימו לב: גלישה מחוץ למסלולים אינה מכוסה בפוליסה רגילה).</p>
+  </section>
+
+  <section class="panel" id="storm">
+    <h2>🌨️ יום סוער / מחוץ למסלולים</h2>
+    <p>כשהפסגה סגורה או שטוחה מעננות — רדו לעצים: הצד של <b>אוריס</b> (Le Rosai, Les Rhodos, Pré-rond) והמסלולים המיוערים מעל <b>אוז ווז׳אני</b>. השחור <b>La Forêt</b> מעל וילאר־רקולה — מסלול עצים לגולשים טובים. מחוץ למסלולים: החלקה על הקרח במרכז, בריכה, ספא, וסיור בגרנובל (שעה נסיעה). אוף־פיסט — רק עם מדריך.</p>
+  </section>
+
+  <section class="panel" id="nearby">
+    <h2>🏔️ אתרים קרובים</h2>
+    <p>בתוך הפס: ארבעת כפרי הלוויין (אוריס, אוז, ווז׳אני, וילאר־רקולה). מחוץ לפס: <b>Les 2 Alpes</b> — אתר גדול נוסף באזור Oisans, במרחק נסיעה (לא מקושר בליפט).</p>
+  </section>
+
+  <section class="panel" id="sources">
+    <h2>מקורות</h2>
+    <p class="note">נבדק 27 בנובמבר 2026: מחירון רשמי — skipass.alpedhuez.com (דרך bookandski / monsguide המצטטים את המחירון); עונה — skipass.alpedhuez.com; מפת מסלולים, ליפטים ומסלולים — מפת המסלולים הרשמית (דרך snow-scanner / skitally / thewhiteguide / WeSki); הגעה — skipass.alpedhuez.com (עמוד How to get to Alpe d'Huez); מתחילים חינם — מחירון המתחילים הרשמי (דרך packzup); תחזית חיה — נתוני SnowForecast. מחירים עשויים להשתנות — אמתו בחנות הרשמית לפני תשלום.</p>
+  </section>
+</main>
+<script>
+(function(){
+  var DATA_URL='https://raw.githubusercontent.com/avielj/snowforcast/refs/heads/main/data/all-forecasts.json';
+  var RESORT='Alpe-d-Huez';
+  var ELEV={bot:['Bottom','1,250m'],mid:['Mid','2,350m'],top:['Top','3,330m']};
+  function num(v){if(v==null)return 0;var m=String(v).replace(',','.').match(/-?\d+(\.\d+)?/);return m?Number(m[0]):0;}
+  function daySnow(d){if(!d)return 0;if(d.average_snow!=null)return num(d.average_snow);var s=0;['am','pm','night'].forEach(function(p){if(d[p])s+=num(d[p].snow);});return s;}
+  function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+  fetch(DATA_URL,{cache:'no-store'}).then(function(r){if(!r.ok)throw new Error(r.status);return r.json();}).then(function(all){
+    var R=all[RESORT]||{};var html='';var best=null,bestSnow=-1;var temps=[];
+    Object.keys(ELEV).forEach(function(e){
+      var d=R[e]||{};var days=Array.isArray(d.days)?d.days:[];
+      var total=days.reduce(function(s,x){return s+daySnow(x);},0);
+      days.forEach(function(x){['am','pm','night'].forEach(function(p){if(x[p]&&x[p].temperature!=null)temps.push(num(x[p].temperature));});if(x.temp_min!=null)temps.push(num(x.temp_min));if(x.temp_max!=null)temps.push(num(x.temp_max));});
+      days.forEach(function(x){var s=daySnow(x);if(s>bestSnow){bestSnow=s;best={day:x.name||x.date||'',snow:s,elev:e};}});
+      html+='<div class="live-cell"><div class="label">'+ELEV[e][0]+' · '+ELEV[e][1]+'</div><div class="v">'+(Math.round(total*10)/10)+' cm</div><div class="n">שלג צפוי · '+days.length+' ימי תחזית</div></div>';
+    });
+    document.getElementById('live-grid').innerHTML=html;
+    var note='';
+    if(best)note='החלון הכי מושלג: <b>'+esc(best.day)+'</b> — '+bestSnow+' ס״מ ('+ELEV[best.elev][0]+'). ';
+    if(temps.length)note+='טמפרטורה: '+Math.round(Math.min.apply(null,temps))+'° עד '+Math.round(Math.max.apply(null,temps))+'°.';
+    var upd=(R.bot&&R.bot.last_updated)||(R.top&&R.top.last_updated)||'';
+    if(upd)note+=' עודכן: '+esc(upd.slice(0,16).replace('T',' '))+'.';
+    document.getElementById('live-note').innerHTML=note;
+  }).catch(function(){
+    document.getElementById('live-grid').innerHTML='<p class="muted">התחזית לא נטענה כרגע — <a href="/#Alpe-d-Huez/bot">פתחו את דף התחזית המלא</a>.</p>';
+  });
+})();
+</script>
+</body>
+</html>

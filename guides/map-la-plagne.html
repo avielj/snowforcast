@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>לה פלאן — מפת ניווט חיה | SnowForecast</title>
+<meta name="description" content="מפת ניווט אינטראקטיבית ללה פלאן: מסלולים ומעליות מנתוני OpenStreetMap, ניווט GPS מנקודה לנקודה, חיפוש יעדים ותכנון לפי זמן.">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+:root{color-scheme:dark;--bg:#06111f;--card:rgba(16,38,61,.92);--line:rgba(255,255,255,.14);--text:#f6fbff;--muted:#9fb3c8;--accent:#7dd3fc;--green:#22c55e;--blue:#3b82f6;--red:#ef4444;--black:#e5e7eb}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
+a{color:var(--accent)}
+header{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 12px;background:var(--card);border-bottom:1px solid var(--line)}
+header h1{font-size:1.15rem;margin:0}
+header .sub{color:var(--muted);font-size:.82rem}
+.btn{display:inline-flex;align-items:center;gap:6px;min-height:38px;padding:8px 14px;border-radius:999px;font-weight:800;text-decoration:none;color:#06111f;background:linear-gradient(135deg,#e0f7ff,var(--accent));border:0;cursor:pointer;font-size:.9rem}
+.btn.secondary{color:var(--text);background:rgba(255,255,255,.09);border:1px solid var(--line)}
+.btn.danger{background:linear-gradient(135deg,#fecaca,#ef4444);color:#450a0a}
+.btn.active{outline:3px solid var(--accent)}
+#map{height:calc(100dvh - 210px);min-height:420px;width:100%}
+@media(max-width:760px){#map{height:calc(100dvh - 260px)}}
+.panel{padding:12px;display:grid;gap:10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px}
+.card h2{margin:0 0 8px;font-size:1rem}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+input[type=text],input[type=time],input[type=number],select{background:rgba(5,16,30,.7);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:9px 10px;font-size:.95rem;min-height:40px}
+#search{flex:1;min-width:180px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{border:1px solid var(--line);background:rgba(255,255,255,.06);color:var(--text);border-radius:999px;padding:6px 12px;cursor:pointer;font-weight:700;font-size:.85rem}
+.tab.active{background:var(--accent);color:#06111f}
+.chip{border:1px solid var(--line);background:rgba(255,255,255,.06);color:var(--text);border-radius:999px;padding:6px 12px;cursor:pointer;font-size:.85rem}
+.chip:hover{border-color:var(--accent)}
+#results{max-height:220px;overflow:auto;display:grid;gap:4px}
+.res{display:flex;justify-content:space-between;gap:8px;text-align:right;background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:10px;padding:8px 10px;cursor:pointer}
+.res:hover{border-color:var(--accent)}
+.res .k{color:var(--muted);font-size:.8rem}
+#steps{list-style:none;margin:8px 0;padding:0;line-height:1.9}
+#steps li::before{content:"• ";color:var(--accent);font-weight:900}
+.muted{color:var(--muted);font-size:.85rem}
+.warn{border:1px solid rgba(250,204,21,.5);background:rgba(250,204,21,.08);border-radius:12px;padding:10px}
+.warn b{color:#facc15}
+.leaflet-popup-content{color:#111827;direction:rtl;text-align:right}
+.pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:2px 10px;font-size:.8rem;font-weight:800;color:var(--muted)}
+.legend{display:flex;gap:10px;flex-wrap:wrap;font-size:.85rem}
+.dot{display:inline-block;width:14px;height:4px;border-radius:2px;vertical-align:middle}
+#sosPanel{display:none}
+#status{font-size:.9rem}
+progress{width:100%}
+</style>
+</head>
+<body>
+<header>
+  <a class="btn secondary" href="/guides/la-plagne">← המדריך</a>
+  <h1>🗺️ לה פלאן — מפת ניווט חיה</h1>
+  <span class="sub">La Plagne · Paradiski — מסלולים ומעליות מנתוני OpenStreetMap</span>
+  <span style="flex:1"></span>
+  <button class="btn danger" id="sosBtn">🆘 SOS · 112</button>
+</header>
+
+<div id="map"></div>
+
+<div class="panel">
+  <div class="card" id="sosPanel">
+    <h2>🆘 חירום — SOS</h2>
+    <p>מספר החירום האירופי: <a href="tel:112" style="font-size:1.3rem;font-weight:900">112</a> (גם 15 — SAMU, 18 — כיבוי אש).</p>
+    <p id="sosCoords" class="muted">המיקום שלכם יופיע כאן כשה־GPS פעיל — אמרו אותו למוקד.</p>
+    <p class="muted">המפה אינה מחליפה את הוראות הסקי־פטרול והשילוט בשטח. במקרה של פציעה — אל תזיזו את הפצוע, סמנו את המקום.</p>
+    <button class="btn secondary" id="sosClose">סגירה</button>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <button class="btn" id="gpsBtn">📍 איפה אני</button>
+      <button class="btn secondary" id="demoBtn">🎬 הדמיה — Plagne Centre</button>
+      <button class="btn secondary" id="markBtn">📌 סמן יעד במפה</button>
+      <button class="btn secondary" id="offlineBtn">💾 שמור מפה לאופליין</button>
+      <span id="status" class="muted">טוען נתוני מסלולים…</span>
+    </div>
+    <div class="row" style="margin-top:8px">
+      <span class="pill" id="startLabel">מוצא: —</span>
+      <span class="pill" id="destLabel">יעד: —</span>
+      <button class="btn secondary" id="clearBtn">נקה ניווט</button>
+    </div>
+    <div id="offlineBox" class="muted"></div>
+  </div>
+
+  <div class="card">
+    <h2>🔍 לאן? חיפוש יעד</h2>
+    <div class="row"><input type="text" id="search" placeholder="חפשו מעלית, מסלול, כפר, בקתה… (למשל: Roche de Mio, Vanoise, Montchavin)" autocomplete="off"></div>
+    <div class="tabs" id="tabs" style="margin-top:8px">
+      <button class="tab active" data-tab="all">הכל</button>
+      <button class="tab" data-tab="village">כפרים</button>
+      <button class="tab" data-tab="lift">מעליות</button>
+      <button class="tab" data-tab="piste">מסלולים</button>
+      <button class="tab" data-tab="hut">בקתות ושירותים</button>
+    </div>
+    <div class="row" style="margin-top:8px" id="chips">
+      <button class="chip" data-chip="hut">🛖 בקתה</button>
+      <button class="chip" data-chip="amenity:toilets">🚻 שירותים</button>
+      <button class="chip" data-chip="lift">🚡 מעלית</button>
+      <button class="chip" data-chip="amenity:doctors">🩺 רפואה</button>
+      <button class="chip" data-chip="amenity:pharmacy">💊 בית מרקחת</button>
+      <button class="chip" data-chip="shop:sports">🎿 השכרת ציוד</button>
+      <button class="chip" data-chip="amenity:parking">🅿️ חניה</button>
+      <button class="chip" data-chip="amenity:atm">🏧 כספומט</button>
+      <button class="chip" data-chip="amenity:restaurant">🍽️ מסעדה</button>
+    </div>
+    <div id="results" style="margin-top:8px"></div>
+  </div>
+
+  <div class="card">
+    <h2>🧭 מסלול — הגדרות</h2>
+    <div class="row">
+      <span>רמה:</span>
+      <button class="tab level active" data-level="blue">כחולים בלבד</button>
+      <button class="tab level" data-level="red">עד אדומים</button>
+      <button class="tab level" data-level="black">כולל שחורים</button>
+    </div>
+    <div class="row" style="margin-top:8px">
+      <label><input type="checkbox" id="snowboard"> 🏂 מצב סנובורד — להימנע מקטעים שטוחים</label>
+      <label><input type="checkbox" id="descend" checked> 🚡 ירידה בתאים (גונדולה/רכבל) מותרת</label>
+    </div>
+    <div class="row" style="margin-top:8px">
+      <button class="tab route-mode active" data-mode="fast">הכי מהיר</button>
+      <button class="tab route-mode" data-mode="fewlifts">הכי פחות מעליות</button>
+    </div>
+    <div id="routeBox" style="margin-top:10px"><p class="muted">בחרו יעד בחיפוש או סמנו אותו במפה — המסלול יחושב מהמיקום שלכם (או מנקודת ההדמיה).</p></div>
+  </div>
+
+  <div class="card">
+    <h2>⏱️ תכנון לפי זמן</h2>
+    <div class="row">
+      <label>יש לי <input type="number" id="haveMin" min="10" max="480" value="60" style="width:80px"> דקות</label>
+      <button class="btn secondary" id="haveBtn">האם אספיק לחזור?</button>
+    </div>
+    <div class="row" style="margin-top:8px">
+      <label>רוצה להיות למטה ב־<input type="time" id="arriveBy" value="16:00"></label>
+      <label>ב־<select id="finishAt">
+        <option value="plagne-centre">Plagne Centre</option>
+        <option value="belle-plagne">Belle Plagne</option>
+        <option value="montchavin">Montchavin</option>
+        <option value="champagny">Champagny</option>
+        <option value="vanoise">Vanoise Express</option>
+        <option value="here">איפה שאני</option>
+      </select></label>
+      <button class="btn secondary" id="arriveBtn">חשבו מתי לצאת</button>
+    </div>
+    <div id="timeBox" style="margin-top:8px"></div>
+    <p class="muted">הזמנים משוערים (מהירות גלישה + כ־5 דקות המתנה למעלית). אין כאן שעות סגירה חיות — בדקו את סטטוס המעליות באתר הרשמי / באפליקציית Yuge לפני יציאה למסלול ארוך, ובמיוחד לפני חציית ה־Vanoise Express (דורש סקי־פס Paradiski; הקישור נסגר 17 באפריל 2027).</p>
+  </div>
+
+  <div class="card">
+    <h2>🗺️ מקרא ומקורות</h2>
+    <div class="legend">
+      <span><i class="dot" style="background:#22c55e"></i> ירוק — מתחילים</span>
+      <span><i class="dot" style="background:#3b82f6"></i> כחול — קל</span>
+      <span><i class="dot" style="background:#ef4444"></i> אדום — בינוני</span>
+      <span><i class="dot" style="background:#111827;border:1px solid #fff"></i> שחור — קשה</span>
+      <span><i class="dot" style="background:#111827"></i> מעלית (שחור)</span>
+      <span><i class="dot" style="background:#7dd3fc"></i> המסלול שלכם</span>
+    </div>
+    <p class="muted">נתוני מסלולים, מעליות ומקומות: © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> (ODbL), נשלפו 27 בנובמבר 2026. שכבת המסלולים: © <a href="https://www.opensnowmap.org/" target="_blank" rel="noopener">OpenSnowMap</a> (CC-BY-SA). בסיס: © OpenStreetMap. הגבהים מ־Open-Meteo (SRTM) — משוערים, לכיוון עלייה/ירידה בלבד.</p>
+    <p class="muted">ידוע וחסר בנתונים: 197 מסלולים ב־OSM ללא שם (מוצגים כקו בלי שם); החיבור לקרחון Bellecôte עובר בירידה בגונדולת Glaciers 1 מ־Roche de Mio — כך זה ממופה ב־OSM וכך ממליץ גם המדריך. <a href="https://en.la-plagne.com/discover/ski-area" target="_blank" rel="noopener">מפת מסלולים וסטטוס מעליות — האתר הרשמי ↗</a> · <a href="/guides/la-plagne">חזרה למדריך ←</a></p>
+  </div>
+</div>
+
+<script>
+// ==ROUTER-START==
+// Pure routing logic (no DOM/Leaflet deps) — mirrored by test_routes.py.
+// Costs: ski minutes from data + 5 min queue per lift board;
+// descend-in-cabin edges +15 (prefer skiing down); snowboard flat +8.
+const LEVELS = {blue: new Set(['green','blue']), red: new Set(['green','blue','red']), black: new Set(['green','blue','red','black'])};
+const LIFT_HE = {gondola:'גונדולה', cable_car:'רכבל', chair_lift:'כיסא', mixed_lift:'מעלית משולבת', platter:'מושך צלחת', 't-bar':'טי-בר', magic_carpet:'שטיח קסם', drag_lift:'מושך', funitel:'פוניטל'};
+const DIFF_HE = {green:'ירוק', blue:'כחול', red:'אדום', black:'שחור'};
+function haversineM(a, b){
+  const R = 6371000, toRad = d => d*Math.PI/180;
+  const la1=toRad(a[1]), lo1=toRad(a[0]), la2=toRad(b[1]), lo2=toRad(b[0]);
+  const h = Math.sin((la2-la1)/2)**2 + Math.cos(la1)*Math.cos(la2)*Math.sin((lo2-lo1)/2)**2;
+  return 2*R*Math.asin(Math.sqrt(h));
+}
+function keyOf(c){ return c[0].toFixed(5)+','+c[1].toFixed(5); }
+function buildGraph(data){
+  const nodes = new Map();
+  for (const n of data.graph.nodes) nodes.set(keyOf(n.key), n);
+  const adj = new Map();
+  for (const e of data.graph.edges){
+    const k = keyOf(e.from);
+    if (!adj.has(k)) adj.set(k, []);
+    adj.get(k).push(e);
+  }
+  return {nodes, adj};
+}
+function nearestNode(graph, coord){
+  let best=null, bd=Infinity;
+  for (const [k,n] of graph.nodes){
+    const d = haversineM(coord, n.coords);
+    if (d<bd){ bd=d; best=k; }
+  }
+  return {key:best, distM:bd};
+}
+function findRoute(graph, startCoord, endCoord, opts){
+  opts = opts || {};
+  const level = opts.level || 'red';
+  const allowed = LEVELS[level];
+  const snowboard = !!opts.snowboard;
+  const descendCabins = opts.descendCabins !== false;
+  const liftPenalty = opts.liftPenalty || 0; // extra minutes per lift board (fewest-lifts mode)
+  const s = nearestNode(graph, startCoord), t = nearestNode(graph, endCoord);
+  if (s.key === t.key) return {steps:[], totalMin:0, startKey:s.key, endKey:t.key};
+  const dist = new Map([[s.key,0]]), prev = new Map();
+  const pq = [[0, s.key]]; // tiny binary-heap-free priority queue (graph is small)
+  const pop = () => { let bi=0; for (let i=1;i<pq.length;i++) if (pq[i][0]<pq[bi][0]) bi=i; return pq.splice(bi,1)[0]; };
+  while (pq.length){
+    const [du,u] = pop();
+    if (du > (dist.get(u) ?? Infinity)) continue;
+    if (u === t.key) break;
+    for (const e of (graph.adj.get(u) || [])){
+      if (e.kind==='piste' && !allowed.has(e.difficulty)) continue;
+      if (e.descend && !descendCabins) continue;
+      let w = e.minutes;
+      if (e.kind==='lift'){ w += 5 + liftPenalty; }
+      if (e.descend) w += 15;
+      if (snowboard && e.flat) w += 8;
+      const v = keyOf(e.to), nd = du + w;
+      if (nd < (dist.get(v) ?? Infinity)){ dist.set(v, nd); prev.set(v, [u,e]); pq.push([nd,v]); }
+    }
+  }
+  if (!prev.has(t.key)) return null;
+  const edges=[]; let u=t.key;
+  while (u !== s.key){ const [pu,e]=prev.get(u); edges.push(e); u=pu; }
+  edges.reverse();
+  return {steps: collapseSteps(edges), totalMin: dist.get(t.key), startKey:s.key, endKey:t.key};
+}
+function collapseSteps(edges){
+  const raw = edges.map(e => ({kind:e.kind, name:e.name, difficulty:e.difficulty, lift_type:e.lift_type,
+    minutes:e.minutes, length_m:e.length_m, flat:!!e.flat, descend:!!e.descend,
+    village_access:!!e.village_access, coords:e.coords}));
+  const steps=[];
+  for (const s of raw){
+    const foldable = (s.kind==='walk' && s.length_m<100 && !s.village_access)
+      || (s.kind==='piste' && !s.name)
+      || (s.kind==='piste' && s.length_m<50);
+    if (foldable && steps.length){
+      steps[steps.length-1].minutes += s.minutes;
+      steps[steps.length-1].length_m += s.length_m;
+      steps[steps.length-1].coords = steps[steps.length-1].coords.concat(s.coords.slice(1));
+    } else if (steps.length && steps[steps.length-1].kind===s.kind && steps[steps.length-1].name===s.name
+        && steps[steps.length-1].descend===s.descend){
+      steps[steps.length-1].minutes += s.minutes;
+      steps[steps.length-1].length_m += s.length_m;
+      steps[steps.length-1].coords = steps[steps.length-1].coords.concat(s.coords.slice(1));
+    } else steps.push(Object.assign({}, s));
+  }
+  if (steps.length>1 && ((steps[0].kind==='piste' && !steps[0].name) ||
+      (steps[0].kind==='walk' && steps[0].length_m<100 && !steps[0].village_access) ||
+      (steps[0].kind==='piste' && steps[0].length_m<50))){
+    steps[1].minutes += steps[0].minutes; steps[1].length_m += steps[0].length_m;
+    steps[1].coords = steps[0].coords.concat(steps[1].coords.slice(1));
+    steps.shift();
+  }
+  return steps;
+}
+if (typeof window !== 'undefined') window.SkiRouter = {LEVELS, LIFT_HE, DIFF_HE, haversineM, keyOf, buildGraph, nearestNode, findRoute, collapseSteps};
+// ==ROUTER-END==
+
+(function(){
+  const DATA_URL = 'data/la-plagne.json';
+  const CENTRE = [45.506, 6.683]; // Plagne Centre
+  const DEMO_START = [6.67436, 45.50588];
+  const PLACES = {
+    'plagne-centre': {name:'Plagne Centre', coords:[6.67436,45.50588]},
+    'belle-plagne': {name:'Belle Plagne', coords:[6.70701,45.50709]},
+    'montchavin': {name:'Montchavin', coords:[6.73656,45.55989]},
+    'champagny': {name:'Champagny-en-Vanoise', coords:[6.6942,45.45515]},
+    'vanoise': {name:'Vanoise Express', coords:[6.73943,45.54924]}
+  };
+  const DIFF_COLOR = {green:'#22c55e', blue:'#3b82f6', red:'#ef4444', black:'#111827'};
+  let DATA=null, GRAPH=null, map, routeLayer, startMarker, destMarker, gpsMarker;
+  let startCoord=null, startLabel='—', destCoord=null, destName=null, marking=false, gpsOn=false, watchId=null;
+  let currentTab='all', currentLevel='red', routeMode='fast';
+
+  const $ = id => document.getElementById(id);
+  const statusEl = $('status');
+
+  map = L.map('map').setView(CENTRE, 13);
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19, attribution:'© OpenStreetMap contributors'}).addTo(map);
+  L.tileLayer('https://tiles.opensnowmap.org/pistes/{z}/{x}/{y}.png', {maxZoom:18, attribution:'Map style: © OpenSnowMap.org (CC-BY-SA)'}).addTo(map);
+  routeLayer = L.layerGroup().addTo(map);
+
+  function setStatus(t){ statusEl.textContent = t; }
+
+  fetch(DATA_URL).then(r => { if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+  .then(d => {
+    DATA = d; GRAPH = buildGraph(d);
+    setStatus(`נטענו ${d.counts.pistes} מסלולים, ${d.counts.lifts} מעליות, ${d.counts.places} מקומות (OSM, 27.11.2026).`);
+    drawData(d);
+    setStart(DEMO_START, 'Plagne Centre (הדמיה)');
+  })
+  .catch(err => setStatus('שגיאה בטעינת נתוני המסלולים: '+err.message+' — בדקו חיבור ורעננו.'));
+
+  function drawData(d){
+    const pisteLayer = L.layerGroup().addTo(map);
+    for (const p of d.pistes){
+      const latlngs = p.coords.map(c => [c[1], c[0]]);
+      const line = L.polyline(latlngs, {color: DIFF_COLOR[p.difficulty] || '#888', weight: p.difficulty==='black'?5:4, opacity:.85});
+      line.bindPopup(p.name ? `<b>${esc(p.name)}</b><br>מסלול ${DIFF_HE[p.difficulty]}` : `מסלול ${DIFF_HE[p.difficulty]} (ללא שם ב־OSM)`);
+      line.on('click', () => setDest(p.coords[Math.floor(p.coords.length/2)], p.name || ('מסלול '+DIFF_HE[p.difficulty])));
+      pisteLayer.addLayer(line);
+    }
+    const liftLayer = L.layerGroup().addTo(map);
+    for (const l of d.lifts){
+      const latlngs = l.coords.map(c => [c[1], c[0]]);
+      const line = L.polyline(latlngs, {color:'#111827', weight:2.5, opacity:.9,
+        dashArray: (l.type==='platter'||l.type==='drag_lift'||l.type==='t-bar') ? '6 4' : null});
+      const label = l.name ? `<b>${esc(l.name)}</b><br>${LIFT_HE[l.type]||'מעלית'}` : (LIFT_HE[l.type]||'מעלית');
+      line.bindPopup(label);
+      line.on('click', () => setDest(l.coords[Math.floor(l.coords.length/2)], l.name || (LIFT_HE[l.type]||'מעלית')));
+      liftLayer.addLayer(line);
+    }
+    const placeLayer = L.layerGroup().addTo(map);
+    const showKinds = new Set(['village','peak','hut','lift_station']);
+    for (const pl of d.places){
+      const base = pl.kind.split(':')[0];
+      if (!showKinds.has(pl.kind) && !showKinds.has(base)) continue;
+      if (pl.kind==='peak' && !pl.ele) continue;
+      const icon = pl.kind==='village' ? '🏘️' : pl.kind==='peak' ? '▲' : pl.kind==='hut' ? '🛖' : '🚡';
+      const m = L.marker([pl.coords[1], pl.coords[0]], {icon: L.divIcon({html:`<span style="font-size:18px">${icon}</span>`, className:'', iconSize:[20,20], iconAnchor:[10,10]})});
+      m.bindPopup(`<b>${esc(pl.name)}</b><br>${esc(pl.kind)}${pl.ele?` · ${esc(pl.ele)} מ׳`:''}`);
+      m.on('click', () => setDest(pl.coords, pl.name));
+      placeLayer.addLayer(m);
+    }
+  }
+  function esc(s){ return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+  function setStart(coord, label){
+    startCoord = coord; startLabel = label;
+    $('startLabel').textContent = 'מוצא: ' + label;
+    if (startMarker) map.removeLayer(startMarker);
+    startMarker = L.marker([coord[1], coord[0]], {icon: L.divIcon({html:'<span style="font-size:22px">🟢</span>', className:'', iconSize:[24,24], iconAnchor:[12,12]})}).addTo(map).bindPopup('מוצא: '+esc(label));
+    if (destCoord) computeRoute();
+  }
+  function setDest(coord, name){
+    destCoord = coord; destName = name;
+    $('destLabel').textContent = 'יעד: ' + name;
+    if (destMarker) map.removeLayer(destMarker);
+    destMarker = L.marker([coord[1], coord[0]], {icon: L.divIcon({html:'<span style="font-size:22px">🔴</span>', className:'', iconSize:[24,24], iconAnchor:[12,12]})}).addTo(map).bindPopup('יעד: '+esc(name));
+    map.panTo([coord[1], coord[0]]);
+    computeRoute();
+  }
+  function routeOpts(){
+    return {level: currentLevel, snowboard: $('snowboard').checked, descendCabins: $('descend').checked,
+            liftPenalty: routeMode==='fewlifts' ? 20 : 0};
+  }
+  function computeRoute(){
+    if (!DATA || !GRAPH || !startCoord || !destCoord) return;
+    routeLayer.clearLayers();
+    let r = findRoute(GRAPH, startCoord, destCoord, routeOpts());
+    let note = '';
+    if (routeMode==='fewlifts' && r){
+      // only keep the fewest-lifts variant if it actually uses fewer lifts
+      const fast = findRoute(GRAPH, startCoord, destCoord, Object.assign({}, routeOpts(), {liftPenalty:0}));
+      const liftsOf = x => x.steps.filter(s=>s.kind==='lift' && !s.descend).length;
+      if (fast && liftsOf(r) >= liftsOf(fast)){ r = fast; note = '<p class="muted">אין מסלול עם פחות מעליות ליעד הזה — מוצג המסלול הכי מהיר.</p>'; }
+    }
+    const box = $('routeBox');
+    if (!r){
+      box.innerHTML = `<div class="warn"><b>לא נמצא מסלול</b> ברמה שנבחרה מ־${esc(startLabel)} אל ${esc(destName)}. נסו רמה גבוהה יותר, או יעד אחר. שימו לב: החיבור לקרחון Bellecôte דורש ירידה בגונדולת Glaciers 1 — ודאו ש״ירידה בתאים״ מסומנת.</div>`;
+      return;
+    }
+    const totalKm = r.steps.reduce((a,s)=>a+s.length_m,0)/1000;
+    const lifts = r.steps.filter(s=>s.kind==='lift' && !s.descend).length;
+    const crossesVE = r.steps.some(s=>s.kind==='lift' && s.name && s.name.indexOf('Vanoise Express')===0);
+    const usesDescend = r.steps.some(s=>s.descend);
+    let html = `<p><b>${esc(startLabel)} ← ${esc(destName)}</b> · כ־<b>${Math.round(r.totalMin)} דקות</b> (משוער, כולל המתנה) · ${totalKm.toFixed(1)} ק״מ · ${lifts} מעליות</p><ol id="steps">`;
+    r.steps.forEach(s => {
+      if (s.kind==='lift') html += `<li>🚡 ${s.descend?'רדו ב':'עלו ב'}${LIFT_HE[s.lift_type]||'מעלית'} <b>${esc(s.name||'')}</b>${s.descend?' (ירידה בתא)':''} — כ־${Math.max(1,Math.round(s.minutes))} דק׳</li>`;
+      else if (s.kind==='piste') html += `<li>⛷️ גלשו במסלול <b>${esc(s.name||'')}</b> (${DIFF_HE[s.difficulty]||''}) — כ־${Math.max(1,Math.round(s.minutes))} דק׳</li>`;
+      else html += `<li>🚶 ${s.village_access?'הליכה בכפר':'הליכה קצרה'} — כ־${Math.max(1,Math.round(s.minutes))} דק׳ (${s.length_m} מ׳)</li>`;
+    });
+    html += '</ol>';
+    if (crossesVE) html += `<div class="warn"><b>⚠️ חציית Vanoise Express:</b> המעבר ללי זארק דורש <b>סקי־פס Paradiski</b> (לא מספיק פס מקומי של לה פלאן). בדקו שהמעבר פתוח ומה שעת החצייה האחרונה חזרה.</div>`;
+    if (usesDescend) html += `<p class="muted">המסלול כולל ירידה בתא גונדולה/רכבל — זה חלק מהתכנון באתר (למשל לקרחון Bellecôte), לא טעות.</p>`;
+    html += note;
+    box.innerHTML = html;
+    const line = L.polyline(r.steps.flatMap(s => s.coords.map(c=>[c[1],c[0]])), {color:'#38bdf8', weight:6, opacity:.9}).addTo(routeLayer);
+    map.fitBounds(line.getBounds().pad(0.15));
+  }
+
+  // ---- search ----
+  function searchIndex(){
+    const items=[];
+    for (const pl of DATA.places) items.push({name:pl.name, kind:pl.kind, coords:pl.coords, tab: pl.kind==='village'?'village':(pl.kind==='lift_station'?'lift':'hut')});
+    for (const l of DATA.lifts) if (l.name) items.push({name:l.name, kind:'מעלית · '+(LIFT_HE[l.type]||''), coords:l.coords[Math.floor(l.coords.length/2)], tab:'lift'});
+    for (const p of DATA.pistes) if (p.name) items.push({name:p.name, kind:'מסלול · '+DIFF_HE[p.difficulty], coords:p.coords[Math.floor(p.coords.length/2)], tab:'piste'});
+    const seen=new Set(), out=[];
+    for (const it of items){ const k=it.name+'|'+it.coords.join(','); if(!seen.has(k)){seen.add(k);out.push(it);} }
+    return out;
+  }
+  let INDEX=[];
+  function renderSearch(){
+    if (!DATA) return;
+    if (!INDEX.length) INDEX = searchIndex();
+    const q = $('search').value.trim().toLowerCase();
+    const res = INDEX.filter(it => (currentTab==='all' || it.tab===currentTab) && (!q || it.name.toLowerCase().includes(q))).slice(0,40);
+    $('results').innerHTML = res.map((it,i)=>`<div class="res" data-i="${INDEX.indexOf(it)}"><span>${esc(it.name)}</span><span class="k">${esc(it.kind)}</span></div>`).join('')
+      || '<p class="muted">לא נמצאו תוצאות — נסו שם אחר, או בחרו יעד במפה.</p>';
+    document.querySelectorAll('#results .res').forEach(el => el.addEventListener('click', () => {
+      const it = INDEX[+el.dataset.i]; setDest(it.coords, it.name);
+    }));
+  }
+  $('search').addEventListener('input', renderSearch);
+  document.querySelectorAll('#tabs .tab').forEach(t => t.addEventListener('click', () => {
+    document.querySelectorAll('#tabs .tab').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active'); currentTab = t.dataset.tab; renderSearch();
+  }));
+  document.querySelectorAll('#chips .chip').forEach(c => c.addEventListener('click', () => {
+    if (!DATA) return;
+    const want = c.dataset.chip;
+    currentTab = 'hut';
+    document.querySelectorAll('#tabs .tab').forEach(x=>x.classList.toggle('active', x.dataset.tab==='hut'));
+    $('search').value = '';
+    INDEX = searchIndex().filter(it => want==='lift' ? it.tab==='lift' : it.kind===want || it.kind.indexOf(want)===0);
+    const res = INDEX.slice(0,40);
+    $('results').innerHTML = res.map((it,i)=>`<div class="res" data-i="${i}"><span>${esc(it.name)}</span><span class="k">${esc(it.kind)}</span></div>`).join('') || '<p class="muted">אין תוצאות לסוג זה באתר.</p>';
+    document.querySelectorAll('#results .res').forEach(el => el.addEventListener('click', () => {
+      const it = INDEX[+el.dataset.i]; setDest(it.coords, it.name);
+    }));
+    INDEX = []; // rebuild full index next time
+  }));
+  document.querySelectorAll('.level').forEach(b => b.addEventListener('click', () => {
+    document.querySelectorAll('.level').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active'); currentLevel = b.dataset.level; computeRoute();
+  }));
+  document.querySelectorAll('.route-mode').forEach(b => b.addEventListener('click', () => {
+    document.querySelectorAll('.route-mode').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active'); routeMode = b.dataset.mode; computeRoute();
+  }));
+  $('snowboard').addEventListener('change', computeRoute);
+  $('descend').addEventListener('change', computeRoute);
+  $('clearBtn').addEventListener('click', () => {
+    destCoord=null; destName=null; $('destLabel').textContent='יעד: —';
+    if (destMarker) map.removeLayer(destMarker);
+    routeLayer.clearLayers();
+    $('routeBox').innerHTML = '<p class="muted">בחרו יעד בחיפוש או סמנו אותו במפה.</p>';
+  });
+
+  // ---- GPS ----
+  function onPos(pos){
+    const c = [pos.coords.longitude, pos.coords.latitude];
+    if (gpsMarker) map.removeLayer(gpsMarker);
+    gpsMarker = L.circleMarker([c[1], c[0]], {radius:8, color:'#38bdf8', fillColor:'#38bdf8', fillOpacity:.8}).addTo(map);
+    gpsMarker.bindPopup('המיקום שלכם (GPS, נשאר במכשיר)');
+    $('sosCoords').textContent = `המיקום שלכם: ${c[1].toFixed(5)}, ${c[0].toFixed(5)} (דיוק כ־${Math.round(pos.coords.accuracy)} מ׳).`;
+    setStart(c, 'המיקום שלי (GPS)');
+    map.panTo([c[1], c[0]]);
+  }
+  $('gpsBtn').addEventListener('click', () => {
+    if (!navigator.geolocation){ setStatus('הדפדפן לא תומך במיקום — משתמשים בנקודת הדמיה (Plagne Centre).'); return; }
+    setStatus('מבקש מיקום… (המיקום נשאר במכשיר ולא נשלח לשום שרת)');
+    navigator.geolocation.getCurrentPosition(onPos, err => {
+      setStatus('לא הצלחנו לקבל GPS ('+err.message+') — משתמשים בנקודת הדמיה (Plagne Centre).');
+    }, {enableHighAccuracy:true, timeout:10000});
+    if (watchId===null) watchId = navigator.geolocation.watchPosition(onPos, ()=>{}, {enableHighAccuracy:true, maximumAge:60000});
+    gpsOn = true;
+  });
+  $('demoBtn').addEventListener('click', () => {
+    if (watchId!==null){ navigator.geolocation.clearWatch(watchId); watchId=null; }
+    if (gpsMarker) map.removeLayer(gpsMarker);
+    setStart(DEMO_START, 'Plagne Centre (הדמיה)');
+    map.setView(CENTRE, 13);
+    setStatus('מצב הדמיה: המוצא הוא Plagne Centre. לחצו ״איפה אני״ כשאתם באתר.');
+  });
+  $('markBtn').addEventListener('click', () => {
+    marking = !marking;
+    $('markBtn').classList.toggle('active', marking);
+    $('markBtn').textContent = marking ? '👆 לחצו על המפה לבחירת יעד…' : '📌 סמן יעד במפה';
+  });
+  map.on('click', e => { if (marking){ marking=false; $('markBtn').classList.remove('active'); $('markBtn').textContent='📌 סמן יעד במפה'; setDest([e.latlng.lng, e.latlng.lat], 'נקודה במפה'); } });
+
+  // ---- SOS ----
+  $('sosBtn').addEventListener('click', () => { $('sosPanel').style.display='block'; $('sosPanel').scrollIntoView({behavior:'smooth'}); });
+  $('sosClose').addEventListener('click', () => { $('sosPanel').style.display='none'; });
+
+  // ---- plan by time ----
+  $('haveBtn').addEventListener('click', () => {
+    const mins = +$('haveMin').value || 60;
+    if (!destCoord || !startCoord){ $('timeBox').innerHTML = '<p class="muted">קודם בחרו יעד (המסלול מחושב מהמיקום שלכם).</p>'; return; }
+    const r = findRoute(GRAPH, startCoord, destCoord, routeOpts());
+    const back = findRoute(GRAPH, destCoord, startCoord, routeOpts());
+    if (!r || !back){ $('timeBox').innerHTML = '<p class="muted">לא נמצא מסלול הלוך או חזור ברמה שנבחרה.</p>'; return; }
+    const total = r.totalMin + back.totalMin;
+    $('timeBox').innerHTML = total <= mins
+      ? `<p>✅ הלוך־חזור ל<b>${esc(destName)}</b> לוקח כ־<b>${Math.round(total)} דקות</b> — נכנס ב־${mins} דקות, עם עודף של כ־${Math.round(mins-total)} דקות.</p>`
+      : `<div class="warn"><b>לא תספיקו:</b> הלוך־חזור ל<b>${esc(destName)}</b> לוקח כ־<b>${Math.round(total)} דקות</b> (הלוך ${Math.round(r.totalMin)} + חזור ${Math.round(back.totalMin)}) — יותר מ־${mins} הדקות שיש לכם. בחרו יעד קרוב יותר.</div>`;
+  });
+  $('arriveBtn').addEventListener('click', () => {
+    const t = $('arriveBy').value; if (!t){ $('timeBox').innerHTML = '<p class="muted">בחרו שעת הגעה.</p>'; return; }
+    const fin = $('finishAt').value;
+    const dest = fin==='here' ? startCoord : PLACES[fin].coords;
+    const destNm = fin==='here' ? 'המיקום שלי' : PLACES[fin].name;
+    if (!dest || !startCoord){ $('timeBox').innerHTML = '<p class="muted">צריך מיקום מוצא (GPS או הדמיה).</p>'; return; }
+    const r = findRoute(GRAPH, startCoord, dest, routeOpts());
+    if (!r){ $('timeBox').innerHTML = '<p class="muted">לא נמצא מסלול ליעד הסיום ברמה שנבחרה.</p>'; return; }
+    const [hh,mm] = t.split(':').map(Number);
+    const arrive = new Date(); arrive.setHours(hh, mm, 0, 0);
+    const leave = new Date(arrive.getTime() - (r.totalMin + 10) * 60000); // +10 min buffer
+    const fmt = d => String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+    $('timeBox').innerHTML = `<p>להיות ב<b>${esc(destNm)}</b> ב־<b>${t}</b>: המסלול לוקח כ־${Math.round(r.totalMin)} דקות — <b>צאו עד ${fmt(leave)}</b> (כולל 10 דקות ביטחון). אם אתם חוצים את ה־Vanoise Express, ודאו את שעת החצייה האחרונה חזרה באתר הרשמי.</p>`;
+  });
+
+  // ---- offline: cache tiles + data in the Cache API; tile layer reads cache first ----
+  const CACHE = 'laplagne-map-v1';
+  async function cacheTiles(){
+    const box = $('offlineBox');
+    if (!('caches' in window)){ box.textContent = 'הדפדפן לא תומך בשמירת אופליין (Cache API).'; return; }
+    const cache = await caches.open(CACHE);
+    try { await cache.add(DATA_URL); } catch(e){}
+    // resort bbox zooms 12-15, OSM base + OpenSnowMap pistes overlay
+    const zMin=12, zMax=15, lonMin=6.58, lonMax=6.82, latMin=45.43, latMax=45.58;
+    const urls=[];
+    for (let z=zMin; z<=zMax; z++){
+      const x0=Math.floor((lonMin+180)/360*Math.pow(2,z)), x1=Math.floor((lonMax+180)/360*Math.pow(2,z));
+      const y0=Math.floor((1-Math.log(Math.tan(latMax*Math.PI/180)+1/Math.cos(latMax*Math.PI/180))/Math.PI)/2*Math.pow(2,z));
+      const y1=Math.floor((1-Math.log(Math.tan(latMin*Math.PI/180)+1/Math.cos(latMin*Math.PI/180))/Math.PI)/2*Math.pow(2,z));
+      for (let x=x0;x<=x1;x++) for (let y=y0;y<=y1;y++){
+        urls.push(`https://tile.openstreetmap.org/${z}/${x}/${y}.png`);
+        urls.push(`https://tiles.opensnowmap.org/pistes/${z}/${x}/${y}.png`);
+      }
+    }
+    box.innerHTML = `שומר ${urls.length} אריחים לאופליין… <progress max="${urls.length}" value="0"></progress>`;
+    const bar = box.querySelector('progress');
+    let done=0, failed=0;
+    for (const u of urls){
+      try { const res = await fetch(u, {mode:'cors'}); if (res.ok) await cache.put(u, res); else failed++; }
+      catch(e){ failed++; }
+      done++; if (done%20===0) bar.value = done;
+    }
+    bar.value = done;
+    box.innerHTML = `✅ נשמרו ${done-failed} אריחים לאופליין (${failed} נכשלו — ייטענו מהרשת כשיש קליטה). הנתונים (מסלולים/מעליות) נשמרו גם הם. שימו לב: אריחים שמורים תופסים מקום במכשיר; נקו דרך הגדרות הדפדפן אם צריך.`;
+  }
+  $('offlineBtn').addEventListener('click', cacheTiles);
+})();
+</script>
+</body>
+</html>

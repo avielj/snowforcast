@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>מפת ניווט חיה — ואל טוראנס | SnowForecast</title>
+<meta name="description" content="מפת סקי אינטראקטיבית של ואל טוראנס ואורל: ניווט GPS בין מסלולים ומעליות, חיפוש יעדים, תכנון לפי זמן ו-SOS. נתוני OpenStreetMap.">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+:root{color-scheme:dark;--bg:#06111f;--card:#0d2138;--line:rgba(255,255,255,.14);--text:#f6fbff;--muted:#9fb3c8;--accent:#7dd3fc;--green:#22c55e;--blue:#3b82f6;--red:#ef4444;--black:#e5e7eb;--yellow:#facc15}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
+#app{display:flex;flex-direction:column;height:100dvh}
+header{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--card);border-bottom:1px solid var(--line);flex-wrap:wrap}
+header h1{font-size:1.05rem;margin:0}
+header .sub{color:var(--muted);font-size:.8rem}
+header a{color:var(--accent);text-decoration:none;font-size:.85rem;font-weight:700}
+#map{flex:1;min-height:0;z-index:0}
+.leaflet-container{font-family:inherit}
+.leaflet-popup-content{direction:rtl;text-align:right}
+.leaflet-popup-content b{font-size:1rem}
+.pill{display:inline-block;border-radius:999px;padding:1px 8px;font-size:.75rem;font-weight:800;color:#06111f}
+.pill.green{background:#4ade80}.pill.blue{background:#60a5fa}.pill.red{background:#f87171}.pill.black{background:#e5e7eb}
+/* control panel */
+#panel{position:absolute;z-index:1000;top:10px;right:10px;width:min(360px,calc(100vw - 20px));max-height:calc(100dvh - 130px);overflow:auto;background:rgba(6,17,31,.94);border:1px solid var(--line);border-radius:16px;padding:12px;backdrop-filter:blur(4px)}
+#panel h2{font-size:1rem;margin:0 0 8px}
+#panel h3{font-size:.9rem;margin:12px 0 6px}
+.row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+button,.btn{cursor:pointer;border:1px solid var(--line);background:rgba(255,255,255,.08);color:var(--text);border-radius:999px;padding:8px 12px;font-size:.85rem;font-weight:700;font-family:inherit}
+button.primary{background:linear-gradient(135deg,#e0f7ff,var(--accent));color:#06111f;border:0}
+button.danger{background:#dc2626;border-color:#dc2626;color:#fff}
+button.active{background:var(--accent);color:#06111f;border-color:var(--accent)}
+input[type=text],input[type=number],input[type=time],select{background:#0a1a2e;border:1px solid var(--line);color:var(--text);border-radius:10px;padding:8px 10px;font-size:.9rem;font-family:inherit;width:100%}
+#searchResults{max-height:220px;overflow:auto;margin-top:6px}
+#searchResults .res{padding:8px 10px;border-bottom:1px solid var(--line);cursor:pointer;font-size:.9rem}
+#searchResults .res:hover{background:rgba(125,211,252,.12)}
+#searchResults .res small{color:var(--muted);display:block}
+.chips{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
+.chips button{padding:4px 9px;font-size:.78rem}
+.seg{display:flex;gap:4px}
+.seg button{flex:1;padding:6px 4px;font-size:.8rem}
+label.chk{display:flex;gap:6px;align-items:center;font-size:.88rem;margin:4px 0}
+#steps{margin-top:8px}
+#steps ol{margin:6px 0;padding-right:20px;line-height:1.9;font-size:.92rem}
+#steps li::marker{font-weight:900;color:var(--accent)}
+#steps .tot{font-weight:900;font-size:1rem}
+.note{font-size:.82rem;color:var(--muted);line-height:1.6}
+.warn{border:1px solid rgba(250,204,21,.5);background:rgba(250,204,21,.08);border-radius:12px;padding:10px;margin-top:8px;font-size:.88rem;line-height:1.6}
+.warn b{color:var(--yellow)}
+#sosPanel{display:none;border:1px solid rgba(239,68,68,.6);background:rgba(239,68,68,.1);border-radius:12px;padding:10px;margin-top:8px;line-height:1.8}
+#bottombar{position:absolute;z-index:1000;bottom:10px;left:50%;transform:translateX(-50%);display:none;gap:8px;background:rgba(6,17,31,.94);border:1px solid var(--line);border-radius:999px;padding:8px 12px;align-items:center;max-width:calc(100vw - 20px);flex-wrap:wrap;justify-content:center}
+#bottombar b{font-size:.9rem}
+#togglePanel{position:absolute;z-index:1001;top:10px;left:10px}
+#status{font-size:.8rem;color:var(--muted);margin-top:6px}
+footer{padding:6px 12px;font-size:.72rem;color:var(--muted);background:var(--card);border-top:1px solid var(--line)}
+footer a{color:var(--muted)}
+@media(max-width:640px){#panel{top:54px}}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1>🗺️ ואל טוראנס — מפת ניווט חיה</h1>
+    <span class="sub">Val Thorens + Orelle · ‏3 Vallées · נתוני OpenStreetMap</span>
+    <span style="flex:1"></span>
+    <a href="/guides/val-thorens">← חזרה למדריך</a>
+    <a href="https://www.valthorens.com/en/infos-neige/" target="_blank" rel="noopener">סטטוס מעליות ↗</a>
+  </header>
+  <div style="position:relative;flex:1;min-height:0">
+    <div id="map"></div>
+    <button id="togglePanel" onclick="togglePanel()">☰ תפריט</button>
+    <div id="panel">
+      <h2>🧭 ניווט</h2>
+      <div class="row">
+        <button id="gpsBtn" onclick="locateMe()">📍 איפה אני (GPS)</button>
+        <button id="demoBtn" onclick="setDemoStart()" class="active">🏠 התחלה: הכפר</button>
+      </div>
+      <div id="status">טוען נתוני מפה…</div>
+
+      <h3>🔍 לאן? חיפוש יעד</h3>
+      <input type="text" id="search" placeholder="חפשו מעלית, מסלול, בקתה, חניה…" oninput="doSearch(this.value)">
+      <div class="chips" id="searchTabs">
+        <button data-cat="all" class="active" onclick="setTab('all',this)">הכל</button>
+        <button data-cat="lift" onclick="setTab('lift',this)">מעליות</button>
+        <button data-cat="piste" onclick="setTab('piste',this)">מסלולים</button>
+        <button data-cat="village" onclick="setTab('village',this)">כפר</button>
+        <button data-cat="hut" onclick="setTab('hut',this)">בקתות</button>
+        <button data-cat="service" onclick="setTab('service',this)">שירותים</button>
+      </div>
+      <div id="searchResults"></div>
+      <p class="note">אפשר גם ללחוץ על המפה כדי לסמן יעד. נקודת ההתחלה היא המיקום שלכם (GPS) או הכפר במצב הדגמה.</p>
+
+      <h3>⚙️ העדפות מסלול</h3>
+      <div class="seg" id="levelSeg">
+        <button data-level="1" onclick="setLevel(1,this)">כחולים בלבד</button>
+        <button data-level="2" class="active" onclick="setLevel(2,this)">עד אדומים</button>
+        <button data-level="3" onclick="setLevel(3,this)">כולל שחורים</button>
+      </div>
+      <label class="chk"><input type="checkbox" id="snowboardMode" onchange="reroute()"> 🏂 מצב סנובורד — להימנע מקטעים שטוחים</label>
+      <label class="chk"><input type="checkbox" id="cabinDown" onchange="reroute()"> 🚡 מותר לרדת בגונדולה / רכבל (לא רק לגלוש)</label>
+
+      <div id="steps"></div>
+
+      <h3>⏱️ תכנון לפי זמן</h3>
+      <div class="row">
+        <span style="font-size:.88rem">יש לי</span>
+        <input type="number" id="haveMinutes" placeholder="60" style="width:70px" min="5" max="480">
+        <span style="font-size:.88rem">דקות</span>
+        <button onclick="planByMinutes()">בדיקה</button>
+      </div>
+      <div class="row" style="margin-top:6px">
+        <span style="font-size:.88rem">רוצה להיות למטה ב־</span>
+        <input type="time" id="arriveBy" style="width:110px">
+        <button onclick="planByTime()">חשבו</button>
+      </div>
+      <div class="row" style="margin-top:6px">
+        <span style="font-size:.88rem">סיום ב־</span>
+        <select id="finishAt" style="width:auto">
+          <option value="village">הכפר (ואל טוראנס)</option>
+          <option value="here">איפה שאני עכשיו</option>
+        </select>
+      </div>
+      <div id="planOut" class="note" style="margin-top:6px"></div>
+
+      <h3>💾 אופליין</h3>
+      <div class="row">
+        <button onclick="saveOffline()">שמור מפה לאופליין</button>
+        <button onclick="clearOffline()">מחק שמירה</button>
+      </div>
+      <div id="offlineStatus" class="note"></div>
+
+      <h3>🆘 חירום</h3>
+      <div class="row">
+        <button class="danger" onclick="toggleSOS()">🆘 SOS — 112</button>
+      </div>
+      <div id="sosPanel">
+        <b>מספר חירום: <a href="tel:112" style="color:#fff;font-size:1.2rem">112</a></b><br>
+        <span id="sosCoords">המיקום יופיע כאן כשה־GPS פעיל (או מרכז המפה).</span><br>
+        <button onclick="copyCoords()">📋 העתק קואורדינטות</button>
+        <button onclick="shareLocation()">↗️ שתף מיקום</button>
+        <p class="note">המיקום נשאר במכשיר שלכם — הוא לא נשלח לשום שרת. במקרה חירום התקשרו 112 ומסרו את הקואורדינטות.</p>
+      </div>
+      <p class="note" style="margin-top:10px">⚠️ זמני הגלישה וההמתנה הם <b>הערכות</b> (מהירויות ממוצעות + כ־5 דקות המתנה למעלית). שעות סגירה, עומסים וסטטוס פתיחה/סגירה משתנים — בדקו תמיד באתר הרשמי לפני יציאה למסלול ארוך. אין בנתונים האלה סטטוס חי.</p>
+    </div>
+    <div id="bottombar">
+      <b id="destName"></b>
+      <button onclick="document.getElementById('panel').scrollIntoView()">שלבי המסלול</button>
+      <button onclick="clearRoute()">סיום ניווט ✕</button>
+    </div>
+  </div>
+  <footer>
+    © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors (ODbL) · סגנון מפה © <a href="https://www.opensnowmap.org/" target="_blank" rel="noopener">OpenSnowMap.org</a> (CC-BY-SA) · נתוני מסלולים/מעליות: OSM, נבנה 27 בנובמבר 2026 · זמנים משוערים בלבד, ללא סטטוס חי.
+  </footer>
+</div>
+
+<script>
+/* Val Thorens live navigation map — Leaflet + OSM + OpenSnowMap overlay.
+   Routing: Dijkstra over the prebuilt directed graph in data/val-thorens.json
+   (pistes downhill only, lifts uphill only, near-flat segments both ways).
+   Speeds (estimates): ski green 3.5 / blue 5 / red 6.5 / black 8 m/s;
+   lifts gondola 5 / cable car 6 / chair 2.5 / platter 2 / carpet 0.8 m/s;
+   + ~5 min queue wait per lift. Times are estimates, not live data. */
+const DATA_URL = 'data/val-thorens.json';
+const VILLAGE = [45.29791, 6.58227]; // Val Thorens village (OSM place node)
+const DIFF_HE = {green:'ירוק', blue:'כחול', red:'אדום', black:'שחור'};
+const DIFF_LVL = {green:0, blue:1, red:2, black:3};
+const DIFF_COLOR = {green:'#22c55e', blue:'#3b82f6', red:'#ef4444', black:'#111827'};
+const LIFT_HE = {gondola:'גונדולה', cable_car:'רכבל', chair_lift:'כיסא', mixed_lift:'מעלית משולבת', platter:'מושך צלחת', 't-bar':'טי-בר', magic_carpet:'שטיח קסם', drag_lift:'מושך', funitel:'פוניטל'};
+const KIND_HE = {'village':'כפר','peak':'פסגה','hut':'בקתה','lift_station':'תחנת מעלית','hotel':'מלון','info':'מידע',
+  'amenity:restaurant':'מסעדה','amenity:bar':'בר','amenity:fast_food':'אוכל מהיר','amenity:pharmacy':'בית מרקחת',
+  'amenity:clinic':'מרפאה','amenity:doctors':'רופא','amenity:parking':'חניה','amenity:atm':'כספומט',
+  'amenity:toilets':'שירותים','amenity:fuel':'דלק','shop:sports':'חנות ספורט','shop:rental':'השכרת ציוד',
+  'shop:supermarket':'סופרמרקט','shop:convenience':'מכולת'};
+
+let map, DATA=null, adj={}, adjTo={}, allNodes=[];
+let pisteLayer, liftLayer, placesLayer, routeLayer, startMarker, destMarker, gpsMarker, gpsCircle;
+let startLL = VILLAGE.slice(), startIsDemo = true, destLL = null, destName = '';
+let maxLevel = 2, searchTab = 'all', currentRoute = null, watchId = null, dataInfo = '';
+
+const $ = id => document.getElementById(id);
+function haversineM(a, b){ // a,b = [lat,lon]
+  const R=6371000, toR=x=>x*Math.PI/180;
+  const dLa=toR(b[0]-a[0]), dLo=toR(b[1]-a[1]);
+  const h=Math.sin(dLa/2)**2 + Math.cos(toR(a[0]))*Math.cos(toR(b[0]))*Math.sin(dLo/2)**2;
+  return 2*R*Math.asin(Math.sqrt(h));
+}
+function pathLenM(coords){ let s=0; for(let i=0;i<coords.length-1;i++) s+=haversineM([coords[i][1],coords[i][0]],[coords[i+1][1],coords[i+1][0]]); return Math.round(s); }
+function keyOf(ll){ return ll[1].toFixed(5)+','+ll[0].toFixed(5); } // "lon,lat"
+function fmtMin(m){ m=Math.round(m*10)/10; return m<1 ? 'פחות מדקה' : (Number.isInteger(m)? m+' דק׳' : m.toFixed(1)+' דק׳'); }
+
+map = L.map('map', {zoomControl:true}).setView(VILLAGE, 14);
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19, attribution:'© OpenStreetMap contributors'}).addTo(map);
+L.tileLayer('https://tiles.opensnowmap.org/pistes/{z}/{x}/{y}.png', {maxZoom:18, opacity:0.9, attribution:'© OpenSnowMap (CC-BY-SA)'}).addTo(map);
+pisteLayer = L.layerGroup().addTo(map);
+liftLayer = L.layerGroup().addTo(map);
+placesLayer = L.layerGroup().addTo(map);
+routeLayer = L.layerGroup().addTo(map);
+
+function togglePanel(){ const p=$('panel'); p.style.display = p.style.display==='none' ? '' : 'none'; }
+function setStatus(t){ $('status').textContent = t; }
+
+fetch(DATA_URL).then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); }).then(d=>{
+  DATA=d;
+  buildGraph(); drawPistes(); drawLifts(); drawPlaces(); buildSearchIndex();
+  dataInfo=`נתונים נטענו: ${d.counts.pistes} מסלולים, ${d.counts.lifts} מעליות, ${d.counts.places} מקומות · גרף ${d.counts.graph_nodes} צמתים.`;
+  setStatus(dataInfo);
+  setDemoStart();
+}).catch(e=>{ setStatus('שגיאה בטעינת נתוני המפה: '+e.message+' — נסו לרענן.'); });
+
+function buildGraph(){
+  adj={}; adjTo={}; const seen=new Set();
+  for(const e of DATA.graph.edges){
+    const fk=e.from[0]+','+e.from[1], tk=e.to[0]+','+e.to[1];
+    (adj[fk]=adj[fk]||[]).push(e);
+    (adjTo[tk]=adjTo[tk]||[]).push(e);
+    if(!seen.has(fk)){seen.add(fk);allNodes.push([e.from[1],e.from[0]]);}
+    if(!seen.has(tk)){seen.add(tk);allNodes.push([e.to[1],e.to[0]]);}
+  }
+}
+function nearestNode(ll){ // ll=[lat,lon] -> [lat,lon] of nearest graph node
+  let best=null,bd=1e18;
+  for(const n of allNodes){ const d=haversineM(ll,n); if(d<bd){bd=d;best=n;} }
+  return best;
+}
+function drawPistes(){
+  for(const p of DATA.pistes){
+    const latlngs=p.coords.map(c=>[c[1],c[0]]);
+    const len=pathLenM(p.coords);
+    const line=L.polyline(latlngs,{color:DIFF_COLOR[p.difficulty],weight:3,opacity:0.85});
+    const name=p.name||'מסלול ללא שם';
+    line.bindPopup(`<b>${name}</b> <span class="pill ${p.difficulty}">${DIFF_HE[p.difficulty]}</span><br>אורך כ־${len.toLocaleString('he')} מ׳<br><span style="color:#666;font-size:.8rem">נתוני OSM · לחיצה על המפה ליד המסלול תציע אותו כיעד</span>`);
+    line.on('click',()=>{ setDestination([p.coords[Math.floor(p.coords.length/2)][1], p.coords[Math.floor(p.coords.length/2)][0]], name+' ('+DIFF_HE[p.difficulty]+')'); });
+    pisteLayer.addLayer(line);
+  }
+}
+function drawLifts(){
+  for(const l of DATA.lifts){
+    const latlngs=l.coords.map(c=>[c[1],c[0]]);
+    const len=pathLenM(l.coords);
+    const line=L.polyline(latlngs,{color:'#111827',weight:3,opacity:0.9});
+    const name=l.name||'מעלית ללא שם';
+    line.bindPopup(`<b>${name}</b><br>${LIFT_HE[l.type]||l.type} · אורך כ־${len.toLocaleString('he')} מ׳<br><span style="color:#666;font-size:.8rem">נתוני OSM · שעות פתיחה וסטטוס — באתר הרשמי</span>`);
+    line.on('click',()=>{ setDestination([l.coords[l.coords.length-1][1], l.coords[l.coords.length-1][0]], 'פסגת '+name); });
+    liftLayer.addLayer(line);
+  }
+}
+const KIND_COLOR={'village':'#2563eb','peak':'#6b7280','hut':'#92400e','lift_station':'#111827','hotel':'#7c3aed','info':'#0891b2',
+  'amenity:restaurant':'#ea580c','amenity:bar':'#db2777','amenity:fast_food':'#f59e0b','amenity:pharmacy':'#16a34a',
+  'amenity:clinic':'#dc2626','amenity:doctors':'#dc2626','amenity:parking':'#0ea5e9','amenity:atm':'#059669',
+  'amenity:toilets':'#64748b','amenity:fuel':'#475569','shop:sports':'#4f46e5','shop:rental':'#4f46e5',
+  'shop:supermarket':'#65a30d','shop:convenience':'#65a30d'};
+function drawPlaces(){
+  for(const pl of DATA.places){
+    const m=L.circleMarker([pl.coords[1],pl.coords[0]],{radius: pl.kind==='village'?7:5, color:KIND_COLOR[pl.kind]||'#666', weight:2, fillColor:KIND_COLOR[pl.kind]||'#666', fillOpacity:0.9});
+    m.bindPopup(`<b>${pl.name}</b><br>${KIND_HE[pl.kind]||pl.kind}${pl.ele? ' · '+pl.ele+' מ׳':''}`);
+    m.on('click',()=>{ setDestination([pl.coords[1],pl.coords[0]], pl.name); });
+    m._kind=pl.kind;
+    placesLayer.addLayer(m);
+  }
+}
+/* ---- search ---- */
+let SEARCH=[];
+function buildSearchIndex(){
+  for(const l of DATA.lifts) if(l.name) SEARCH.push({name:l.name, cat:'lift', label:'מעלית · '+(LIFT_HE[l.type]||l.type), ll:[l.coords[l.coords.length-1][1], l.coords[l.coords.length-1][0]]});
+  for(const p of DATA.pistes) if(p.name) SEARCH.push({name:p.name, cat:'piste', label:'מסלול · '+DIFF_HE[p.difficulty], ll:[p.coords[Math.floor(p.coords.length/2)][1], p.coords[Math.floor(p.coords.length/2)][0]]});
+  for(const pl of DATA.places) SEARCH.push({name:pl.name, cat: (pl.kind==='village'?'village': pl.kind==='hut'?'hut':'service'), label:KIND_HE[pl.kind]||pl.kind, ll:[pl.coords[1],pl.coords[0]]});
+}
+function setTab(cat,btn){ searchTab=cat; document.querySelectorAll('#searchTabs button').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); doSearch($('search').value); }
+function doSearch(q){
+  q=(q||'').trim().toLowerCase();
+  const box=$('searchResults'); box.innerHTML='';
+  if(q.length<2){ return; }
+  const hits=SEARCH.filter(s=> (searchTab==='all'||s.cat===searchTab) && s.name.toLowerCase().includes(q)).slice(0,30);
+  if(!hits.length){ box.innerHTML='<div class="res">לא נמצא — נסו שם אחר, או לחצו על המפה.</div>'; return; }
+  for(const h of hits){
+    const div=document.createElement('div'); div.className='res';
+    div.innerHTML=`<b></b><small></small>`;
+    div.querySelector('b').textContent=h.name; div.querySelector('small').textContent=h.label;
+    div.onclick=()=>{ setDestination(h.ll, h.name); map.setView(h.ll, 15); };
+    box.appendChild(div);
+  }
+}
+/* ---- start / GPS ---- */
+function setDemoStart(){
+  startIsDemo=true; startLL=VILLAGE.slice();
+  $('demoBtn').classList.add('active'); $('gpsBtn').classList.remove('active');
+  placeStartMarker(); setStatus(dataInfo+' נקודת התחלה: הכפר (מצב הדגמה). לחצו "איפה אני" ל־GPS חי.');
+  if(destLL) computeRoute();
+}
+function locateMe(){
+  if(!navigator.geolocation){ setStatus('הדפדפן לא תומך ב־GPS — נשארים במצב הדגמה.'); return; }
+  setStatus('מבקש מיקום…');
+  if(watchId!==null) navigator.geolocation.clearWatch(watchId);
+  watchId=navigator.geolocation.watchPosition(pos=>{
+    startIsDemo=false; startLL=[pos.coords.latitude, pos.coords.longitude];
+    $('gpsBtn').classList.add('active'); $('demoBtn').classList.remove('active');
+    placeStartMarker();
+    if(gpsCircle) map.removeLayer(gpsCircle);
+    gpsCircle=L.circle(startLL,{radius:pos.coords.accuracy||30,color:'#3b82f6',fillOpacity:0.15}).addTo(map);
+    map.setView(startLL, 15);
+    setStatus(dataInfo+` מיקום GPS פעיל (±${Math.round(pos.coords.accuracy||0)} מ׳). המיקום נשאר במכשיר.`);
+    updateSOS();
+    if(destLL) computeRoute();
+  }, err=>{
+    setStatus('לא הצלחנו לקבל GPS ('+err.message+') — נשארים במצב הדגמה (הכפר).');
+  }, {enableHighAccuracy:true, maximumAge:10000, timeout:15000});
+}
+function placeStartMarker(){
+  if(startMarker) map.removeLayer(startMarker);
+  startMarker=L.marker(startLL,{title:'נקודת התחלה'}).addTo(map)
+    .bindPopup(startIsDemo?'<b>התחלה: הכפר ואל טוראנס</b><br>(מצב הדגמה)':'<b>המיקום שלי</b>');
+}
+/* ---- destination + routing ---- */
+map.on('click', e=>{ setDestination([e.latlng.lat, e.latlng.lng], 'נקודה במפה'); });
+function setDestination(ll, name){
+  destLL=ll; destName=name||'יעד';
+  if(destMarker) map.removeLayer(destMarker);
+  destMarker=L.marker(ll,{title:destName}).addTo(map).bindPopup('<b>'+escapeHtml(destName)+'</b>').openPopup();
+  $('destName').textContent='🎯 '+destName;
+  $('bottombar').style.display='flex';
+  computeRoute();
+}
+function escapeHtml(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function setLevel(lvl,btn){ maxLevel=lvl; document.querySelectorAll('#levelSeg button').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); reroute(); }
+function reroute(){ if(destLL) computeRoute(); }
+function clearRoute(){
+  destLL=null; destName=''; currentRoute=null;
+  routeLayer.clearLayers(); if(destMarker){map.removeLayer(destMarker);destMarker=null;}
+  $('bottombar').style.display='none'; $('steps').innerHTML=''; $('planOut').textContent='';
+}
+function dijkstra(startKey, goalKey){
+  const snowboard=$('snowboardMode').checked, cabinDown=$('cabinDown').checked;
+  const dist={}, prev={}; const pq=[[0,startKey]]; dist[startKey]=0;
+  const ok=e=>{
+    if(e.kind==='piste'){
+      if(DIFF_LVL[e.difficulty]>maxLevel) return false;
+      if(snowboard && e.flat) return false;
+    }
+    return true;
+  };
+  while(pq.length){
+    let bi=0; for(let i=1;i<pq.length;i++) if(pq[i][0]<pq[bi][0]) bi=i;
+    const [du,u]=pq.splice(bi,1)[0];
+    if(du>dist[u]) continue;
+    if(u===goalKey) break;
+    for(const e of (adj[u]||[])){
+      if(!ok(e)) continue;
+      const v=e.to[0]+','+e.to[1];
+      const nd=du+e.minutes;
+      if(nd<(dist[v]??Infinity)){ dist[v]=nd; prev[v]=[u,e]; pq.push([nd,v]); }
+    }
+    if(cabinDown){ // reverse edges for gondola/cable_car/funitel: ride down in a cabin.
+      // We are at node u; look at lifts ENDING at u (u is the lift top) and ride down.
+      for(const e of (adjTo[u]||[])){
+        if(e.kind!=='lift') continue;
+        if(!['gondola','cable_car','funitel'].includes(e.lift_type)) continue;
+        const v=e.from[0]+','+e.from[1];
+        const nd=du+e.minutes;
+        if(nd<(dist[v]??Infinity)){ dist[v]=nd; prev[v]=[u,{...e,from:e.to,to:e.from,down:true}]; pq.push([nd,v]); }
+      }
+    }
+  }
+  if(dist[goalKey]===undefined) return null;
+  const path=[]; let cur=goalKey;
+  while(cur!==startKey){ const [u,e]=prev[cur]; path.push(e); cur=u; }
+  path.reverse();
+  return {minutes:dist[goalKey], path};
+}
+function collapseSteps(path){
+  const steps=[];
+  for(const e of path){
+    const k=e.kind+'|'+(e.name||'');
+    if(steps.length && steps[steps.length-1].key===k && !e.down){
+      const s=steps[steps.length-1]; s.minutes+=e.minutes; s.length_m+=e.length_m; s.coords.push(...e.coords.slice(1));
+    } else {
+      steps.push({key:k, kind:e.kind, name:e.name, difficulty:e.difficulty, lift_type:e.lift_type, down:!!e.down,
+        minutes:e.minutes, length_m:e.length_m, coords:e.coords.slice()});
+    }
+  }
+  return steps;
+}
+function computeRoute(){
+  if(!DATA||!destLL) return;
+  const sNode=nearestNode(startLL), gNode=nearestNode(destLL);
+  const res=dijkstra(keyOf(sNode), keyOf(gNode));
+  routeLayer.clearLayers();
+  const box=$('steps');
+  if(!res){
+    box.innerHTML='<div class="warn"><b>לא נמצא מסלול</b> ברמת הקושי שנבחרה. נסו להרחיב ל״עד אדומים״ או ״כולל שחורים״, או לבטל מצב סנובורד.</div>';
+    currentRoute=null; $('planOut').textContent=''; return;
+  }
+  const steps=collapseSteps(res.path);
+  const lifts=steps.filter(s=>s.kind==='lift').length;
+  const waitMin=5*lifts;
+  const total=res.minutes+waitMin;
+  currentRoute={steps, minutes:res.minutes, waitMin, total, lifts};
+  // draw
+  const latlngs=[];
+  for(const s of steps) for(const c of s.coords) latlngs.push([c[1],c[0]]);
+  L.polyline(latlngs,{color:'#a855f7',weight:5,opacity:0.95}).addTo(routeLayer);
+  let html=`<div class="tot">🕐 כ־${Math.round(total)} דקות סה״כ (${fmtMin(res.minutes)} גלישה/נסיעה + כ־${waitMin} דק׳ המתנה ב־${lifts} מעליות)</div><ol>`;
+  for(const s of steps){
+    if(s.kind==='lift'){
+      const nm=s.name||'מעלית ללא שם';
+      html+=`<li>🚡 מעלית <b>${escapeHtml(nm)}</b> (${LIFT_HE[s.lift_type]||s.lift_type||''}${s.down?' — ירידה בתא':''}) — ${fmtMin(s.minutes)}</li>`;
+    } else if(s.kind==='piste'){
+      const nm=s.name||'מסלול ללא שם';
+      html+=`<li>⛷️ מסלול <b>${escapeHtml(nm)}</b> <span class="pill ${s.difficulty}">${DIFF_HE[s.difficulty]}</span> — ${fmtMin(s.minutes)}</li>`;
+    } else {
+      html+=`<li>🚶 מעבר רגלי קצר (${s.length_m} מ׳) — ${fmtMin(s.minutes)}</li>`;
+    }
+  }
+  html+='</ol>';
+  // sector notes — from real data only
+  if(destLL[0]<45.26) html+='<div class="warn"><b>אורל:</b> היעד באזור אורל — ההגעה דרך Cime Caron. תחנת העמק של אורל (בגובה ~900 מ׳) מחוץ לנתוני המפה; הירידה לעמק אורל עצמו אינה מנווטת כאן.</div>';
+  if(destLL[0]>45.315) html+='<div class="warn"><b>קול דה לה שמבר → מריבל:</b> מכאן ממשיכים למריבל — נדרש פס <b>3 Vallées</b> מלא. המפה כאן מכסה עד גבול הנתונים (מריבל עצמה מחוץ לה).</div>';
+  const now=new Date();
+  const eta=new Date(now.getTime()+total*60000);
+  const etaStr=eta.getHours().toString().padStart(2,'0')+':'+eta.getMinutes().toString().padStart(2,'0');
+  html+=`<p class="note">הגעה משוערת: <b>${etaStr}</b> (אם יוצאים עכשיו). שעות סגירת מעליות אינן בנתונים — בדקו <a href="https://www.valthorens.com/en/infos-neige/" target="_blank" rel="noopener">סטטוס רשמי ↗</a> לפני מסלול ארוך בסוף היום.</p>`;
+  box.innerHTML=html;
+  $('planOut').textContent='';
+}
+/* ---- plan by time ---- */
+function planByMinutes(){
+  const mins=parseInt($('haveMinutes').value,10);
+  const out=$('planOut');
+  if(!currentRoute){ out.textContent='קודם בחרו יעד — התכנון נמדד מול המסלול הנוכחי.'; return; }
+  if(!mins||mins<=0){ out.textContent='הכניסו מספר דקות (למשל 60).'; return; }
+  const t=currentRoute.total;
+  if(t<=mins) out.innerHTML=`✅ המסלול ליעד לוקח כ־<b>${Math.round(t)} דקות</b> — נכנס ב־${mins} הדקות שיש לכם (נשארות כ־${Math.round(mins-t)} דקות).`;
+  else out.innerHTML=`⚠️ המסלול לוקח כ־<b>${Math.round(t)} דקות</b> — יותר מה־${mins} דקות שיש לכם (חסרות כ־${Math.round(t-mins)} דקות). בחרו יעד קרוב יותר או צאו מוקדם יותר.`;
+}
+function planByTime(){
+  const v=$('arriveBy').value;
+  const out=$('planOut');
+  if(!currentRoute){ out.textContent='קודם בחרו יעד — התכנון נמדד מול המסלול הנוכחי.'; return; }
+  if(!v){ out.textContent='בחרו שעה (למשל 14:00).'; return; }
+  const [hh,mm]=v.split(':').map(Number);
+  const now=new Date();
+  const target=new Date(now); target.setHours(hh,mm,0,0);
+  if(target<now) target.setDate(target.getDate()+1);
+  const leave=new Date(target.getTime()-currentRoute.total*60000);
+  const leaveStr=leave.getHours().toString().padStart(2,'0')+':'+leave.getMinutes().toString().padStart(2,'0');
+  const finishAt=$('finishAt').value;
+  const destTxt = finishAt==='village' ? 'בכפר ואל טוראנס' : 'בנקודת ההתחלה';
+  out.innerHTML=`כדי להיות ${destTxt} ב־<b>${v}</b> (מסלול של כ־${Math.round(currentRoute.total)} דקות כולל המתנות), צאו עד <b>${leaveStr}</b>. <span style="color:var(--muted)">הערכה בלבד — הוסיפו מרווח ביטחון ושעות סגירה מהאתר הרשמי.</span>`;
+}
+/* ---- offline ---- */
+const CACHE_NAME='vt-map-v1';
+async function saveOffline(){
+  const st=$('offlineStatus');
+  if(!('caches' in window)){ st.textContent='הדפדפן לא תומך בשמירת אופליין (Cache Storage).'; return; }
+  try{
+    const cache=await caches.open(CACHE_NAME);
+    await cache.add(DATA_URL);
+    // tiles for the resort bbox, zooms 12-15 (honest estimate: ~15KB/tile avg)
+    const bbox=[[45.24,6.50],[45.33,6.68]];
+    let urls=[], total=0;
+    for(let z=12; z<=15; z++){
+      const tiles=tileList(bbox,z);
+      for(const [x,y] of tiles){
+        urls.push(`https://tile.openstreetmap.org/${z}/${x}/${y}.png`);
+        urls.push(`https://tiles.opensnowmap.org/pistes/${z}/${x}/${y}.png`);
+      }
+    }
+    st.textContent=`שומר ${urls.length} אריחים (זום 12–15) + נתוני מסלולים… זה עשוי לקחת דקה.`;
+    let done=0;
+    for(let i=0;i<urls.length;i+=20){
+      await Promise.all(urls.slice(i,i+20).map(u=>cache.add(u).catch(()=>{})));
+      done+=20; st.textContent=`נשמרו ${Math.min(done,urls.length)} מתוך ${urls.length} אריחים…`;
+    }
+    st.textContent=`✅ נשמר לאופליין: נתוני מסלולים + ${urls.length} אריחים (כ־${Math.round(urls.length*15/1024)}MB משוער). השירות ברקע (service worker) יגיש אותם בלי קליטה.`;
+    if('serviceWorker' in navigator){ try{ await navigator.serviceWorker.register('sw-vt.js'); }catch(e){} }
+  }catch(e){ st.textContent='שגיאה בשמירה: '+e.message; }
+}
+function tileList(bbox,z){
+  const [sw,ne]=bbox; const out=[];
+  const x1=lon2tile(sw[1],z), x2=lon2tile(ne[1],z), y1=lat2tile(ne[0],z), y2=lat2tile(sw[0],z);
+  for(let x=x1;x<=x2;x++) for(let y=y1;y<=y2;y++) out.push([x,y]);
+  return out;
+}
+function lon2tile(lon,z){ return Math.floor((lon+180)/360*Math.pow(2,z)); }
+function lat2tile(lat,z){ const r=lat*Math.PI/180; return Math.floor((1-Math.log(Math.tan(r)+1/Math.cos(r))/Math.PI)/2*Math.pow(2,z)); }
+async function clearOffline(){
+  if('caches' in window){ await caches.delete(CACHE_NAME); $('offlineStatus').textContent='השמירה נמחקה.'; }
+}
+/* ---- SOS ---- */
+function toggleSOS(){ const p=$('sosPanel'); p.style.display=p.style.display==='block'?'none':'block'; updateSOS(); }
+function sosText(){
+  const ll = (!startIsDemo && startLL) ? startLL : map.getCenter();
+  const lat=ll.lat!==undefined? ll.lat : ll[0], lon=ll.lng!==undefined? ll.lng : ll[1];
+  return {lat, lon, text:`${lat.toFixed(5)}, ${lon.toFixed(5)}`};
+}
+function updateSOS(){ const s=sosText(); $('sosCoords').textContent='המיקום שלי: '+s.text+' (ואל טוראנס).'; }
+function copyCoords(){ const s=sosText(); (navigator.clipboard? navigator.clipboard.writeText(s.text) : Promise.reject()).then(()=>{ $('sosCoords').textContent='הועתק: '+s.text; }).catch(()=>{ $('sosCoords').textContent='העתיקו ידנית: '+s.text; }); }
+function shareLocation(){
+  const s=sosText();
+  const url=`https://www.google.com/maps?q=${s.lat},${s.lon}`;
+  if(navigator.share){ navigator.share({title:'המיקום שלי — ואל טוראנס', text:'אני כאן: '+s.text, url}).catch(()=>{}); }
+  else { window.open(url,'_blank'); }
+}
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw-vt.js').catch(()=>{}); }
+map.on('moveend', ()=>{ if($('sosPanel').style.display==='block') updateSOS(); });
+</script>
+</body>
+</html>

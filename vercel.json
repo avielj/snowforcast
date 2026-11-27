@@ -23,6 +23,18 @@
         {
             "src": "guides/*.html",
             "use": "@vercel/static"
+        },
+        {
+            "src": "guides/data/*.json",
+            "use": "@vercel/static"
+        },
+        {
+            "src": "guides/sw-vt.js",
+            "use": "@vercel/static"
+        },
+        {
+            "src": "guides/sw-alpe.js",
+            "use": "@vercel/static"
         }
     ],
     "routes": [
@@ -32,7 +44,7 @@
         },
         {
             "dest": "/guides/$1.html",
-            "src": "/guides/(val-thorens|la-plagne|alpe-d-huez)/?"
+            "src": "/guides/(val-thorens|la-plagne|alpe-d-huez|map-val-thorens|map-la-plagne|map-alpe-d-huez)/?"
         },
         {
             "dest": "app.py",
@@ -65,6 +77,18 @@
         {
             "dest": "app.py",
             "src": "/share-card/(.*)"
+        },
+        {
+            "dest": "/guides/data/$1",
+            "src": "/guides/data/(.*)"
+        },
+        {
+            "dest": "/guides/sw-vt.js",
+            "src": "/guides/sw-vt.js"
+        },
+        {
+            "dest": "/guides/sw-alpe.js",
+            "src": "/guides/sw-alpe.js"
         },
         {
             "dest": "app.py",

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ואל טוראנס — מדריך סקי וניווט | SnowForecast</title>
+<meta name="description" content="מדריך סקי בעברית לואל טוראנס: ניווט צעד אחר צעד בין פקלה, סים קארון, אורל ומריבל, סקי פס 2026/27, הגעה, מצלמות ותחזית חיה.">
+<style>
+:root{color-scheme:dark;--bg:#06111f;--card:rgba(16,38,61,.74);--line:rgba(255,255,255,.14);--text:#f6fbff;--muted:#9fb3c8;--accent:#7dd3fc;--green:#8ef7bd;--yellow:#facc15;--red:#fb7185}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;background:radial-gradient(circle at 0% 0%,rgba(56,189,248,.26),transparent 34rem),linear-gradient(135deg,#06111f 0%,#081827 48%,#10121e 100%);color:var(--text)}
+a{color:var(--accent)}
+.shell{width:min(1100px,calc(100% - 32px));margin:0 auto;padding:24px 0 56px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px;flex-wrap:wrap}
+.brand{display:inline-flex;align-items:center;gap:12px;font-size:1.25rem;font-weight:900;text-decoration:none;color:var(--text)}
+.brand-mark{width:44px;height:44px;display:grid;place-items:center;border-radius:16px;background:linear-gradient(135deg,rgba(125,211,252,.95),rgba(14,165,233,.55))}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:12px 18px;border-radius:999px;font-weight:900;text-decoration:none;color:#06111f;background:linear-gradient(135deg,#e0f7ff,var(--accent));border:0;cursor:pointer}
+.btn.secondary{color:var(--text);background:rgba(255,255,255,.09);border:1px solid var(--line)}
+h1{font-size:clamp(2rem,5vw,3rem);line-height:1.1;margin:0 0 8px}
+.lead{color:#c9d8e8;font-size:1.05rem;line-height:1.6}
+.live{background:linear-gradient(135deg,rgba(125,211,252,.16),rgba(255,255,255,.05));border:1px solid rgba(125,211,252,.35);border-radius:24px;padding:20px;margin:20px 0}
+.live h2{margin:0 0 12px;font-size:1.05rem}
+.live-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media(max-width:760px){.live-grid{grid-template-columns:1fr}}
+.live-cell{background:rgba(5,16,30,.55);border:1px solid var(--line);border-radius:16px;padding:14px}
+.live-cell .v{font-size:1.9rem;font-weight:950;margin-top:4px}
+.live-cell .n{color:var(--muted);font-size:.85rem;margin-top:4px}
+.label{color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;font-weight:900}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0}
+.toc a{color:var(--text);background:rgba(255,255,255,.07);border:1px solid var(--line);border-radius:999px;padding:8px 14px;text-decoration:none;font-size:.9rem;font-weight:700}
+section.panel{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:22px;margin-top:16px;line-height:1.75}
+section.panel h2{margin-top:0;font-size:1.35rem}
+section.panel h3{margin-bottom:6px}
+.muted{color:var(--muted)}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:.95rem}
+th,td{border:1px solid var(--line);padding:9px 10px;text-align:right}
+th{background:rgba(255,255,255,.07)}
+.route{border:1px solid var(--line);border-radius:16px;padding:16px;margin:12px 0;background:rgba(255,255,255,.04)}
+.route h3{margin:0 0 8px}
+.route ol{margin:6px 0;padding-right:20px;line-height:2}
+.route ol li::marker{font-weight:900;color:var(--accent)}
+.warn{border:1px solid rgba(250,204,21,.5);background:rgba(250,204,21,.08);border-radius:16px;padding:16px;margin:12px 0}
+.warn h3{margin:0 0 6px;color:var(--yellow)}
+ul{line-height:1.9}
+.note{font-size:.9rem;color:var(--muted)}
+.pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:.85rem;font-weight:800;color:var(--muted);margin:2px}
+</style>
+</head>
+<body>
+<main class="shell">
+  <div class="topbar">
+    <a class="brand" href="/"><span class="brand-mark">❄️</span><span>SnowForecast</span></a>
+    <div><a class="btn secondary" href="/guides/">מדריכים</a> <a class="btn secondary" href="/#Val-Thorens/bot">תחזית מלאה</a></div>
+  </div>
+
+  <h1>ואל טוראנס 🏔️</h1>
+  <p class="lead">Val Thorens · ‏3 Vallées, צרפת — הכפר הגבוה באירופה. הכפר יושב בתחתית של קערה בגובה 2,300 מ׳, והמסלולים מקיפים אותו משלושה צדדים — כמעט כל מסלול מחזיר בסוף לאותו כפר. זה מה שהופך את הניווט כאן לקל יחסית, וגם למסוכן כשחוצים את שפת הקערה.</p>
+
+  <div class="live" id="live-banner">
+    <h2>❄️ תחזית חיה — שלג צפוי ב־7 הימים הקרובים <span class="muted">(נתוני SnowForecast)</span></h2>
+    <div class="live-grid" id="live-grid"><p class="muted">טוען תחזית…</p></div>
+    <p class="note" id="live-note"></p>
+    <p><a class="btn secondary" href="/#Val-Thorens/bot">פתחו את התחזית המלאה ←</a>
+    <a class="btn secondary" href="https://www.valthorens.com/en/infos-neige/" target="_blank" rel="noopener">🚡 סטטוס מעליות ומסלולים — האתר הרשמי ↗</a></p>
+  </div>
+
+  <nav class="toc">
+    <a href="#nav">🧭 ניווט</a><a href="#facts">בקצרה</a><a href="#pass">סקי פס</a><a href="#cams">מצלמות ומפות</a><a href="#arrive">הגעה וחניה</a><a href="#stay">לינה</a><a href="#school">הדרכה וציוד</a><a href="#food">בקתות ואפרה</a><a href="#kosher">כשרות ושבת</a><a href="#storm">יום סוער</a><a href="#nearby">אתרים קרובים</a><a href="#sources">מקורות</a>
+  </nav>
+
+  <section class="panel" id="facts">
+    <h2>בקצרה</h2>
+    <p><span class="pill">כפר: 2,300 מ׳</span> <span class="pill">פסגה: 3,230 מ׳ (Pointe du Bouchet)</span> <span class="pill">150 ק״מ מקומי</span> <span class="pill">600 ק״מ ב־3 Vallées</span> <span class="pill">11 ירוק · 27 כחול · 29 אדום · 9 שחור</span> <span class="pill">32 מעליות מקומיות · 169 בכל 3 Vallées</span></p>
+    <p><b>עונה 2026/27:</b> ואל טוראנס–אורל 21 בנובמבר 2026 – 2 במאי 2027; הקישור לכל 3 Vallées פתוח 5 בדצמבר 2026 – 18 באפריל 2027.</p>
+    <p><b>איך קוראים את ההר:</b> קערה שהכפר בתחתיתה. מצפון — קרחון <b>Péclet</b>; ממערב — <b>Cime Caron</b> (3,200 מ׳) והמעבר לאורל; מעל הכפר, פונה לשמש — <b>Plein Sud</b> ו־<b>Col de la Chambre</b>, הדלת למריבל. כמעט כל מסלול חוזר לכפר — חוץ מהמסלולים שיורדים מהקערה החוצה (ללי מנואיר, למריבל, לאורל).</p>
+  </section>
+
+  <section class="panel" id="nav">
+    <h2>🧭 ניווט — מנקודה לנקודה</h2>
+    <p class="muted">כל השמות כאן נבדקו מול מפת המסלולים הרשמית של ואל טוראנס. לפני כל יום — בדקו את עמוד סטטוס המעליות: רוח סוגרת את הליפטים הגבוהים (Péclet, Cime Caron) והתוכנית משתנה.</p>
+
+    <div class="route">
+      <h3>1. מהכפר לפסגת Cime Caron (3,200 מ׳) — התצפית של העמק</h3>
+      <ol>
+        <li>מהכפר: גונדולה <b>Caron</b> עד לתחנת הביניים (2,316 מ׳).</li>
+        <li>משם: רכבל <b>Cime Caron</b> עד לפסגה (~3,155 מ׳).</li>
+        <li>ירידה: השחורים <b>Combe de Caron</b> ו־<b>Combe de Rosaël</b> למנוסים, או חזרה ברכבל למטה. הנוף מהפסגה — הטוב בעמק.</li>
+      </ol>
+    </div>
+
+    <div class="route">
+      <h3>2. מהכפר לקרחון Péclet — השלג הראשון של הבוקר</h3>
+      <ol>
+        <li>מהכפר: <b>Funitel Péclet</b> ישירות עד ~2,927 מ׳, מתחת לקרחון.</li>
+        <li>ירידה: אדומים רחבים ועקביים חזרה לכפר. הצד הזה תופס שמש ראשון בבוקר ומחזיק שלג הכי הרבה זמן באביב.</li>
+      </ol>
+    </div>
+
+    <div class="route">
+      <h3>3. מהכפר למריבל (3 Vallées) — דרך Col de la Chambre</h3>
+      <ol>
+        <li>מהכפר: כיסא <b>Plein Sud</b> (הצד שטוף השמש מעל הכפר, כחולים רחבים).</li>
+        <li>ממשיכים ל־<b>Col de la Chambre</b> בראש — זו הדלת למריבל.</li>
+        <li>ירידה בכחולים <b>Lac de la Chambre</b> / <b>Mont de la Chambre</b> לכיוון Méribel-Mottaret.</li>
+      </ol>
+      <p><b>פס נדרש: 3 Vallées מלא.</b> עם פס ואל טוראנס–אורל בלבד המעבר סגור לכם. חזרה באותה דרך — תכננו מרווח זמן גדול לפני סגירת המעבר.</p>
+    </div>
+
+    <div class="route">
+      <h3>4. מהכפר לאורל (Orelle) — העמק הרביעי, השקט</h3>
+      <ol>
+        <li>אפשרות א׳: <b>Grand Fond</b> (פוניטל) עד Col de Rosaël ומשם לאורל.</li>
+        <li>אפשרות ב׳: <b>Cime Caron</b> ואז גונדולת <b>Orelle-Caron</b> (2,364 ←→ 3,148 מ׳) היישר לאורל.</li>
+        <li>בדרך: <b>Pointe du Bouchet</b> (3,230 מ׳) — הנקודה הגבוהה ביותר בכל 3 Vallées.</li>
+      </ol>
+      <p><b>פס נדרש:</b> פס ואל טוראנס–אורל מספיק (אורל כלולה בו).</p>
+    </div>
+
+    <div class="route">
+      <h3>5. מתחילים — מהכפר למסלול הירוק הראשון</h3>
+      <ol>
+        <li>מתחילים באזור הלימוד <b>במרכז הכפר</b> — שטיחי קסם חינמיים, בלי צורך בפס ביום הראשון.</li>
+        <li>השלב הבא: גונדולת <b>Deux Lacs</b> עד Chalet des 2 Lacs, וירידה במסלול הירוק <b>Traversée Deux Lacs</b> חזרה לכפר. גם מסלולי <b>Cascades</b> מתאימים להתחלה.</li>
+      </ol>
+    </div>
+
+    <div class="route">
+      <h3>6. חזרה לכפר בסוף היום</h3>
+      <p>רוב המסלולים בקערה מובילים חזרה לכפר מעצמם. מי שירד לכיוון <b>Les Menuires</b> (במורד העמק) צריך לעלות חזרה בליפטים — לא לרדת לשם מאוחר. מי שחצה למריבל או לאורל — חוזר דרך אותו מעבר שדרכו יצא (Col de la Chambre / Orelle-Caron), עם מרווח זמן.</p>
+    </div>
+
+    <div class="warn">
+      <h3>⚠️ מלכודות ניווט</h3>
+      <ul>
+        <li><b>אורל — הדרך חזרה אדומה.</b> מסלולי החזרה מאורל לואל טוראנס אדומים. לא שולחים לשם גולש חלש לבד.</li>
+        <li><b>Col de la Chambre — בלי פס 3 Vallées אין מעבר,</b> ובלי זמן לחזור אין טעם לחצות. המרחק חזרה ארוך, והמעבר נסגר לפני סוף היום.</li>
+        <li><b>רוח סוגרת את הגבוהים.</b> ביום רוח — Péclet ו־Cime Caron נסגרים ראשונים. תכננו יום נמוך (Plein Sud) מראש.</li>
+        <li><b>בדרך ברכב:</b> ממוטייה עולים בכביש <b>D117</b> דרך סן־מרטן־דה־בלוויל. לשכת התיירות מזהירה במפורש <b>לא</b> לקחת את ה־D96 — צר ולעתים סגור.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="panel" id="pass">
+    <h2>🎫 סקי פס — מחירון 2026/27</h2>
+    <p class="muted">מבוגר 18–74. נבדק 27 בנובמבר 2026 מול valthorens.com הרשמי. 6 ימים = מחיר 5 ימים.</p>
+    <table>
+      <tr><th>פס</th><th>יום 1</th><th>6 ימים</th><th>הערות</th></tr>
+      <tr><td><b>Val Thorens–Orelle</b></td><td>€73.50</td><td><b>€367.50</b></td><td>ילד 5–17: €301 · עד 18 בדצמ׳: €330.50</td></tr>
+      <tr><td><b>3 Vallées (מלא)</b></td><td>€84.20</td><td><b>€421</b></td><td>ילד 5–17: €345 · שבועות זולים (5–18 בדצמ׳, 10–18 באפר׳): €378.50</td></tr>
+    </table>
+    <p>קנייה: <a href="https://ski.valthorens.com/" target="_blank" rel="noopener">ski.valthorens.com</a> או בקופות. מתחת לגיל 5 — חינם. פס מתחילים <b>EasyRider</b> בחצי מחיר, לליפטים הירוקים/כחולים בלבד.</p>
+  </section>
+
+  <section class="panel" id="cams">
+    <h2>📹 מצלמות, מפות וסטטוס</h2>
+    <ul>
+      <li><a href="https://www.valthorens.com/en/webcams/" target="_blank" rel="noopener">מצלמות חיות — valthorens.com ↗</a></li>
+      <li><a href="https://www.valthorens.com/en/ski/plan/" target="_blank" rel="noopener">מפת מסלולים רשמית ↗</a></li>
+      <li><a href="https://www.valthorens.com/en/infos-neige/" target="_blank" rel="noopener">סטטוס מעליות ומסלולים + גובה שלג ↗</a></li>
+      <li><a href="https://www.valthorens.com/en/" target="_blank" rel="noopener">אתר האתר הרשמי ↗</a></li>
+    </ul>
+  </section>
+
+  <section class="panel" id="arrive">
+    <h2>🚗 הגעה, חניה וחירום</h2>
+    <ul>
+      <li><b>ז׳נבה (GVA):</b> כ־2.5–3 שעות נסיעה (~200 ק״מ), ביום שבת עמוס — להוסיף שעה לפחות. רכבת עד <b>Moûtiers-Salins-Brides-les-Bains</b> (37 ק״מ מהאתר) ואז אוטובוס S63, כשעה.</li>
+      <li><b>הסעות:</b> שאטלים משותפים (Ben's Bus, AlpyBus ואחרים) ופרטיות מז׳נבה; אוטובוס Altibus בעונה.</li>
+      <li><b>רכב:</b> הכפר חצי־הולכי־רגל — חניה ברחובות אסורה 15 בנוב׳–15 במאי; חובה להזמין חניה מראש. ביום ההגעה מותר לפרוק ליד הלינה ואז להכניס את הרכב לחניון. צמיגי חורף או שרשראות חובה 1 בנוב׳–31 במרץ (חוק צרפתי).</li>
+      <li><b>חירום:</b> 112 (חירום כללי, אירופה), 15 (SAMU, רפואי). על המסלול — פנו לפיסטורים או לצוות המעלית הקרובה.</li>
+    </ul>
+  </section>
+
+  <section class="panel" id="stay">
+    <h2>🛏️ איפה להתארח</h2>
+    <p>כפר אחד, בנוי סביב מרכז ללא מכוניות — רוב הלינה (דירות, מלונות, שאלה) במרחק הליכה קצר מהמעליות, ורובה ski-in / ski-out. הלינה יקרה יחסית לגובה — מי שמחפש זול יותר יכול לישון ב־<b>Les Menuires</b> או <b>Saint-Martin-de-Belleville</b> במורד העמק ולעלות כל בוקר (עם פס מתאים). שאלו לפני הזמנה: מרחק למעלית הקרובה, האם יש חניה כלולה, ומעלית/מחסן ציוד בבניין.</p>
+  </section>
+
+  <section class="panel" id="school">
+    <h2>🎿 הדרכת סקי וציוד</h2>
+    <ul>
+      <li><b>בתי ספר:</b> ESF (בית הספר הצרפתי הלאומי) ו־Evolution 2 פועלים באתר — קבוצות, פרטי, ילדים וסנובורד. הזמינו מראש לשבועות עמוסים; מחירים עדכניים באתר בית הספר.</li>
+      <li><b>אזור לימוד:</b> במרכז הכפר, שטיחי קסם חינמיים — לא צריך פס ליום הראשון.</li>
+      <li><b>השכרת ציוד:</b> חנויות ההשכרה מרוכזות במרכז הכפר ליד המעליות. הזמינו אונליין מראש בעונה — זול יותר ומבטיח מידה. מגלשיים/סנובורד, מגפיים, קסדה (חובה לילדים בצרפת, מומלצת לכולם).</li>
+    </ul>
+  </section>
+
+  <section class="panel" id="food">
+    <h2>🍽️ בקתות ואפרה־סקי</h2>
+    <ul>
+      <li><b>Chalet des 2 Lacs</b> — בקתת הרים עם מרפסת שמש גדולה בראש גונדולת Deux Lacs, נקודת עצירה קלאסית למתחילים ולמשפחות.</li>
+      <li><b>אפרה־סקי:</b> מרוכז במרכז הכפר, סביב הרחוב הראשי — ברים ומועדונים במרחק הליכה מהמסלולים. ואל טוראנס ידועה באפרה החזק שלה; מי שמחפש שקט — יוצא מהמרכז לכיוון הקצוות.</li>
+      <li>רשימת בקתות ומסעדות מעודכנת — באתר הרשמי של האתר.</li>
+    </ul>
+  </section>
+
+  <section class="panel" id="kosher">
+    <h2>✡️ כשרות ושבת</h2>
+    <p>לא נמצאה מסעדה כשרה מאומתת בואל טוראנס (נבדק 27 בנוב׳ 2026). המעשי: דירה עם מטבח (self-catering) ולהביא אוכל מהארץ / לקנות מצרכים בסופר בכפר ובמוטייה בדרך. זמני שבת — <a href="https://www.myzmanim.com/" target="_blank" rel="noopener">MyZmanim ↗</a> (בחרו Val Thorens). המעליות פועלות בשבת כרגיל בצרפת. ביטוח נסיעות עם הרחבת ספורט חורף — חובה (ראו המדריך של CerviniaLive על ההבדל בין ״ספורט אתגרי״ ל״ספורט חורף״).</p>
+  </section>
+
+  <section class="panel" id="storm">
+    <h2>🌨️ יום סוער / מחוץ למסלולים</h2>
+    <p>ואל טוראנס כולה מעל קו העצים — ביום סופה אין עצים שיתנו קונטרסט, והראות נעלמת. ביום כזה: הישארו נמוך (Plein Sud), גלשו קצר, או קחו יום מנוחה — מרכז הספורט, בריכה וספא בכפר, וסיור בלי מנואיר. כשהרוח סוגרת את הגבוהים, אל תנסו ״רק עוד עלייה אחת״ לקארון.</p>
+  </section>
+
+  <section class="panel" id="nearby">
+    <h2>🏔️ אתרים קרובים</h2>
+    <p>עם פס 3 Vallées מלא: <b>Les Menuires</b> (במורד העמק), <b>Méribel</b> (מעבר Col de la Chambre) ו־<b>Courchevel</b> (הלאה ממריבל) — 600 ק״מ מחוברים. בלי הפס המלא — נשארים בואל טוראנס–אורל.</p>
+  </section>
+
+  <section class="panel" id="sources">
+    <h2>מקורות</h2>
+    <p class="note">נבדק 27 בנובמבר 2026: מחירון רשמי — valthorens.com (עמוד 6-day pass ומחירון המעליות); עונה וגבהים — valthorens.com; מפת מסלולים וליפטים — מפת המסלולים הרשמית (דרך justpiste/WeSki המצטטים אותה); הגעה — valthorens.com + מדריכי העברות (Luxotica, GVA Airport); תחזית חיה — נתוני SnowForecast. מחירים עשויים להשתנות — אמתו בחנות הרשמית לפני תשלום.</p>
+  </section>
+</main>
+<script>
+(function(){
+  var DATA_URL='https://raw.githubusercontent.com/avielj/snowforcast/refs/heads/main/data/all-forecasts.json';
+  var RESORT='Val-Thorens';
+  var ELEV={bot:['Bottom','2,300m'],mid:['Mid','2,800m'],top:['Top','3,230m']};
+  function num(v){if(v==null)return 0;var m=String(v).replace(',','.').match(/-?\d+(\.\d+)?/);return m?Number(m[0]):0;}
+  function daySnow(d){if(!d)return 0;if(d.average_snow!=null)return num(d.average_snow);var s=0;['am','pm','night'].forEach(function(p){if(d[p])s+=num(d[p].snow);});return s;}
+  function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+  fetch(DATA_URL,{cache:'no-store'}).then(function(r){if(!r.ok)throw new Error(r.status);return r.json();}).then(function(all){
+    var R=all[RESORT]||{};var html='';var best=null,bestSnow=-1;var temps=[];
+    Object.keys(ELEV).forEach(function(e){
+      var d=R[e]||{};var days=Array.isArray(d.days)?d.days:[];
+      var total=days.reduce(function(s,x){return s+daySnow(x);},0);
+      days.forEach(function(x){['am','pm','night'].forEach(function(p){if(x[p]&&x[p].temperature!=null)temps.push(num(x[p].temperature));});if(x.temp_min!=null)temps.push(num(x.temp_min));if(x.temp_max!=null)temps.push(num(x.temp_max));});
+      var bd=null;days.forEach(function(x){var s=daySnow(x);if(s>bestSnow){bestSnow=s;bd=x;best={day:x.name||x.date||'',snow:s,elev:e};}});
+      html+='<div class="live-cell"><div class="label">'+ELEV[e][0]+' · '+ELEV[e][1]+'</div><div class="v">'+(Math.round(total*10)/10)+' cm</div><div class="n">שלג צפוי · '+days.length+' ימי תחזית</div></div>';
+    });
+    document.getElementById('live-grid').innerHTML=html;
+    var note='';
+    if(best)note='החלון הכי מושלג: <b>'+esc(best.day)+'</b> — '+bestSnow+' ס״מ ('+ELEV[best.elev][0]+'). ';
+    if(temps.length)note+='טמפרטורה: '+Math.round(Math.min.apply(null,temps))+'° עד '+Math.round(Math.max.apply(null,temps))+'°.';
+    var upd=(R.bot&&R.bot.last_updated)||(R.top&&R.top.last_updated)||'';
+    if(upd)note+=' עודכן: '+esc(upd.slice(0,16).replace('T',' '))+'.';
+    document.getElementById('live-note').innerHTML=note;
+  }).catch(function(){
+    document.getElementById('live-grid').innerHTML='<p class="muted">התחזית לא נטענה כרגע — <a href="/#Val-Thorens/bot">פתחו את דף התחזית המלא</a>.</p>';
+  });
+})();
+</script>
+</body>
+</html>

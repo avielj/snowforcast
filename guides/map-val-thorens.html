@@ -2,21 +2,20 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<script>try{var _l=localStorage.getItem('sf-lang')||'he';document.documentElement.lang=_l;document.documentElement.dir=_l==='en'?'ltr':'rtl';}catch(e){}</script>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>try{var _l=localStorage.getItem('sf-lang')||'he';document.documentElement.lang=_l;document.documentElement.dir=_l==='en'?'ltr':'rtl';var _t=localStorage.getItem('sf-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>מפת ניווט חיה — ואל טוראנס | SnowForecast</title>
 <meta name="description" content="מפת סקי אינטראקטיבית של ואל טוראנס ואורל: ניווט GPS בין מסלולים ומעליות, חיפוש יעדים, תכנון לפי זמן ו-SOS. נתוני OpenStreetMap.">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="icon" href="favicon.svg">
+<link rel="stylesheet" href="sf-tokens.css">
+<link rel="stylesheet" href="map-shared.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="map-shared.js"></script>
 <style>
-:root{color-scheme:dark;--bg:#06111f;--card:#0d2138;--line:rgba(255,255,255,.14);--text:#f6fbff;--muted:#9fb3c8;--accent:#7dd3fc;--green:#22c55e;--blue:#3b82f6;--red:#ef4444;--black:#e5e7eb;--yellow:#facc15}
 *{box-sizing:border-box}
-html,body{margin:0;height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
-#app{display:flex;flex-direction:column;height:100dvh}
-header{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--card);border-bottom:1px solid var(--line);flex-wrap:wrap}
-header h1{font-size:1.05rem;margin:0}
-header .sub{color:var(--muted);font-size:.8rem}
-header a{color:var(--accent);text-decoration:none;font-size:.85rem;font-weight:700}
+html,body{margin:0;height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--sf-bg);color:var(--sf-text)}
+#app{display:flex;flex-direction:column;height:100vh;height:100dvh}
 #map{flex:1;min-height:0;z-index:0}
 .leaflet-container{font-family:inherit}
 .leaflet-popup-content{direction:rtl;text-align:right}
@@ -24,15 +23,14 @@ header a{color:var(--accent);text-decoration:none;font-size:.85rem;font-weight:7
 .pill{display:inline-block;border-radius:999px;padding:1px 8px;font-size:.75rem;font-weight:800;color:#06111f}
 .pill.green{background:#4ade80}.pill.blue{background:#60a5fa}.pill.red{background:#f87171}.pill.black{background:#e5e7eb}
 /* control panel */
-#panel{position:absolute;z-index:1000;top:10px;right:10px;width:min(360px,calc(100vw - 20px));max-height:calc(100dvh - 130px);overflow:auto;background:rgba(6,17,31,.94);border:1px solid var(--line);border-radius:16px;padding:12px;backdrop-filter:blur(4px)}
-#panel h2{font-size:1rem;margin:0 0 8px}
-#panel h3{font-size:.9rem;margin:12px 0 6px}
+#sheet h2{font-size:1rem;margin:0 0 8px}
+#sheet h3{font-size:.9rem;margin:12px 0 6px}
 .row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-button,.btn{cursor:pointer;border:1px solid var(--line);background:rgba(255,255,255,.08);color:var(--text);border-radius:999px;padding:8px 12px;font-size:.85rem;font-weight:700;font-family:inherit}
+button,.btn{cursor:pointer;border:1px solid var(--line);background:var(--sf-surface-2);color:var(--text);border-radius:999px;padding:8px 12px;font-size:.85rem;font-weight:700;font-family:inherit;min-height:48px}
 button.primary{background:linear-gradient(135deg,#e0f7ff,var(--accent));color:#06111f;border:0}
 button.danger{background:#dc2626;border-color:#dc2626;color:#fff}
 button.active{background:var(--accent);color:#06111f;border-color:var(--accent)}
-input[type=text],input[type=number],input[type=time],select{background:#0a1a2e;border:1px solid var(--line);color:var(--text);border-radius:10px;padding:8px 10px;font-size:.9rem;font-family:inherit;width:100%}
+input[type=text],input[type=number],input[type=time],select{background:var(--sf-input-bg);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:8px 10px;font-size:16px;font-family:inherit;width:100%}
 #searchResults{max-height:220px;overflow:auto;margin-top:6px}
 #searchResults .res{padding:8px 10px;border-bottom:1px solid var(--line);cursor:pointer;font-size:.9rem}
 #searchResults .res:hover{background:rgba(125,211,252,.12)}
@@ -50,40 +48,45 @@ label.chk{display:flex;gap:6px;align-items:center;font-size:.88rem;margin:4px 0}
 .warn{border:1px solid rgba(250,204,21,.5);background:rgba(250,204,21,.08);border-radius:12px;padding:10px;margin-top:8px;font-size:.88rem;line-height:1.6}
 .warn b{color:var(--yellow)}
 #sosPanel{display:none;border:1px solid rgba(239,68,68,.6);background:rgba(239,68,68,.1);border-radius:12px;padding:10px;margin-top:8px;line-height:1.8}
-#bottombar{position:absolute;z-index:1000;bottom:10px;left:50%;transform:translateX(-50%);display:none;gap:8px;background:rgba(6,17,31,.94);border:1px solid var(--line);border-radius:999px;padding:8px 12px;align-items:center;max-width:calc(100vw - 20px);flex-wrap:wrap;justify-content:center}
-#bottombar b{font-size:.9rem}
-#togglePanel{position:absolute;z-index:1001;top:10px;left:10px}
-#status{font-size:.8rem;color:var(--muted);margin-top:6px}
-footer{padding:6px 12px;font-size:.72rem;color:var(--muted);background:var(--card);border-top:1px solid var(--line)}
-footer a{color:var(--muted)}
-@media(max-width:640px){#panel{top:54px}}
 
 html[dir="ltr"] #steps ol{padding-right:0;padding-left:20px}
 html[dir="ltr"] .leaflet-popup-content{direction:ltr;text-align:left}
+
 </style>
 </head>
 <body>
 <div id="app">
-  <header>
-    <h1 data-i18n="meta.h1">🗺️ ואל טוראנס — מפת ניווט חיה</h1>
-    <span class="sub" data-i18n="meta.sub">Val Thorens + Orelle · ‏3 Vallées · נתוני OpenStreetMap</span>
-    <span style="flex:1"></span>
-    <a href="/guides/val-thorens" data-i18n="ui.backGuide">← חזרה למדריך</a>
-    <button id="langToggle" onclick="toggleLang()">EN</button>
-    <a href="https://www.valthorens.com/en/infos-neige/" target="_blank" rel="noopener" data-i18n="ui.liftStatus">סטטוס מעליות ↗</a>
-  </header>
-  <div style="position:relative;flex:1;min-height:0">
+  <div id="mapWrap">
     <div id="map"></div>
-    <button id="togglePanel" onclick="togglePanel()" data-i18n="ui.menu">☰ תפריט</button>
-    <div id="panel">
-      <h2 data-i18n="nav.title">🧭 ניווט</h2>
-      <div class="row">
-        <button id="gpsBtn" onclick="locateMe()" data-i18n="nav.gps">📍 איפה אני (GPS)</button>
-        <button id="demoBtn" onclick="setDemoStart()" class="active" data-i18n="nav.demo">🏠 התחלה: הכפר</button>
+<div id="topPill">
+      <a href="/guides/val-thorens" aria-label="Back to guide">‹</a>
+      <span class="resort">Val Thorens</span>
+      <a class="liftlink" href="https://www.valthorens.com/en/infos-neige/" target="_blank" rel="noopener" data-i18n="ui.liftStatus">סטטוס מעליות ↗</a>
+      <button class="pillbtn bar-item" id="gearBtn" data-sheet="settings" aria-label="Settings">⚙️</button>
+      <button class="pillbtn" id="langToggle" onclick="toggleLang()" aria-label="Language">EN</button>
+    </div>
+    <div id="statusRow">
+      <button class="chip" id="startLabel"><span class="dot demo"></span><span>הכפר (דמו)</span></button>
+      <div class="chip group-chip" id="tripChip"><span class="trip-label">👥 קבוצות טיול</span><button class="switch" role="switch" aria-checked="false" aria-label="שיתוף מיקום">כבוי</button></div>
+      <button class="chip" id="offlineChip">💾 <span data-i18n="offline.save">שמור מפה לאופליין</span></button>
+    </div>
+    <div id="status" class="toast" role="status"></div>
+    <button class="fab" id="gpsFab" aria-label="GPS">◎</button>
+    <div id="routeCard">
+      <div class="rc-dest" id="destName"></div>
+      <div class="rc-sum" id="routeTotal"></div>
+      <div class="rc-steps" id="routeStepsPeek"></div>
+      <div class="rc-actions">
+        <button id="rcDetails" data-i18n="nav.stepsBtn">שלבי המסלול</button>
+        <button id="rcStart" class="primary" data-i18n="nav.start">▶ התחל ניווט</button>
+        <button id="rcEnd" class="danger" data-i18n="nav.endBtn">✕ נקה מסלול</button>
       </div>
-      <div id="status">טוען נתוני מפה…</div>
-
-      <h3 data-i18n="search.title">🔍 לאן? חיפוש יעד</h3>
+    </div>
+    <div id="scrim"></div>
+    <div id="sheet">
+      <div class="sheet-handle"></div>
+<div class="pane" id="pane-search">
+<h2><span data-i18n="search.title">🔍 לאן? חיפוש יעד</span><button class="x" aria-label="Close">✕</button></h2>
       <input type="text" id="search" placeholder="חפשו מעלית, מסלול, בקתה, חניה…" data-i18n-ph="search.ph" oninput="doSearch(this.value)">
       <div class="chips" id="searchTabs">
         <button data-cat="all" class="active" onclick="setTab('all',this)" data-i18n="search.tabAll">הכל</button>
@@ -93,27 +96,53 @@ html[dir="ltr"] .leaflet-popup-content{direction:ltr;text-align:left}
         <button data-cat="hut" onclick="setTab('hut',this)" data-i18n="search.tabHut">בקתות</button>
         <button data-cat="service" onclick="setTab('service',this)" data-i18n="search.tabService">שירותים</button>
       </div>
+      <div id="recentList"></div>
       <div id="searchResults"></div>
       <p class="note" data-i18n="search.note">אפשר גם ללחוץ על המפה כדי לסמן יעד. נקודת ההתחלה היא המיקום שלכם (GPS) או הכפר במצב הדגמה.</p>
 
-      <h3 data-i18n="prefs.title">⚙️ העדפות מסלול</h3>
+            </div>
+<div class="pane" id="pane-route"><h2><span data-i18n="route.title">🧭 מסלול</span><button class="x" aria-label="Close">✕</button></h2>
+
+        <div class="row">
+<div class="row">
+        <button id="gpsBtn" onclick="locateMe()" data-i18n="nav.gps">📍 איפה אני (GPS)</button>
+        <button id="demoBtn" onclick="setDemoStart()" class="active" data-i18n="nav.demo">🏠 התחלה: הכפר</button>
+      </div>        </div>
+<h3 data-i18n="prefs.title">⚙️ העדפות מסלול</h3>
       <div class="seg" id="levelSeg">
         <button data-level="1" onclick="setLevel(1,this)" data-i18n="prefs.blueOnly">כחולים בלבד</button>
         <button data-level="2" class="active" onclick="setLevel(2,this)" data-i18n="prefs.toRed">עד אדומים</button>
         <button data-level="3" onclick="setLevel(3,this)" data-i18n="prefs.withBlack">כולל שחורים</button>
       </div>
-      <label class="chk"><input type="checkbox" id="snowboardMode" onchange="reroute()"> <span data-i18n="prefs.snowboard">🏂 מצב סנובורד — להימנע מקטעים שטוחים</span></label>
-      <label class="chk"><input type="checkbox" id="cabinDown" onchange="reroute()"> <span data-i18n="prefs.cabinDown">🚡 מותר לרדת בגונדולה / רכבל (לא רק לגלוש)</span></label>
+      <div class="row"><span data-i18n="prefs.snowboard">🏂 מצב סנובורד — להימנע מקטעים שטוחים</span><button class="switch" role="switch" aria-checked="false" data-pref="snowboardMode" onclick="togglePref('snowboardMode',this)" aria-label="מצב סנובורד">כבוי</button><input type="checkbox" id="snowboardMode" class="sr-only" onchange="reroute()"></div>
+      <div class="row"><span data-i18n="prefs.cabinDown">🚡 מותר לרדת בגונדולה / רכבל (לא רק לגלוש)</span><button class="switch" role="switch" aria-checked="false" data-pref="cabinDown" onclick="togglePref('cabinDown',this)" aria-label="ירידה בתא">כבוי</button><input type="checkbox" id="cabinDown" class="sr-only" onchange="reroute()"></div>
 
       <div id="steps"></div>
 
-      <h3 data-i18n="plan.title">⏱️ תכנון לפי זמן</h3>
+              <div class="card">
+<h3 data-i18n="friend.title">👥 חברים</h3>
+<p class="muted" data-i18n="friend.demoNote">חבר דמו — הקש על הסמן במפה כדי לנווט אליו. נקודות של חברים מגיעות מקישורי שיתוף — תמונת מצב, לא מעקב חי — ופגות אחרי 60 דקות.</p>
+<div class="row"><button class="btn block" id="friendsEntryRoute" data-i18n="friends.openRow">👥 Friends & trips</button></div>
+<div id="friendList"></div>
+<div class="row"><input type="text" id="friendName" data-i18n-ph="friend.namePh" placeholder="שם החבר"></div>
+<div class="row"><input type="number" id="friendLat" placeholder="45.09" step="any" aria-label="Latitude"><input type="number" id="friendLon" placeholder="6.07" step="any" aria-label="Longitude"></div>
+<div class="row"><input type="text" id="friendLink" data-i18n-ph="friend.linkPh" placeholder="הדבק קישור (Google Maps / geo:)"></div>
+<div class="row"><button class="btn" id="friendPlaceBtn" data-i18n="friend.placeBtn">סמן על המפה</button><button class="btn primary" id="friendAddBtn" data-i18n="friend.addBtn">הוספה</button><button class="btn" id="friendShareBtn" data-i18n="friend.shareBtn">שיתוף המיקום שלי</button></div>
+</div>
+              <div class="row" style="margin-top:10px"><button onclick="clearRoute()" data-i18n="nav.endBtn">✕ נקה מסלול</button></div>
+      </div>
+<div class="pane" id="pane-friends"><h2><span data-i18n="friends.title">👥 חברים וטיולים</span><button class="x" aria-label="Close">✕</button></h2>
+<div id="friendsBody"></div>
+</div>
+<div class="pane" id="pane-plan">
+<h2><span data-i18n="plan.title">⏱️ תכנון לפי זמן</span><button class="x" aria-label="Close">✕</button></h2>
       <div class="row">
         <span style="font-size:.88rem" data-i18n="plan.have">יש לי</span>
         <input type="number" id="haveMinutes" placeholder="60" style="width:70px" min="5" max="480">
         <span style="font-size:.88rem" data-i18n="plan.minutes">דקות</span>
         <button onclick="planByMinutes()" data-i18n="plan.check">בדיקה</button>
       </div>
+      <div class="row"><span data-i18n="plan.roundTrip">הלוך־חזור (חזרה לנקודת ההתחלה)</span><button class="switch" role="switch" aria-checked="false" data-pref="roundTrip" onclick="togglePref('roundTrip',this)" aria-label="הלוך־חזור">כבוי</button><input type="checkbox" id="roundTrip" class="sr-only"></div>
       <div class="row" style="margin-top:6px">
         <span style="font-size:.88rem" data-i18n="plan.wantDown">רוצה להיות למטה ב־</span>
         <input type="time" id="arriveBy" style="width:110px">
@@ -128,35 +157,91 @@ html[dir="ltr"] .leaflet-popup-content{direction:ltr;text-align:left}
       </div>
       <div id="planOut" class="note" style="margin-top:6px"></div>
 
-      <h3 data-i18n="offline.title">💾 אופליין</h3>
+            </div>
+<div class="pane" id="pane-settings"><h2><span data-i18n="settings.title">⚙️ הגדרות</span><button class="x" aria-label="Close">✕</button></h2>
+
+<h3 data-i18n="offline.title">💾 אופליין</h3>
       <div class="row">
         <button onclick="saveOffline()" data-i18n="offline.save">שמור מפה לאופליין</button>
         <button onclick="clearOffline()" data-i18n="offline.clear">מחק שמירה</button>
       </div>
       <div id="offlineStatus" class="note"></div>
 
-      <h3 data-i18n="sos.title">🆘 חירום</h3>
-      <div class="row">
-        <button class="danger" onclick="toggleSOS()">🆘 SOS — 112</button>
+              <h3 data-i18n="settings.theme">ערכת נושא</h3>
+        <div class="seg"><button data-theme-btn="auto" data-i18n="settings.themeAuto">לפי המכשיר</button><button data-theme-btn="light" data-i18n="settings.themeLight">☀️ בהיר</button><button data-theme-btn="dark" data-i18n="settings.themeDark">🌙 כהה</button></div>
+        <h3 data-i18n="settings.language">שפה</h3>
+        <div class="row"><div class="segToggle">
+          <button data-lang-seg data-lang="he" aria-pressed="true" onclick="setLang('he')">HE</button>
+          <button data-lang-seg data-lang="en" aria-pressed="false" onclick="setLang('en')">EN</button>
+        </div></div>
+<div class="row"><button class="btn block" id="friendsEntrySettings" data-i18n="friends.openRow">👥 Friends & trips</button></div>
+<h3 data-i18n="trips.title">👥 קבוצות טיול</h3>
+<div id="tripList"></div>
+<h3 data-i18n="legend.title">🗺️ מקרא</h3>
+      <div class="legend">
+        <span><i class="dot" style="background:#22c55e"></i> <span data-i18n="legend.green">ירוק — מתחילים</span></span>
+        <span><i class="dot" style="background:#3b82f6"></i> <span data-i18n="legend.blue">כחול — קל</span></span>
+        <span><i class="dot" style="background:#ef4444"></i> <span data-i18n="legend.red">אדום — בינוני</span></span>
+        <span><i class="dot" style="background:#111827;border:1px solid #fff"></i> <span data-i18n="legend.black">שחור — קשה</span></span>
+        <span><i class="dot" style="background:#111827"></i> <span data-i18n="legend.lift">מעלית</span></span>
+        <span><i class="dot" style="background:#7dd3fc"></i> <span data-i18n="legend.route">המסלול שלכם</span></span>
       </div>
-      <div id="sosPanel">
+        <h3 data-i18n="settings.layers">שכבות מפה</h3>
+        <div class="row"><span data-i18n="settings.base">מפת בסיס (OSM)</span><button class="switch" role="switch" aria-checked="true" data-pref="layerBase" onclick="togglePref('layerBase',this)" aria-label="מפת בסיס">פעיל</button><input type="checkbox" id="layerBase" class="sr-only" checked onchange="toggleLayer('base')"></div>
+        <div class="row"><span data-i18n="settings.pistes">שכבת מסלולים (OpenSnowMap)</span><button class="switch" role="switch" aria-checked="true" data-pref="layerPistes" onclick="togglePref('layerPistes',this)" aria-label="שכבת מסלולים">פעיל</button><input type="checkbox" id="layerPistes" class="sr-only" checked onchange="toggleLayer('pistes')"></div>
+        <h3 data-i18n="settings.about">אודות ומקורות</h3>
+        <p class="note" data-i18n-html="meta.footer">© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors (ODbL) · סגנון מפה © <a href="https://www.opensnowmap.org/" target="_blank" rel="noopener">OpenSnowMap.org</a> (CC-BY-SA) · נתוני מסלולים/מעליות: OSM, נבנה 27 בנובמבר 2026 · זמנים משוערים בלבד, ללא סטטוס חי.</p>
+        <p class="note" style="margin-top:10px" data-i18n-html="note.estimates">⚠️ זמני הגלישה וההמתנה הם <b>הערכות</b> (מהירויות ממוצעות + כ־5 דקות המתנה למעלית). שעות סגירה, עומסים וסטטוס פתיחה/סגירה משתנים — בדקו תמיד באתר הרשמי לפני יציאה למסלול ארוך. אין בנתונים האלה סטטוס חי.</p>
+      </div>
+<div class="pane" id="pane-sos">
+        <h2><span data-i18n="sos.title">🆘 חירום</span><button class="x" aria-label="Close">✕</button></h2>
+        <a class="big112" href="tel:112" data-i18n="sos.call112">📞 התקשרו 112</a>
+        <div class="row">
+          <a class="btn" href="tel:15" data-i18n="sos.samu">15 — SAMU (רפואה)</a>
+          <a class="btn" href="tel:18" data-i18n="sos.fire">18 — כיבוי אש</a>
+        </div>
+<div id="sosPanel" style="display:block">
         <b><span data-i18n="sos.number">מספר חירום:</span> <a href="tel:112" style="color:#fff;font-size:1.2rem">112</a></b><br>
         <span id="sosCoords" data-i18n="sos.coordsHint">המיקום יופיע כאן כשה־GPS פעיל (או מרכז המפה).</span><br>
-        <button onclick="copyCoords()" data-i18n="sos.copy">📋 העתק קואורדינטות</button>
-        <button onclick="shareLocation()" data-i18n="sos.share">↗️ שתף מיקום</button>
+        <button id="sosCopyBtn" data-i18n="sos.copy">📋 העתק קואורדינטות</button>
+        <button id="sosShareBtn" data-i18n="sos.share">↗️ שתף מיקום</button>
+        <button id="sosWaBtn" data-i18n="sos.whatsapp">💬 וואטסאפ</button>
         <p class="note" data-i18n="sos.note">המיקום נשאר במכשיר שלכם — הוא לא נשלח לשום שרת. במקרה חירום התקשרו 112 ומסרו את הקואורדינטות.</p>
       </div>
-      <p class="note" style="margin-top:10px" data-i18n-html="note.estimates">⚠️ זמני הגלישה וההמתנה הם <b>הערכות</b> (מהירויות ממוצעות + כ־5 דקות המתנה למעלית). שעות סגירה, עומסים וסטטוס פתיחה/סגירה משתנים — בדקו תמיד באתר הרשמי לפני יציאה למסלול ארוך. אין בנתונים האלה סטטוס חי.</p>
+      </div>
+<div class="pane" id="pane-summary"><h2><span>סיכום היום</span><button class="x" aria-label="Close">✕</button></h2><div class="summary-body"></div></div>
+<div class="pane" id="pane-detail"><h2><span data-i18n="detail.title">פרטים</span><button class="x" aria-label="Close">✕</button></h2>
+
+        <div id="detailBody"></div>
+        <div class="row" style="margin-top:10px"><button class="primary" onclick="goToPendingDest()" data-i18n="detail.navigate">🧭 נווט לכאן</button></div>
+      </div>
     </div>
-    <div id="bottombar">
-      <b id="destName"></b>
-      <button onclick="document.getElementById('panel').scrollIntoView()" data-i18n="nav.stepsBtn">שלבי המסלול</button>
-      <button onclick="clearRoute()" data-i18n="nav.endBtn">סיום ניווט ✕</button>
+    <div id="navCard">
+      <span class="nc-badge"></span>
+      <div class="nc-dist"></div>
+      <div class="nc-inst"></div>
+      <div class="nc-then"></div>
+      <div class="nc-actions">
+        <button data-nav-next data-i18n="nav.nextStepBtn">הצעד הבא ›</button>
+        <button data-nav-follow data-i18n="nav.followBtn">שחרר</button>
+        <button data-nav-plan data-i18n="nav.planReturnBtn">תכנון חזרה</button>
+      </div>
     </div>
+    <div id="offRouteBanner"><span data-i18n="nav.offRoute">סטית מהמסלול</span><button id="rrBtn" data-i18n="nav.reroute">נתב מחדש</button></div>
+    <div id="gpsBanner"><span data-i18n="nav.searchingGps">מחפש GPS…</span></div>
+    <button id="sosFab" aria-label="SOS">🆘</button>
   </div>
-  <footer data-i18n-html="meta.footer">
-    © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors (ODbL) · סגנון מפה © <a href="https://www.opensnowmap.org/" target="_blank" rel="noopener">OpenSnowMap.org</a> (CC-BY-SA) · נתוני מסלולים/מעליות: OSM, נבנה 27 בנובמבר 2026 · זמנים משוערים בלבד, ללא סטטוס חי.
-  </footer>
+<nav id="actionbar">
+    <button class="navbtn bar-item" data-pane="search" data-sheet="search" aria-pressed="false"><span class="ic">🔍</span><span class="navlbl" data-i18n="bar.search">חיפוש</span></button>
+    <button class="navbtn bar-item" data-pane="route" data-sheet="route" aria-pressed="false"><span class="ic">🧭</span><span class="navlbl" data-i18n="bar.route">מסלול</span><span class="bar-sub" id="routeBadge"></span></button>
+    <button class="navbtn rec" id="recBtn" aria-label="Record"><span class="recbtn" aria-hidden="true">●</span><span class="reclbl">הקלטה</span></button>
+    <button class="navbtn bar-item" data-pane="plan" data-sheet="plan" aria-pressed="false"><span class="ic">⏱</span><span class="navlbl" data-i18n="bar.plan">תכנון</span></button>
+    <button class="navbtn bar-item sosbtn" data-pane="sos" data-sheet="sos" aria-pressed="false"><span class="ic">🆘</span><span class="navlbl" data-i18n="bar.sos">SOS</span></button>
+  </nav>
+<div id="navStrip">
+    <div class="ns-nums"><div class="ns-time"></div><div class="ns-sub"></div></div>
+    <button class="ns-end" id="nsEnd" aria-label="End navigation">✕</button>
+  </div>
 </div>
 
 <script>
@@ -189,7 +274,10 @@ const $ = id => document.getElementById(id);
 const LANG_KEY='sf-lang';
 let lang='he';
 try{ lang=localStorage.getItem(LANG_KEY)||'he'; if(lang!=='he'&&lang!=='en') lang='he'; }catch(e){}
-const STR={"he": {"ui.menu": "☰ תפריט", "ui.backGuide": "← חזרה למדריך", "ui.liftStatus": "סטטוס מעליות ↗", "nav.title": "🧭 ניווט", "nav.gps": "📍 איפה אני (GPS)", "nav.demo": "🏠 התחלה: הכפר", "nav.loading": "טוען נתוני מפה…", "search.title": "🔍 לאן? חיפוש יעד", "search.ph": "חפשו מעלית, מסלול, בקתה, חניה…", "search.tabAll": "הכל", "search.tabLift": "מעליות", "search.tabPiste": "מסלולים", "search.tabVillage": "כפר", "search.tabHut": "בקתות", "search.tabService": "שירותים", "search.note": "אפשר גם ללחוץ על המפה כדי לסמן יעד. נקודת ההתחלה היא המיקום שלכם (GPS) או הכפר במצב הדגמה.", "search.notFound": "לא נמצא — נסו שם אחר, או לחצו על המפה.", "search.lift": "מעלית · ", "search.piste": "מסלול · ", "prefs.title": "⚙️ העדפות מסלול", "prefs.blueOnly": "כחולים בלבד", "prefs.toRed": "עד אדומים", "prefs.withBlack": "כולל שחורים", "prefs.snowboard": "🏂 מצב סנובורד — להימנע מקטעים שטוחים", "prefs.cabinDown": "🚡 מותר לרדת בגונדולה / רכבל (לא רק לגלוש)", "plan.title": "⏱️ תכנון לפי זמן", "plan.have": "יש לי", "plan.minutes": "דקות", "plan.check": "בדיקה", "plan.wantDown": "רוצה להיות למטה ב־", "plan.calc": "חשבו", "plan.finishAt": "סיום ב־", "plan.finishHere": "איפה שאני עכשיו", "plan.needRoute": "קודם בחרו יעד — התכנון נמדד מול המסלול הנוכחי.", "plan.needMinutes": "הכניסו מספר דקות (למשל 60).", "plan.needTime": "בחרו שעה (למשל 14:00).", "plan.fits": "✅ המסלול ליעד לוקח כ־<b>{t} דקות</b> — נכנס ב־{mins} הדקות שיש לכם (נשארות כ־{left} דקות).", "plan.tooLong": "⚠️ המסלול לוקח כ־<b>{t} דקות</b> — יותר מה־{mins} דקות שיש לכם (חסרות כ־{short} דקות). בחרו יעד קרוב יותר או צאו מוקדם יותר.", "plan.leaveBy": "כדי להיות {dest} ב־<b>{v}</b> (מסלול של כ־{total} דקות כולל המתנות), צאו עד <b>{leave}</b>. <span style=\"color:var(--muted)\">הערכה בלבד — הוסיפו מרווח ביטחון ושעות סגירה מהאתר הרשמי.</span>", "plan.lateRule": "<br>⚠️ <b>כלל אצבע:</b> הגעה אחרי 16:30 היא מאוחרת — מעליות נסגרות בשעות אחר הצהריים; בדקו את שעת הסגירה הרשמית של המעלית האחרונה במסלול.", "plan.atValley": "בתחנת העמק", "plan.atDest": "ביעד", "plan.atStart": "בנקודת ההתחלה", "offline.title": "💾 אופליין", "offline.save": "שמור מפה לאופליין", "offline.clear": "מחק שמירה", "offline.unsupported": "הדפדפן לא תומך בשמירת אופליין (Cache Storage).", "offline.saving": "שומר {n} אריחים (זום 12–15) + נתוני מסלולים… זה עשוי לקחת דקה.", "offline.progress": "נשמרו {done} מתוך {n} אריחים…", "offline.saved": "✅ נשמר לאופליין: נתוני מסלולים + {n} אריחים (כ־{mb}MB משוער). השירות ברקע (service worker) יגיש אותם בלי קליטה.", "offline.error": "שגיאה בשמירה: {msg}", "offline.cleared": "השמירה נמחקה.", "sos.title": "🆘 חירום", "sos.number": "מספר חירום:", "sos.coordsHint": "המיקום יופיע כאן כשה־GPS פעיל (או מרכז המפה).", "sos.copy": "📋 העתק קואורדינטות", "sos.share": "↗️ שתף מיקום", "sos.note": "המיקום נשאר במכשיר שלכם — הוא לא נשלח לשום שרת. במקרה חירום התקשרו 112 ומסרו את הקואורדינטות.", "sos.copied": "הועתק: {coords}", "sos.copyManual": "העתיקו ידנית: {coords}", "sos.shareText": "אני כאן: {coords}", "nav.stepsBtn": "שלבי המסלול", "nav.endBtn": "סיום ניווט ✕", "status.loaded": "נתונים נטענו: {p} מסלולים, {l} מעליות, {pl} מקומות · גרף {n} צמתים.", "status.loadError": "שגיאה בטעינת נתוני המפה: {msg} — נסו לרענן.", "start.demo": "נקודת התחלה: הכפר (מצב הדגמה). לחצו \"איפה אני\" ל־GPS חי.", "start.markerGps": "<b>המיקום שלי</b>", "gps.unsupported": "הדפדפן לא תומך ב־GPS — נשארים במצב הדגמה.", "gps.requesting": "מבקש מיקום…", "gps.active": "מיקום GPS פעיל (±{acc} מ׳). המיקום נשאר במכשיר.", "gps.error": "לא הצלחנו לקבל GPS ({msg}) — נשארים במצב הדגמה (הכפר).", "dest.default": "יעד", "dest.mapPoint": "נקודה במפה", "dest.liftTop": "פסגת {name}", "piste.unnamed": "מסלול ללא שם", "lift.unnamed": "מעלית ללא שם", "popup.length": "אורך כ־{len} מ׳", "popup.osmData": "נתוני OSM", "popup.ele": " · {ele} מ׳", "route.none": "<div class=\"warn\"><b>לא נמצא מסלול</b> ברמת הקושי שנבחרה. נסו להרחיב ל״עד אדומים״ או ״כולל שחורים״, או לבטל מצב סנובורד.</div>", "route.totalWalk": " + הליכה קצרה", "route.walkStart": "🚶 הליכה מנקודת ההתחלה לצומת הקרוב (כ־{m} מ׳) — {w}", "route.walkEnd": "🚶 הליכה מהצומת הקרוב ליעד (כ־{m} מ׳) — {w}", "route.walkShort": "🚶 מעבר רגלי קצר ({m} מ׳) — {w}", "route.lift": "מעלית", "route.liftDown": " — ירידה בתא", "route.piste": "מסלול", "fmt.lt1min": "פחות מדקה", "fmt.min": "{m} דק׳", "unit.lift": "מעלית", "unit.lifts": "מעליות", "start.markerTitle": "נקודת התחלה", "meta.title": "מפת ניווט חיה — ואל טוראנס | SnowForecast", "plan.finishVillage": "הכפר (ואל טוראנס)", "plan.atVillage": "בכפר ואל טוראנס", "sos.myLoc": "המיקום שלי: {coords} (ואל טוראנס).", "sos.shareTitle": "המיקום שלי — ואל טוראנס", "start.markerDemo": "<b>התחלה: הכפר ואל טוראנס</b><br>(מצב הדגמה)", "popup.liftNote": "נתוני OSM · שעות פתיחה וסטטוס — באתר הרשמי", "popup.pisteNote": "נתוני OSM · לחיצה על המפה ליד המסלול תציע אותו כיעד", "route.total": "🕐 כ־{total} דקות סה״כ ({ski} גלישה/נסיעה + כ־{wait} דק׳ המתנה ב־{lifts} מעליות)", "route.eta": "הגעה משוערת: <b>{eta}</b> (אם יוצאים עכשיו). שעות סגירת מעליות אינן בנתונים — בדקו <a href=\"https://www.valthorens.com/en/infos-neige/\" target=\"_blank\" rel=\"noopener\">סטטוס רשמי ↗</a> לפני מסלול ארוך בסוף היום.", "note.estimates": "⚠️ זמני הגלישה וההמתנה הם <b>הערכות</b> (מהירויות ממוצעות + כ־5 דקות המתנה למעלית). שעות סגירה, עומסים וסטטוס פתיחה/סגירה משתנים — בדקו תמיד באתר הרשמי לפני יציאה למסלול ארוך. אין בנתונים האלה סטטוס חי.", "warn.orelle": "<div class=\"warn\"><b>אורל:</b> היעד באזור אורל — ההגעה דרך Cime Caron. תחנת העמק של אורל (בגובה ~900 מ׳) מחוץ לנתוני המפה; הירידה לעמק אורל עצמו אינה מנווטת כאן.</div>", "warn.chambre": "<div class=\"warn\"><b>קול דה לה שמבר → מריבל:</b> מכאן ממשיכים למריבל — נדרש פס <b>3 Vallées</b> מלא. המפה כאן מכסה עד גבול הנתונים (מריבל עצמה מחוץ לה).</div>", "finish.village": "הכפר (ואל טוראנס)", "meta.h1": "🗺️ ואל טוראנס — מפת ניווט חיה", "meta.sub": "Val Thorens + Orelle · ‏3 Vallées · נתוני OpenStreetMap", "meta.footer": "© <a href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\" rel=\"noopener\">OpenStreetMap</a> contributors (ODbL) · סגנון מפה © <a href=\"https://www.opensnowmap.org/\" target=\"_blank\" rel=\"noopener\">OpenSnowMap.org</a> (CC-BY-SA) · נתוני מסלולים/מעליות: OSM, נבנה 27 בנובמבר 2026 · זמנים משוערים בלבד, ללא סטטוס חי."}, "en": {"ui.menu": "☰ Menu", "ui.backGuide": "← Back to the guide", "ui.liftStatus": "Lift status ↗", "nav.title": "🧭 Navigation", "nav.gps": "📍 Where am I (GPS)", "nav.demo": "🏠 Start: the village", "nav.loading": "Loading map data…", "search.title": "🔍 Where to? Search a destination", "search.ph": "Search a lift, piste, hut, parking…", "search.tabAll": "All", "search.tabLift": "Lifts", "search.tabPiste": "Pistes", "search.tabVillage": "Village", "search.tabHut": "Huts", "search.tabService": "Services", "search.note": "You can also tap the map to set a destination. Your start point is your location (GPS) or the village in demo mode.", "search.notFound": "Not found — try another name, or tap the map.", "search.lift": "Lift · ", "search.piste": "Piste · ", "prefs.title": "⚙️ Route preferences", "prefs.blueOnly": "Blue only", "prefs.toRed": "Up to reds", "prefs.withBlack": "Including blacks", "prefs.snowboard": "🏂 Snowboard mode — avoid flat sections", "prefs.cabinDown": "🚡 Allowed to ride down in a gondola / cable car (not just ski down)", "plan.title": "⏱️ Plan by time", "plan.have": "I have", "plan.minutes": "minutes", "plan.check": "Check", "plan.wantDown": "I want to be down by", "plan.calc": "Calculate", "plan.finishAt": "Finish at", "plan.finishHere": "Where I am now", "plan.needRoute": "First pick a destination — the plan is measured against the current route.", "plan.needMinutes": "Enter a number of minutes (e.g. 60).", "plan.needTime": "Pick a time (e.g. 14:00).", "plan.fits": "✅ The route to the destination takes about <b>{t} minutes</b> — it fits in the {mins} minutes you have (about {left} minutes to spare).", "plan.tooLong": "⚠️ The route takes about <b>{t} minutes</b> — more than the {mins} minutes you have (about {short} minutes short). Pick a closer destination or leave earlier.", "plan.leaveBy": "To be {dest} at <b>{v}</b> (a route of about {total} minutes including waits), leave by <b>{leave}</b>. <span style=\"color:var(--muted)\">Estimate only — add a safety margin and check closing times on the official site.</span>", "plan.lateRule": "<br>⚠️ <b>Rule of thumb:</b> arriving after 16:30 is late — lifts close in the afternoon; check the official closing time of the last lift on the route.", "plan.atValley": "at the valley station", "plan.atDest": "at the destination", "plan.atStart": "at the start point", "offline.title": "💾 Offline", "offline.save": "Save map for offline", "offline.clear": "Delete saved map", "offline.unsupported": "This browser does not support offline saving (Cache Storage).", "offline.saving": "Saving {n} tiles (zoom 12–15) + piste data… this may take a minute.", "offline.progress": "Saved {done} of {n} tiles…", "offline.saved": "✅ Saved for offline: piste data + {n} tiles (about {mb} MB estimated). The service worker will serve them with no signal.", "offline.error": "Save error: {msg}", "offline.cleared": "Saved map deleted.", "sos.title": "🆘 Emergency", "sos.number": "Emergency number:", "sos.coordsHint": "Your location will appear here once GPS is active (or the map centre).", "sos.copy": "📋 Copy coordinates", "sos.share": "↗️ Share location", "sos.note": "Your location stays on your device — it is not sent to any server. In an emergency call 112 and give them the coordinates.", "sos.copied": "Copied: {coords}", "sos.copyManual": "Copy manually: {coords}", "sos.shareText": "I am here: {coords}", "nav.stepsBtn": "Route steps", "nav.endBtn": "End navigation ✕", "status.loaded": "Data loaded: {p} pistes, {l} lifts, {pl} places · graph of {n} nodes.", "status.loadError": "Error loading map data: {msg} — try refreshing.", "start.demo": "Start point: the village (demo mode). Tap \"Where am I\" for live GPS.", "start.markerGps": "<b>My location</b>", "gps.unsupported": "This browser does not support GPS — staying in demo mode.", "gps.requesting": "Requesting location…", "gps.active": "GPS location active (±{acc} m). Your location stays on the device.", "gps.error": "Could not get GPS ({msg}) — staying in demo mode (the village).", "dest.default": "Destination", "dest.mapPoint": "Point on the map", "dest.liftTop": "Top of {name}", "piste.unnamed": "Unnamed piste", "lift.unnamed": "Unnamed lift", "popup.length": "Length about {len} m", "popup.osmData": "OSM data", "popup.ele": " · {ele} m", "route.none": "<div class=\"warn\"><b>No route found</b> at the chosen difficulty. Try widening to \"Up to reds\" or \"Including blacks\", or turn off snowboard mode.</div>", "route.totalWalk": " + a short walk", "route.walkStart": "🚶 Walk from your start point to the nearest junction (about {m} m) — {w}", "route.walkEnd": "🚶 Walk from the nearest junction to the destination (about {m} m) — {w}", "route.walkShort": "🚶 Short walk ({m} m) — {w}", "route.lift": "Lift", "route.liftDown": " — riding down", "route.piste": "Piste", "fmt.lt1min": "Less than a minute", "fmt.min": "{m} min", "unit.lift": "lift", "unit.lifts": "lifts", "start.markerTitle": "Start point", "meta.title": "Live navigation map — Val Thorens | SnowForecast", "plan.finishVillage": "The village (Val Thorens)", "plan.atVillage": "in Val Thorens village", "sos.myLoc": "My location: {coords} (Val Thorens).", "sos.shareTitle": "My location — Val Thorens", "start.markerDemo": "<b>Start: Val Thorens village</b><br>(demo mode)", "popup.liftNote": "OSM data · Opening hours and status — on the official site", "popup.pisteNote": "OSM data · Tapping the map next to the piste will offer it as a destination", "route.total": "🕐 About {total} minutes in total ({ski} skiing/riding + about {wait} min waiting at {lifts} {liftWord})", "route.eta": "Estimated arrival: <b>{eta}</b> (if you leave now). Lift closing times are not in the data — check <a href=\"https://www.valthorens.com/en/infos-neige/\" target=\"_blank\" rel=\"noopener\">official status ↗</a> before a long late-day route.", "note.estimates": "⚠️ Ski and waiting times are <b>estimates</b> (average speeds + about 5 minutes' wait per lift). Closing times, crowds and open/closed status change — always check the official site before a long route. There is no live status here.", "warn.orelle": "<div class=\"warn\"><b>Orelle:</b> the destination is in the Orelle area — reached via Cime Caron. The Orelle valley station (at about 900 m) is outside the map data; the descent into the Orelle valley itself is not navigated here.</div>", "warn.chambre": "<div class=\"warn\"><b>Col de la Chambre → Méribel:</b> from here you continue to Méribel — a full <b>3 Vallées</b> pass is required. This map covers up to the data boundary (Méribel itself is outside it).</div>", "finish.village": "The village (Val Thorens)", "meta.h1": "🗺️ Val Thorens — Live navigation map", "meta.sub": "Val Thorens + Orelle · 3 Vallées · OpenStreetMap data", "meta.footer": "© <a href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\" rel=\"noopener\">OpenStreetMap</a> contributors (ODbL) · Map style © <a href=\"https://www.opensnowmap.org/\" target=\"_blank\" rel=\"noopener\">OpenSnowMap.org</a> (CC-BY-SA) · Piste/lift data: OSM, built 27 November 2026 · Estimated times only, no live status."}};
+const STR={"he": {"ui.menu": "☰ תפריט", "bar.search": "חיפוש", "bar.route": "מסלול", "bar.plan": "תכנון", "bar.settings": "הגדרות", "bar.sos": "SOS", "settings.theme": "ערכת נושא", "settings.language": "שפה", "settings.themeLight": "☀️ בהיר", "settings.themeDark": "🌙 כהה", "settings.layers": "שכבות מפה", "settings.base": "מפת בסיס (OSM)", "settings.pistes": "שכבת מסלולים (OpenSnowMap)", "settings.about": "אודות ומקורות", "legend.title": "🗺️ מקרא", "legend.green": "ירוק — מתחילים", "legend.blue": "כחול — קל", "legend.red": "אדום — בינוני", "legend.black": "שחור — קשה", "legend.lift": "מעלית", "legend.route": "המסלול שלכם", "detail.navigate": "🧭 נווט לכאן", "sos.call112": "📞 התקשרו 112", "sos.samu": "15 — SAMU (רפואה)", "sos.fire": "18 — כיבוי אש", "ui.backGuide": "← חזרה למדריך", "ui.liftStatus": "סטטוס מעליות ↗", "nav.title": "🧭 ניווט", "nav.gps": "📍 איפה אני (GPS)", "nav.demo": "🏠 התחלה: הכפר", "nav.loading": "טוען נתוני מפה…", "search.title": "🔍 לאן? חיפוש יעד", "search.ph": "חפשו מעלית, מסלול, בקתה, חניה…", "search.tabAll": "הכל", "search.tabLift": "מעליות", "search.tabPiste": "מסלולים", "search.tabVillage": "כפר", "search.tabHut": "בקתות", "search.tabService": "שירותים", "search.note": "אפשר גם ללחוץ על המפה כדי לסמן יעד. נקודת ההתחלה היא המיקום שלכם (GPS) או הכפר במצב הדגמה.", "search.notFound": "לא נמצא — נסו שם אחר, או לחצו על המפה.", "search.lift": "מעלית · ", "search.piste": "מסלול · ", "prefs.title": "⚙️ העדפות מסלול", "prefs.blueOnly": "כחולים בלבד", "prefs.toRed": "עד אדומים", "prefs.withBlack": "כולל שחורים", "prefs.snowboard": "🏂 מצב סנובורד — להימנע מקטעים שטוחים", "prefs.cabinDown": "🚡 מותר לרדת בגונדולה / רכבל (לא רק לגלוש)", "plan.title": "⏱️ תכנון לפי זמן", "plan.have": "יש לי", "plan.minutes": "דקות", "plan.check": "בדיקה", "plan.wantDown": "רוצה להיות למטה ב־", "plan.calc": "חשבו", "plan.finishAt": "סיום ב־", "plan.finishHere": "איפה שאני עכשיו", "plan.needRoute": "קודם בחרו יעד — התכנון נמדד מול המסלול הנוכחי.", "plan.needMinutes": "הכניסו מספר דקות (למשל 60).", "plan.needTime": "בחרו שעה (למשל 14:00).", "plan.fits": "✅ המסלול ליעד לוקח כ־<b>{t} דקות</b> — נכנס ב־{mins} הדקות שיש לכם (נשארות כ־{left} דקות).", "plan.tooLong": "⚠️ המסלול לוקח כ־<b>{t} דקות</b> — יותר מה־{mins} דקות שיש לכם (חסרות כ־{short} דקות). בחרו יעד קרוב יותר או צאו מוקדם יותר.", "plan.leaveBy": "כדי להיות {dest} ב־<b>{v}</b> (מסלול של כ־{total} דקות כולל המתנות), צאו עד <b>{leave}</b>. <span style=\"color:var(--muted)\">הערכה בלבד — הוסיפו מרווח ביטחון ושעות סגירה מהאתר הרשמי.</span>", "plan.lateRule": "<br>⚠️ <b>כלל אצבע:</b> הגעה אחרי 16:30 היא מאוחרת — מעליות נסגרות בשעות אחר הצהריים; בדקו את שעת הסגירה הרשמית של המעלית האחרונה במסלול.", "plan.atValley": "בתחנת העמק", "plan.atDest": "ביעד", "plan.atStart": "בנקודת ההתחלה", "offline.title": "💾 אופליין", "offline.save": "שמור מפה לאופליין", "offline.clear": "מחק שמירה", "offline.unsupported": "הדפדפן לא תומך בשמירת אופליין (Cache Storage).", "offline.saving": "שומר {n} אריחים (זום 12–15) + נתוני מסלולים… זה עשוי לקחת דקה.", "offline.progress": "נשמרו {done} מתוך {n} אריחים…", "offline.saved": "✅ נשמר לאופליין: נתוני מסלולים + {n} אריחים (כ־{mb}MB משוער). השירות ברקע (service worker) יגיש אותם בלי קליטה.", "offline.error": "שגיאה בשמירה: {msg}", "offline.cleared": "השמירה נמחקה.", "sos.title": "🆘 חירום", "sos.number": "מספר חירום:", "sos.coordsHint": "המיקום יופיע כאן כשה־GPS פעיל (או מרכז המפה).", "sos.copy": "📋 העתק קואורדינטות", "sos.share": "↗️ שתף מיקום", "sos.note": "המיקום נשאר במכשיר שלכם — הוא לא נשלח לשום שרת. במקרה חירום התקשרו 112 ומסרו את הקואורדינטות.", "sos.copied": "הועתק: {coords}", "sos.copyManual": "העתיקו ידנית: {coords}", "sos.shareText": "אני כאן: {coords}", "nav.stepsBtn": "שלבי המסלול", "nav.endBtn": "✕ נקה מסלול", "status.loaded": "נתונים נטענו: {p} מסלולים, {l} מעליות, {pl} מקומות · גרף {n} צמתים.", "status.loadError": "שגיאה בטעינת נתוני המפה: {msg} — נסו לרענן.", "start.demo": "נקודת התחלה: הכפר (מצב הדגמה). לחצו \"איפה אני\" ל־GPS חי.", "start.markerGps": "<b>המיקום שלי</b>", "gps.unsupported": "הדפדפן לא תומך ב־GPS — נשארים במצב הדגמה.", "gps.requesting": "מבקש מיקום…", "gps.active": "מיקום GPS פעיל (±{acc} מ׳). המיקום נשאר במכשיר.", "gps.error": "לא הצלחנו לקבל GPS ({msg}) — נשארים במצב הדגמה (הכפר).", "dest.default": "יעד", "dest.mapPoint": "נקודה במפה", "dest.liftTop": "פסגת {name}", "piste.unnamed": "מסלול ללא שם", "lift.unnamed": "מעלית ללא שם", "popup.length": "אורך כ־{len} מ׳", "popup.osmData": "נתוני OSM", "popup.ele": " · {ele} מ׳", "route.none": "<div class=\"warn\"><b>לא נמצא מסלול</b> ברמת הקושי שנבחרה. נסו להרחיב ל״עד אדומים״ או ״כולל שחורים״, או לבטל מצב סנובורד.</div>", "route.totalWalk": " + הליכה קצרה", "route.walkStart": "🚶 הליכה מנקודת ההתחלה לצומת הקרוב (כ־{m} מ׳) — {w}", "route.walkEnd": "🚶 הליכה מהצומת הקרוב ליעד (כ־{m} מ׳) — {w}", "route.walkShort": "🚶 מעבר רגלי קצר ({m} מ׳) — {w}", "route.lift": "מעלית", "route.liftDown": " — ירידה בתא", "route.piste": "מסלול", "fmt.lt1min": "פחות מדקה", "fmt.min": "{m} דק׳", "unit.lift": "מעלית", "unit.lifts": "מעליות", "start.markerTitle": "נקודת התחלה", "meta.title": "מפת ניווט חיה — ואל טוראנס | SnowForecast", "plan.finishVillage": "הכפר (ואל טוראנס)", "plan.atVillage": "בכפר ואל טוראנס", "sos.myLoc": "המיקום שלי: {coords} (ואל טוראנס).", "sos.shareTitle": "המיקום שלי — ואל טוראנס", "start.markerDemo": "<b>התחלה: הכפר ואל טוראנס</b><br>(מצב הדגמה)", "popup.liftNote": "נתוני OSM · שעות פתיחה וסטטוס — באתר הרשמי", "popup.pisteNote": "נתוני OSM · לחיצה על המפה ליד המסלול תציע אותו כיעד", "route.total": "🕐 כ־{total} דקות סה״כ ({ski} גלישה/נסיעה + כ־{wait} דק׳ המתנה ב־{lifts} מעליות)", "route.eta": "הגעה משוערת: <b>{eta}</b> (אם יוצאים עכשיו). שעות סגירת מעליות אינן בנתונים — בדקו <a href=\"https://www.valthorens.com/en/infos-neige/\" target=\"_blank\" rel=\"noopener\">סטטוס רשמי ↗</a> לפני מסלול ארוך בסוף היום.", "note.estimates": "⚠️ זמני הגלישה וההמתנה הם <b>הערכות</b> (מהירויות ממוצעות + כ־5 דקות המתנה למעלית). שעות סגירה, עומסים וסטטוס פתיחה/סגירה משתנים — בדקו תמיד באתר הרשמי לפני יציאה למסלול ארוך. אין בנתונים האלה סטטוס חי.", "warn.orelle": "<div class=\"warn\"><b>אורל:</b> היעד באזור אורל — ההגעה דרך Cime Caron. תחנת העמק של אורל (בגובה ~900 מ׳) מחוץ לנתוני המפה; הירידה לעמק אורל עצמו אינה מנווטת כאן.</div>", "warn.chambre": "<div class=\"warn\"><b>קול דה לה שמבר → מריבל:</b> מכאן ממשיכים למריבל — נדרש פס <b>3 Vallées</b> מלא. המפה כאן מכסה עד גבול הנתונים (מריבל עצמה מחוץ לה).</div>", "finish.village": "הכפר (ואל טוראנס)", "meta.h1": "🗺️ ואל טוראנס — מפת ניווט חיה", "meta.sub": "Val Thorens + Orelle · ‏3 Vallées · נתוני OpenStreetMap", "meta.footer": "© <a href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\" rel=\"noopener\">OpenStreetMap</a> contributors (ODbL) · סגנון מפה © <a href=\"https://www.opensnowmap.org/\" target=\"_blank\" rel=\"noopener\">OpenSnowMap.org</a> (CC-BY-SA) · נתוני מסלולים/מעליות: OSM, נבנה 27 בנובמבר 2026 · זמנים משוערים בלבד, ללא סטטוס חי."}, "en": {"ui.menu": "☰ Menu", "bar.search": "Search", "bar.route": "Route", "bar.plan": "Plan", "bar.settings": "Settings", "bar.sos": "SOS", "settings.theme": "Theme", "settings.language": "Language", "settings.themeLight": "☀️ Light", "settings.themeDark": "🌙 Dark", "settings.layers": "Map layers", "settings.base": "Base map (OSM)", "settings.pistes": "Piste overlay (OpenSnowMap)", "settings.about": "About & sources", "legend.title": "🗺️ Legend", "legend.green": "Green — beginners", "legend.blue": "Blue — easy", "legend.red": "Red — intermediate", "legend.black": "Black — difficult", "legend.lift": "Lift", "legend.route": "Your route", "detail.navigate": "🧭 Navigate here", "sos.call112": "📞 Call 112", "sos.samu": "15 — SAMU (medical)", "sos.fire": "18 — Fire brigade", "ui.backGuide": "← Back to the guide", "ui.liftStatus": "Lift status ↗", "nav.title": "🧭 Navigation", "nav.gps": "📍 Where am I (GPS)", "nav.demo": "🏠 Start: the village", "nav.loading": "Loading map data…", "search.title": "🔍 Where to? Search a destination", "search.ph": "Search a lift, piste, hut, parking…", "search.tabAll": "All", "search.tabLift": "Lifts", "search.tabPiste": "Pistes", "search.tabVillage": "Village", "search.tabHut": "Huts", "search.tabService": "Services", "search.note": "You can also tap the map to set a destination. Your start point is your location (GPS) or the village in demo mode.", "search.notFound": "Not found — try another name, or tap the map.", "search.lift": "Lift · ", "search.piste": "Piste · ", "prefs.title": "⚙️ Route preferences", "prefs.blueOnly": "Blue only", "prefs.toRed": "Up to reds", "prefs.withBlack": "Including blacks", "prefs.snowboard": "🏂 Snowboard mode — avoid flat sections", "prefs.cabinDown": "🚡 Allowed to ride down in a gondola / cable car (not just ski down)", "plan.title": "⏱️ Plan by time", "plan.have": "I have", "plan.minutes": "minutes", "plan.check": "Check", "plan.wantDown": "I want to be down by", "plan.calc": "Calculate", "plan.finishAt": "Finish at", "plan.finishHere": "Where I am now", "plan.needRoute": "First pick a destination — the plan is measured against the current route.", "plan.needMinutes": "Enter a number of minutes (e.g. 60).", "plan.needTime": "Pick a time (e.g. 14:00).", "plan.fits": "✅ The route to the destination takes about <b>{t} minutes</b> — it fits in the {mins} minutes you have (about {left} minutes to spare).", "plan.tooLong": "⚠️ The route takes about <b>{t} minutes</b> — more than the {mins} minutes you have (about {short} minutes short). Pick a closer destination or leave earlier.", "plan.leaveBy": "To be {dest} at <b>{v}</b> (a route of about {total} minutes including waits), leave by <b>{leave}</b>. <span style=\"color:var(--muted)\">Estimate only — add a safety margin and check closing times on the official site.</span>", "plan.lateRule": "<br>⚠️ <b>Rule of thumb:</b> arriving after 16:30 is late — lifts close in the afternoon; check the official closing time of the last lift on the route.", "plan.atValley": "at the valley station", "plan.atDest": "at the destination", "plan.atStart": "at the start point", "offline.title": "💾 Offline", "offline.save": "Save map for offline", "offline.clear": "Delete saved map", "offline.unsupported": "This browser does not support offline saving (Cache Storage).", "offline.saving": "Saving {n} tiles (zoom 12–15) + piste data… this may take a minute.", "offline.progress": "Saved {done} of {n} tiles…", "offline.saved": "✅ Saved for offline: piste data + {n} tiles (about {mb} MB estimated). The service worker will serve them with no signal.", "offline.error": "Save error: {msg}", "offline.cleared": "Saved map deleted.", "sos.title": "🆘 Emergency", "sos.number": "Emergency number:", "sos.coordsHint": "Your location will appear here once GPS is active (or the map centre).", "sos.copy": "📋 Copy coordinates", "sos.share": "↗️ Share location", "sos.note": "Your location stays on your device — it is not sent to any server. In an emergency call 112 and give them the coordinates.", "sos.copied": "Copied: {coords}", "sos.copyManual": "Copy manually: {coords}", "sos.shareText": "I am here: {coords}", "nav.stepsBtn": "Route steps", "nav.endBtn": "✕ Clear route", "status.loaded": "Data loaded: {p} pistes, {l} lifts, {pl} places · graph of {n} nodes.", "status.loadError": "Error loading map data: {msg} — try refreshing.", "start.demo": "Start point: the village (demo mode). Tap \"Where am I\" for live GPS.", "start.markerGps": "<b>My location</b>", "gps.unsupported": "This browser does not support GPS — staying in demo mode.", "gps.requesting": "Requesting location…", "gps.active": "GPS location active (±{acc} m). Your location stays on the device.", "gps.error": "Could not get GPS ({msg}) — staying in demo mode (the village).", "dest.default": "Destination", "dest.mapPoint": "Point on the map", "dest.liftTop": "Top of {name}", "piste.unnamed": "Unnamed piste", "lift.unnamed": "Unnamed lift", "popup.length": "Length about {len} m", "popup.osmData": "OSM data", "popup.ele": " · {ele} m", "route.none": "<div class=\"warn\"><b>No route found</b> at the chosen difficulty. Try widening to \"Up to reds\" or \"Including blacks\", or turn off snowboard mode.</div>", "route.totalWalk": " + a short walk", "route.walkStart": "🚶 Walk from your start point to the nearest junction (about {m} m) — {w}", "route.walkEnd": "🚶 Walk from the nearest junction to the destination (about {m} m) — {w}", "route.walkShort": "🚶 Short walk ({m} m) — {w}", "route.lift": "Lift", "route.liftDown": " — riding down", "route.piste": "Piste", "fmt.lt1min": "Less than a minute", "fmt.min": "{m} min", "unit.lift": "lift", "unit.lifts": "lifts", "start.markerTitle": "Start point", "meta.title": "Live navigation map — Val Thorens | SnowForecast", "plan.finishVillage": "The village (Val Thorens)", "plan.atVillage": "in Val Thorens village", "sos.myLoc": "My location: {coords} (Val Thorens).", "sos.shareTitle": "My location — Val Thorens", "start.markerDemo": "<b>Start: Val Thorens village</b><br>(demo mode)", "popup.liftNote": "OSM data · Opening hours and status — on the official site", "popup.pisteNote": "OSM data · Tapping the map next to the piste will offer it as a destination", "route.total": "🕐 About {total} minutes in total ({ski} skiing/riding + about {wait} min waiting at {lifts} {liftWord})", "route.eta": "Estimated arrival: <b>{eta}</b> (if you leave now). Lift closing times are not in the data — check <a href=\"https://www.valthorens.com/en/infos-neige/\" target=\"_blank\" rel=\"noopener\">official status ↗</a> before a long late-day route.", "note.estimates": "⚠️ Ski and waiting times are <b>estimates</b> (average speeds + about 5 minutes' wait per lift). Closing times, crowds and open/closed status change — always check the official site before a long route. There is no live status here.", "warn.orelle": "<div class=\"warn\"><b>Orelle:</b> the destination is in the Orelle area — reached via Cime Caron. The Orelle valley station (at about 900 m) is outside the map data; the descent into the Orelle valley itself is not navigated here.</div>", "warn.chambre": "<div class=\"warn\"><b>Col de la Chambre → Méribel:</b> from here you continue to Méribel — a full <b>3 Vallées</b> pass is required. This map covers up to the data boundary (Méribel itself is outside it).</div>", "finish.village": "The village (Val Thorens)", "meta.h1": "🗺️ Val Thorens — Live navigation map", "meta.sub": "Val Thorens + Orelle · 3 Vallées · OpenStreetMap data", "meta.footer": "© <a href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\" rel=\"noopener\">OpenStreetMap</a> contributors (ODbL) · Map style © <a href=\"https://www.opensnowmap.org/\" target=\"_blank\" rel=\"noopener\">OpenSnowMap.org</a> (CC-BY-SA) · Piste/lift data: OSM, built 27 November 2026 · Estimated times only, no live status."}};
+Object.assign(STR.he, {"bar.record":"הקלטה","nav.start":"▶ התחל ניווט","nav.nextStepBtn":"הצעד הבא ›","nav.followBtn":"שחרר","nav.planReturnBtn":"תכנון חזרה","nav.offRoute":"סטית מהמסלול","nav.reroute":"נתב מחדש","nav.searchingGps":"מחפש GPS…","plan.roundTrip":"הלוך־חזור (חזרה לנקודת ההתחלה)","plan.noReturn":"לא נמצא מסלול חזרה ברמת הקושי שנבחרה.","plan.decidingLift":"המעלית המכריעה: {lift} — צאו לפני שהיא נסגרת.","plan.noRoute":"לא נמצא מסלול לנקודת הסיום ברמת הקושי שנבחרה.","search.recents":"אחרונים","start.myLocChip":"המיקום שלי","start.demoChip":"הכפר (דמו)","prefs.on":"פעיל","prefs.off":"כבוי","sos.whatsapp":"💬 וואטסאפ","route.title":"🧭 מסלול","settings.title":"⚙️ הגדרות","trips.title":"👥 קבוצות טיול","friend.title":"👥 חברים","friend.demoNote":"חבר דמו — הקש על הסמן במפה כדי לנווט אליו. נקודות של חברים מגיעות מקישורי שיתוף — תמונת מצב, לא מעקב חי — ופגות אחרי 60 דקות.","friend.namePh":"שם החבר","friend.linkPh":"הדבק קישור (Google Maps / geo:)","friend.placeBtn":"סמן על המפה","friend.addBtn":"הוספה","friend.shareBtn":"שיתוף המיקום שלי","detail.title":"פרטים"});
+Object.assign(STR.en, {"bar.record":"Record","nav.start":"▶ Start navigation","nav.nextStepBtn":"Next step ›","nav.followBtn":"Free","nav.planReturnBtn":"Plan return","nav.offRoute":"You are off route","nav.reroute":"Re-route","nav.searchingGps":"Searching for GPS…","plan.roundTrip":"Round trip (return to start)","plan.noReturn":"No return route found at the chosen difficulty.","plan.decidingLift":"Deciding lift: {lift} — leave before it closes.","plan.noRoute":"No route to the finish point at the chosen difficulty.","search.recents":"Recent","start.myLocChip":"My location","start.demoChip":"Village (demo)","prefs.on":"On","prefs.off":"Off","sos.whatsapp":"💬 WhatsApp","route.title":"🧭 Route","settings.title":"⚙️ Settings","trips.title":"👥 Trip groups","friend.title":"👥 Friends","friend.demoNote":"Demo friend — tap the marker on the map to navigate to them. Friends' points arrive from share links — a snapshot, not live tracking — and expire after 60 minutes.","friend.namePh":"Friend’s name","friend.linkPh":"Paste link (Google Maps / geo:)","friend.placeBtn":"Place on map","friend.addBtn":"Add","friend.shareBtn":"Share my location","detail.title":"Details"});
+if(typeof SF_STR!=='undefined'){for(const _l of['he','en'])Object.assign(STR[_l],SF_STR[_l]);}
 function t(k,vars){ let s=(STR[lang]&&STR[lang][k]!==undefined)?STR[lang][k]:(STR.he[k]!==undefined?STR.he[k]:k); if(vars) for(const a in vars) s=s.split('{'+a+'}').join(vars[a]); return s; }
 const DIFF_EN={green:'Green',blue:'Blue',red:'Red',black:'Black'};
 const LIFT_EN={gondola:'Gondola',cable_car:'Cable car',chair_lift:'Chairlift',mixed_lift:'Mixed lift',platter:'Button lift','t-bar':'T-bar',magic_carpet:'Magic carpet',drag_lift:'Drag lift',funitel:'Funitel'};
@@ -205,12 +293,13 @@ function applyLang(){
   document.querySelectorAll('[data-i18n]').forEach(el=>{ el.textContent=t(el.getAttribute('data-i18n')); });
   document.querySelectorAll('[data-i18n-ph]').forEach(el=>{ el.placeholder=t(el.getAttribute('data-i18n-ph')); });
   document.querySelectorAll('[data-i18n-html]').forEach(el=>{ el.innerHTML=t(el.getAttribute('data-i18n-html')); });
-  const tg=$('langToggle'); if(tg) tg.textContent=lang==='he'?'EN':'עב';
+  document.querySelectorAll('[data-lang-seg]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.lang===lang?'true':'false'));
   try{ localStorage.setItem(LANG_KEY,lang); }catch(e){}
   document.title=t('meta.title');
   if(typeof refreshDynamicLang==='function') refreshDynamicLang();
 }
 function toggleLang(){ lang=lang==='he'?'en':'he'; applyLang(); }
+function setLang(l){ lang=(l==='en')?'en':'he'; applyLang(); }
 function refreshDynamicLang(){
   if(DATA){
     if(startIsDemo) setDemoStart();
@@ -220,6 +309,10 @@ function refreshDynamicLang(){
   }
   updateSOS();
   if(lastOffline) setOfflineMsg(lastOffline.key,lastOffline.vars);
+  applyTheme();
+  refreshSwitches();
+  var _lt=$('langToggle'); if(_lt) _lt.textContent = lang==='he'?'EN':'עב';
+  if(window.SF) SF.renderDynamic();
 }
 function setDemoStartText(){ setStatus((typeof dataInfo!=='undefined'&&dataInfo?dataInfo+' ':'')+t('start.demo')); }
 
@@ -234,15 +327,15 @@ function keyOf(ll){ return ll[1]+','+ll[0]; } // "lon,lat" — RAW, no toFixed: 
 function fmtMin(m){ m=Math.round(m*10)/10; return m<1 ? t('fmt.lt1min') : t('fmt.min',{m:Number.isInteger(m)?m:m.toFixed(1)}); }
 
 map = L.map('map', {zoomControl:true}).setView(VILLAGE, 14);
-L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19, attribution:'© OpenStreetMap contributors'}).addTo(map);
-L.tileLayer('https://tiles.opensnowmap.org/pistes/{z}/{x}/{y}.png', {maxZoom:18, opacity:0.9, attribution:'© OpenSnowMap (CC-BY-SA)'}).addTo(map);
+map.zoomControl.setPosition('topright');
+const osmBaseLayer=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19, attribution:'© OpenStreetMap contributors'}).addTo(map);
+const osmPisteLayer=L.tileLayer('https://tiles.opensnowmap.org/pistes/{z}/{x}/{y}.png', {maxZoom:18, opacity:0.9, attribution:'© OpenSnowMap (CC-BY-SA)'}).addTo(map);
 pisteLayer = L.layerGroup().addTo(map);
 liftLayer = L.layerGroup().addTo(map);
 placesLayer = L.layerGroup().addTo(map);
 routeLayer = L.layerGroup().addTo(map);
 
-function togglePanel(){ const p=$('panel'); p.style.display = p.style.display==='none' ? '' : 'none'; }
-function setStatus(t){ $('status').textContent = t; }
+function setStatus(msg){ if(window.SF) SF.toast(msg); else $('status').textContent = msg; }
 
 fetch(DATA_URL).then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); }).then(d=>{
   DATA=d;
@@ -273,8 +366,7 @@ function drawPistes(){
     const len=pathLenM(p.coords);
     const line=L.polyline(latlngs,{color:DIFF_COLOR[p.difficulty],weight:3,opacity:0.85});
     const name=p.name||'מסלול ללא שם';
-    line.bindPopup(`<b>${name}</b> <span class="pill ${p.difficulty}">${diffName(p.difficulty)}</span><br>${t('popup.length',{len:len.toLocaleString(lang)})}<br><span style="color:#666;font-size:.8rem">${t('popup.pisteNote')}</span>`);
-    line.on('click',()=>{ setDestination([p.coords[Math.floor(p.coords.length/2)][1], p.coords[Math.floor(p.coords.length/2)][0]], name+' ('+diffName(p.difficulty)+')'); });
+    line.on('click',(e)=>{ suppressMapClickUntil=Date.now()+300; setDestination([e.latlng.lat,e.latlng.lng], name); showFeature(`<b>${name}</b> <span class="pill ${p.difficulty}">${diffName(p.difficulty)}</span><br>${t('popup.length',{len:len.toLocaleString(lang)})}<br><span style="color:var(--muted);font-size:.8rem">${t('popup.pisteNote')}</span>`, [p.coords[Math.floor(p.coords.length/2)][1], p.coords[Math.floor(p.coords.length/2)][0]], name+' ('+diffName(p.difficulty)+')'); });
     pisteLayer.addLayer(line);
   }
 }
@@ -284,8 +376,7 @@ function drawLifts(){
     const len=pathLenM(l.coords);
     const line=L.polyline(latlngs,{color:'#111827',weight:3,opacity:0.9});
     const name=l.name||'מעלית ללא שם';
-    line.bindPopup(`<b>${name}</b><br>${liftName(l.type)||l.type} · ${t('popup.length',{len:len.toLocaleString(lang)})}<br><span style="color:#666;font-size:.8rem">${t('popup.liftNote')}</span>`);
-    line.on('click',()=>{ setDestination([l.coords[l.coords.length-1][1], l.coords[l.coords.length-1][0]], t('dest.liftTop',{name:name})); });
+    line.on('click',(e)=>{ suppressMapClickUntil=Date.now()+300; setDestination([e.latlng.lat,e.latlng.lng], name); showFeature(`<b>${name}</b><br>${liftName(l.type)||l.type} · ${t('popup.length',{len:len.toLocaleString(lang)})}<br><span style="color:var(--muted);font-size:.8rem">${t('popup.liftNote')}</span>`, [l.coords[l.coords.length-1][1], l.coords[l.coords.length-1][0]], t('dest.liftTop',{name:name})); });
     liftLayer.addLayer(line);
   }
 }
@@ -297,8 +388,7 @@ const KIND_COLOR={'village':'#2563eb','peak':'#6b7280','hut':'#92400e','lift_sta
 function drawPlaces(){
   for(const pl of DATA.places){
     const m=L.circleMarker([pl.coords[1],pl.coords[0]],{radius: pl.kind==='village'?7:5, color:KIND_COLOR[pl.kind]||'#666', weight:2, fillColor:KIND_COLOR[pl.kind]||'#666', fillOpacity:0.9});
-    m.bindPopup(`<b>${pl.name}</b><br>${kindName(pl.kind)}${pl.ele? t('popup.ele',{ele:pl.ele}):''}`);
-    m.on('click',()=>{ setDestination([pl.coords[1],pl.coords[0]], pl.name); });
+    m.on('click',(e)=>{ suppressMapClickUntil=Date.now()+300; setDestination([e.latlng.lat,e.latlng.lng], pl.name); showFeature(`<b>${pl.name}</b><br>${kindName(pl.kind)}${pl.ele? t('popup.ele',{ele:pl.ele}):''}`, [pl.coords[1],pl.coords[0]], pl.name); });
     m._kind=pl.kind;
     placesLayer.addLayer(m);
   }
@@ -312,10 +402,32 @@ function buildSearchIndex(){
 }
 function setTab(cat,btn){ searchTab=cat; document.querySelectorAll('#searchTabs button').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); doSearch($('search').value); }
 function doSearch(q){
-  q=(q||'').trim().toLowerCase();
+  const raw=q||'';
+  q=(window.SF?SF.searchFold(raw):raw.trim().toLowerCase());
   const box=$('searchResults'); box.innerHTML='';
-  if(q.length<2){ return; }
-  const hits=SEARCH.filter(s=> (searchTab==='all'||s.cat===searchTab) && s.name.toLowerCase().includes(q)).slice(0,30);
+  const recBox=$('recentList'); if(recBox) recBox.innerHTML='';
+  if(q.length<2){
+    // recents (L9), sorted by distance from the current start
+    if(recBox && window.SF){
+      const recs=SF.Recents.sorted();
+      if(recs.length){
+        recBox.innerHTML='<div class="muted" style="margin:6px 0">'+t('search.recents')+'</div>';
+        for(const r of recs){
+          const div=document.createElement('div'); div.className='res';
+          div.innerHTML='<b></b>';
+          div.querySelector('b').textContent=r.name;
+          div.onclick=()=>{ setDestination([r.lat,r.lon], r.name); };
+          recBox.appendChild(div);
+        }
+      }
+    }
+    return;
+  }
+  const catK = window.SF ? SF.matchCategory(raw) : null;
+  const catKind = (catK==='lift'||catK==='piste'||catK==='village'||catK==='hut'||catK==='service') ? catK : null;
+  const hits=SEARCH.filter(s=> (searchTab==='all'||s.cat===searchTab) && (!catKind||s.cat===catKind) && (window.SF?SF.searchFold(s.name).includes(q):s.name.toLowerCase().includes(q)))
+    .sort((a,b)=> haversineM(startLL,a.ll)-haversineM(startLL,b.ll)) // nearest to the current start (L9)
+    .slice(0,30);
   if(!hits.length){ box.innerHTML='<div class="res">'+t('search.notFound')+'</div>'; return; }
   for(const h of hits){
     const div=document.createElement('div'); div.className='res';
@@ -326,10 +438,15 @@ function doSearch(q){
   }
 }
 /* ---- start / GPS ---- */
+function setGpsDemoUI(which){
+  ['gpsFab','gpsBtn'].forEach(function(id){ const b=$(id); if(b) b.classList.toggle('active', which==='gps'); });
+  const d=$('demoBtn'); if(d) d.classList.toggle('active', which==='demo');
+}
 function setDemoStart(){
   startIsDemo=true; startLL=VILLAGE.slice();
-  $('demoBtn').classList.add('active'); $('gpsBtn').classList.remove('active');
+  setGpsDemoUI('demo');
   placeStartMarker(); setDemoStartText();
+  if(window.SF) SF.setStartLabel(t('start.demoChip'), true);
   if(destLL) computeRoute();
 }
 function locateMe(){
@@ -338,12 +455,13 @@ function locateMe(){
   if(watchId!==null) navigator.geolocation.clearWatch(watchId);
   watchId=navigator.geolocation.watchPosition(pos=>{
     startIsDemo=false; startLL=[pos.coords.latitude, pos.coords.longitude];
-    $('gpsBtn').classList.add('active'); $('demoBtn').classList.remove('active');
+    setGpsDemoUI('gps');
     placeStartMarker();
     if(gpsCircle) map.removeLayer(gpsCircle);
     gpsCircle=L.circle(startLL,{radius:pos.coords.accuracy||30,color:'#3b82f6',fillOpacity:0.15}).addTo(map);
     map.setView(startLL, 15);
     gpsAccuracy=pos.coords.accuracy||0; setStatus(dataInfo+' '+t('gps.active',{acc:Math.round(gpsAccuracy)}));
+    if(window.SF) SF.setStartLabel(t('start.myLocChip'), false);
     updateSOS();
     if(destLL) computeRoute();
   }, err=>{
@@ -352,26 +470,31 @@ function locateMe(){
 }
 function placeStartMarker(){
   if(startMarker) map.removeLayer(startMarker);
-  startMarker=L.marker(startLL,{title:t('start.markerTitle')}).addTo(map)
-    .bindPopup(startIsDemo?t('start.markerDemo'):t('start.markerGps'));
+  startMarker=L.marker(startLL,{title:t('start.markerTitle')}).addTo(map);
+  startMarker.on('click',()=>{ suppressMapClickUntil=Date.now()+300; showFeature(startIsDemo?t('start.markerDemo'):t('start.markerGps'), startLL, t('start.markerTitle')); });
 }
 /* ---- destination + routing ---- */
-map.on('click', e=>{ setDestination([e.latlng.lat, e.latlng.lng], t('dest.mapPoint')); });
+let suppressMapClickUntil = 0; // layer clicks must not also fire the map tap handler
+map.on('click', e=>{ if(Date.now()<suppressMapClickUntil) return; if(window.SF){ if(SF.onMapTap(e.latlng.lat, e.latlng.lng)==='friend') return; } else if(sheetIsOpen()){ closeSheet(); } setDestination([e.latlng.lat, e.latlng.lng], t('dest.mapPoint')); });
 function setDestination(ll, name){
+  if(window.SF&&SF.Nav&&!SF.Nav.confirmReplace()) return;
+  if(window.SF&&SF.Nav&&SF.Nav.active) SF.Nav.end();
   destLL=ll; destName=name||t('dest.default');
+  if(window.SF) SF.Recents.add(destName, ll[0], ll[1], '');
   if(destMarker) map.removeLayer(destMarker);
-  destMarker=L.marker(ll,{title:destName}).addTo(map).bindPopup('<b>'+escapeHtml(destName)+'</b>').openPopup();
+  destMarker=L.marker(ll,{title:destName}).addTo(map);
+  destMarker.on('click',()=>{ suppressMapClickUntil=Date.now()+300; showFeature('<b>'+escapeHtml(destName)+'</b>', ll, destName); });
   $('destName').textContent='🎯 '+destName;
-  $('bottombar').style.display='flex';
+  syncRouteCard();
   computeRoute();
 }
 function escapeHtml(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 function setLevel(lvl,btn){ maxLevel=lvl; document.querySelectorAll('#levelSeg button').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); reroute(); }
 function reroute(){ if(destLL) computeRoute(); }
 function clearRoute(){
-  destLL=null; destName=''; currentRoute=null;
+  destLL=null; destName=''; currentRoute=null; window.__route=null;
   routeLayer.clearLayers(); if(destMarker){map.removeLayer(destMarker);destMarker=null;}
-  $('bottombar').style.display='none'; $('steps').innerHTML=''; $('planOut').textContent='';
+  syncRouteCard(); const _rb=$('routeBadge'); if(_rb) _rb.textContent=''; $('steps').innerHTML=''; $('planOut').textContent='';
 }
 function dijkstra(startKey, goalKey){
   const snowboard=$('snowboardMode').checked, cabinDown=$('cabinDown').checked;
@@ -432,7 +555,11 @@ function computeRoute(){
   const box=$('steps');
   if(!res){
     box.innerHTML=t('route.none');
-    currentRoute=null; $('planOut').textContent=''; return;
+    currentRoute=null; window.__route=null; $('planOut').textContent='';
+    const _rt=$('routeTotal'); if(_rt) _rt.textContent='';
+    const _rb=$('routeBadge'); if(_rb) _rb.textContent='';
+    syncRouteCard();
+    return;
   }
   const steps=collapseSteps(res.path);
   const lifts=steps.filter(s=>s.kind==='lift').length;
@@ -443,6 +570,13 @@ function computeRoute(){
   const latlngs=[];
   for(const s of steps) for(const c of s.coords) latlngs.push([c[1],c[0]]);
   L.polyline(latlngs,{color:'#a855f7',weight:5,opacity:0.95}).addTo(routeLayer);
+  // structured route for nav mode (SF.Nav) + route-card peek
+  window.__route={legs:[], totalMin:total, totalDist:0, destName:destName, destLL:destLL.slice(), polyline:latlngs.slice()};
+  (function(){
+    var totD=0;
+    for(var i=0;i<steps.length;i++){ var s=steps[i]; window.__route.legs.push({kind:s.kind==='lift'?'lift':(s.kind==='piste'?'piste':'walk'),name:s.name||'',dist:s.length_m||0,time:s.minutes||0}); totD+=s.length_m||0; }
+    window.__route.totalDist=totD;
+  })();
   const liftWord=lifts===1?t('unit.lift'):t('unit.lifts');
   let html=`<div class="tot">${t('route.total',{total:Math.round(total),ski:fmtMin(res.minutes),wait:waitMin,lifts:lifts,liftWord:liftWord})}</div><ol>`;
   for(const s of steps){
@@ -465,6 +599,10 @@ function computeRoute(){
   const etaStr=eta.getHours().toString().padStart(2,'0')+':'+eta.getMinutes().toString().padStart(2,'0');
   html+=`<p class="note">${t('route.eta',{eta:etaStr})}</p>`;
   box.innerHTML=html;
+  var _rp=$('routeStepsPeek'); if(_rp) _rp.textContent = steps.slice(0,2).map(function(s){ return (s.kind==='lift'?'🚡 ':'⛷️ ')+(s.name||''); }).join(' › ');
+  const _bt=t('fmt.min',{m:Math.round(total)});
+  const _rt=$('routeTotal'); if(_rt) _rt.textContent=_bt;
+  const _rb=$('routeBadge'); if(_rb) _rb.textContent=_bt;
   $('planOut').textContent='';
 }
 /* ---- plan by time ---- */
@@ -473,27 +611,45 @@ function planByMinutes(){
   const out=$('planOut');
   if(!currentRoute){ out.textContent=t('plan.needRoute'); return; }
   if(!mins||mins<=0){ out.textContent=t('plan.needMinutes'); return; }
-  const t=currentRoute.total;
-  if(t<=mins) out.innerHTML=t('plan.fits',{t:Math.round(t),mins:mins,left:Math.round(mins-t)});
-  else out.innerHTML=t('plan.tooLong',{t:Math.round(t),mins:mins,short:Math.round(t-mins)});
+  let total=currentRoute.total;
+  const rt=$('roundTrip');
+  if(rt&&rt.checked){
+    // round trip (L1): fresh Dijkstra dest -> start, labelled as such
+    const back=dijkstra(keyOf(nearestNode(destLL)), keyOf(nearestNode(startLL)));
+    if(!back){ out.textContent=t('plan.noReturn'); return; }
+    total += back.minutes + 5*back.path.filter(function(e){ return e.kind==='lift'; }).length;
+  }
+  if(total<=mins) out.innerHTML=t('plan.fits',{t:Math.round(total),mins:mins,left:Math.round(mins-total)});
+  else out.innerHTML=t('plan.tooLong',{t:Math.round(total),mins:mins,short:Math.round(total-mins)});
 }
 function planByTime(){
   const v=$('arriveBy').value;
   const out=$('planOut');
-  if(!currentRoute){ out.textContent=t('plan.needRoute'); return; }
   if(!v){ out.textContent=t('plan.needTime'); return; }
   const [hh,mm]=v.split(':').map(Number);
   const now=new Date();
   const target=new Date(now); target.setHours(hh,mm,0,0);
   if(target<now) target.setDate(target.getDate()+1);
-  const leave=new Date(target.getTime()-currentRoute.total*60000);
+  const finVal=($('finishAt')||{}).value||'village';
+  const finLL = finVal==='here' ? startLL : VILLAGE;
+  // fresh route from the current start to the finish place (L2), +10 min buffer
+  const sNode=nearestNode(startLL), gNode=nearestNode(finLL);
+  const res=dijkstra(keyOf(sNode), keyOf(gNode));
+  if(!res){ out.textContent=t('plan.noRoute'); return; }
+  const steps=collapseSteps(res.path);
+  const lifts=steps.filter(function(s){ return s.kind==='lift'; }).length;
+  const total=res.minutes+5*lifts+10;
+  const leave=new Date(target.getTime()-total*60000);
   const leaveStr=leave.getHours().toString().padStart(2,'0')+':'+leave.getMinutes().toString().padStart(2,'0');
-  const finishAt=$('finishAt').value;
-  const destTxt = finishAt==='village' ? t('plan.atVillage') : t('plan.atStart');
-  out.innerHTML=t('plan.leaveBy',{dest:destTxt,v:v,total:Math.round(currentRoute.total),leave:leaveStr});
+  const destTxt = finVal==='here' ? t('plan.atDest') : t('plan.atVillage');
+  let html=t('plan.leaveBy',{dest:destTxt,v:v,total:Math.round(total),leave:leaveStr});
+  const lastLift=steps.slice().reverse().find(function(s){ return s.kind==='lift'; });
+  if(lastLift) html+='<br>'+t('plan.decidingLift',{lift:lastLift.name||''});
+  out.innerHTML=html;
+  if(hh>16 || (hh===16 && mm>=30)) out.innerHTML+=t('plan.lateRule');
 }
 /* ---- offline ---- */
-const CACHE_NAME='vt-map-v2';
+const CACHE_NAME='vt-map-v3';
 async function saveOffline(){
   const st=$('offlineStatus');
   if(!('caches' in window)){ setOfflineMsg('offline.unsupported'); return; }
@@ -501,7 +657,7 @@ async function saveOffline(){
     const cache=await caches.open(CACHE_NAME);
     await cache.add(DATA_URL);
     // app shell too (Leaflet CDN + this page), so an offline reload works
-    for (const u of ['https://unpkg.com/leaflet@1.9.4/dist/leaflet.js','https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', location.pathname]) {
+    for (const u of ['https://unpkg.com/leaflet@1.9.4/dist/leaflet.js','https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', location.pathname, 'map-shared.js', 'sf-tokens.css', 'map-shared.css']) {
       try { const r = await fetch(u, {mode: u.startsWith('http') ? 'no-cors' : 'same-origin'}); if (r.ok || r.type === 'opaque') await cache.put(u, r); } catch(e){}
     }
     // tiles for the resort bbox, zooms 12-15 (honest estimate: ~15KB/tile avg)
@@ -521,6 +677,7 @@ async function saveOffline(){
       done+=20; setOfflineMsg('offline.progress',{done:Math.min(done,urls.length),n:urls.length});
     }
     setOfflineMsg('offline.saved',{n:urls.length,mb:Math.round(urls.length*15/1024)});
+    if(window.SF) SF.Offline.markSaved(urls.length*15/1024);
     if('serviceWorker' in navigator){ try{ await navigator.serviceWorker.register('sw-vt.js'); }catch(e){} }
   }catch(e){ setOfflineMsg('offline.error',{msg:e.message}); }
 }
@@ -533,7 +690,7 @@ function tileList(bbox,z){
 function lon2tile(lon,z){ return Math.floor((lon+180)/360*Math.pow(2,z)); }
 function lat2tile(lat,z){ const r=lat*Math.PI/180; return Math.floor((1-Math.log(Math.tan(r)+1/Math.cos(r))/Math.PI)/2*Math.pow(2,z)); }
 async function clearOffline(){
-  if('caches' in window){ await caches.delete(CACHE_NAME); setOfflineMsg('offline.cleared'); }
+  if('caches' in window){ await caches.delete(CACHE_NAME); setOfflineMsg('offline.cleared'); if(window.SF) SF.Offline.clearSaved(); }
 }
 /* ---- SOS ---- */
 function toggleSOS(){ const p=$('sosPanel'); p.style.display=p.style.display==='block'?'none':'block'; updateSOS(); }
@@ -551,8 +708,91 @@ function shareLocation(){
   else { window.open(url,'_blank'); }
 }
 if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw-vt.js').catch(()=>{}); }
+let pendingDest=null;
+function showFeature(html, ll, name){
+  if(window.SF&&SF.Nav&&SF.Nav.active) return; // no popups while navigating (WS6)
+  pendingDest = (ll && name) ? {ll:ll, name:name} : null;
+  const b=$('detailBody'); if(b) b.innerHTML=html;
+  openSheet('detail');
+}
+function goToPendingDest(){
+  if(!pendingDest) return;
+  setDestination(pendingDest.ll, pendingDest.name);
+  closeSheet();
+}
+function syncRouteCard(){
+  const rc=$('routeCard'); if(!rc) return;
+  rc.classList.toggle('show', !!(destLL && !(window.SF&&SF.sheetOpen&&SF.sheetOpen())));
+}
+function applyTheme(){ if(window.SF) SF.applyTheme(); }
+function toggleTheme(){
+  if(!window.SF) return;
+  const cur=document.documentElement.getAttribute('data-theme')||'dark';
+  SF.setTheme(cur==='dark'?'light':'dark');
+}
+function toggleLayer(which){
+  if(which==='base' && typeof osmBaseLayer!=='undefined'){ const on=$('layerBase').checked; if(on) osmBaseLayer.addTo(map); else map.removeLayer(osmBaseLayer); }
+  if(which==='pistes' && typeof osmPisteLayer!=='undefined'){ const on=$('layerPistes').checked; if(on) osmPisteLayer.addTo(map); else map.removeLayer(osmPisteLayer); }
+}
+
+/* ---- Round 2 shared shell (SF) adapter ---- */
+function togglePref(id, btn){
+  const cb=$(id); if(!cb) return;
+  cb.checked=!cb.checked;
+  cb.dispatchEvent(new Event('change'));
+  refreshSwitches();
+}
+function refreshSwitches(){
+  document.querySelectorAll('.switch[data-pref]').forEach(function(b){
+    const cb=$(b.getAttribute('data-pref')); if(!cb) return;
+    const on=!!cb.checked;
+    b.setAttribute('aria-checked', on?'true':'false');
+    b.textContent = on ? t('prefs.on') : t('prefs.off');
+  });
+}
+function wireFriendsForm(){
+  const pb=$('friendPlaceBtn');
+  if(pb) pb.addEventListener('click', function(){
+    const n=(($('friendName')||{}).value||'').trim();
+    if(window.SF) SF.Friends.startPlacing(n||SF.t('friend'));
+  });
+  const ab=$('friendAddBtn');
+  if(ab) ab.addEventListener('click', function(){
+    const n=(($('friendName')||{}).value||'').trim();
+    let la=parseFloat((($('friendLat')||{}).value||''));
+    let lo=parseFloat((($('friendLon')||{}).value||''));
+    const link=(($('friendLink')||{}).value||'').trim();
+    if(link && window.SF){ const p=SF.Friends.parseLink(link); if(p){ la=p.lat; lo=p.lon; } }
+    if(isNaN(la)||isNaN(lo)){ if(window.SF) SF.toast(SF.t('invalidLink'), true); return; }
+    if(window.SF){ SF.Friends.add({name:n||SF.t('friend'), lat:la, lon:lo}); SF.toast(SF.t('friendAdded')); }
+  });
+  const sb=$('friendShareBtn');
+  if(sb) sb.addEventListener('click', function(){ if(window.SF) SF.Friends.shareMyLocation(); });
+}
+window.SFMap = {
+  getMap:function(){ return map; },
+  setDest:function(lat,lon,name){ setDestination([lat,lon], name); },
+  locate:function(){ locateMe(); },
+  getStart:function(){ return startLL.slice(); },
+  isDemo:function(){ return startIsDemo; },
+  setStartLL:function(lat,lon){ startLL=[lat,lon]; startIsDemo=false; placeStartMarker(); },
+  getRoute:function(){ return window.__route||null; },
+  clearRoute:function(){ clearRoute(); },
+  saveOffline:function(){ saveOffline(); },
+  rerouteFrom:function(lat,lon){ startLL=[lat,lon]; startIsDemo=false; placeStartMarker(); if(destLL){ computeRoute(); return !!window.__route; } return false; },
+  planReturn:function(totalMin){ const hm=$('haveMinutes'); if(hm) hm.value=Math.max(5,Math.round(totalMin)); const rt=$('roundTrip'); if(rt){ rt.checked=true; refreshSwitches(); } if(window.SF) SF.openSheet('plan','half'); planByMinutes(); }
+};
+if(typeof SF!=='undefined'&&SF.init){
+  SF.init({slug:'val-thorens', resortName:'Val Thorens', centre:[45.29791, 6.58227],
+    demoFriend:{name:'Demo', lat:45.30503, lon:6.58599, place:'Funitel 3 Vallées'},
+    activeTrip:''});
+}
+wireFriendsForm();
+refreshSwitches();
 applyLang();
 map.on('moveend', ()=>{ if($('sosPanel').style.display==='block') updateSOS(); });
+applyTheme(); syncRouteCard();
+if(window.SF) SF.Offline.renderBadge();
 </script>
 </body>
 </html>

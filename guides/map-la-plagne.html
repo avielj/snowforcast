@@ -2,37 +2,38 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<script>try{var _l=localStorage.getItem('sf-lang')||'he';document.documentElement.lang=_l;document.documentElement.dir=_l==='en'?'ltr':'rtl';}catch(e){}</script>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>try{var _l=localStorage.getItem('sf-lang')||'he';document.documentElement.lang=_l;document.documentElement.dir=_l==='en'?'ltr':'rtl';var _t=localStorage.getItem('sf-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>לה פלאן — מפת ניווט חיה | SnowForecast</title>
 <meta name="description" content="מפת ניווט אינטראקטיבית ללה פלאן: מסלולים ומעליות מנתוני OpenStreetMap, ניווט GPS מנקודה לנקודה, חיפוש יעדים ותכנון לפי זמן.">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="icon" href="favicon.svg">
+<link rel="stylesheet" href="sf-tokens.css">
+<link rel="stylesheet" href="map-shared.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="map-shared.js"></script>
 <style>
 :root{color-scheme:dark;--bg:#06111f;--card:rgba(16,38,61,.92);--line:rgba(255,255,255,.14);--text:#f6fbff;--muted:#9fb3c8;--accent:#7dd3fc;--green:#22c55e;--blue:#3b82f6;--red:#ef4444;--black:#e5e7eb}
 *{box-sizing:border-box}
-body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
+body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);position:relative;height:100dvh;overflow:hidden;display:flex;flex-direction:column}
 a{color:var(--accent)}
-header{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 12px;background:var(--card);border-bottom:1px solid var(--line)}
-header h1{font-size:1.15rem;margin:0}
-header .sub{color:var(--muted);font-size:.82rem}
 .btn{display:inline-flex;align-items:center;gap:6px;min-height:38px;padding:8px 14px;border-radius:999px;font-weight:800;text-decoration:none;color:#06111f;background:linear-gradient(135deg,#e0f7ff,var(--accent));border:0;cursor:pointer;font-size:.9rem}
 .btn.secondary{color:var(--text);background:rgba(255,255,255,.09);border:1px solid var(--line)}
 .btn.danger{background:linear-gradient(135deg,#fecaca,#ef4444);color:#450a0a}
 .btn.active{outline:3px solid var(--accent)}
-#map{height:calc(100dvh - 210px);min-height:420px;width:100%}
-@media(max-width:760px){#map{height:calc(100dvh - 260px)}}
-.panel{padding:12px;display:grid;gap:10px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px}
-.card h2{margin:0 0 8px;font-size:1rem}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-input[type=text],input[type=time],input[type=number],select{background:rgba(5,16,30,.7);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:9px 10px;font-size:.95rem;min-height:40px}
+input[type=text],input[type=time],input[type=number],select{background:var(--sf-input-bg);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:9px 10px;font-size:16px;min-height:48px}
 #search{flex:1;min-width:180px}
 .tabs{display:flex;gap:6px;flex-wrap:wrap}
 .tab{border:1px solid var(--line);background:rgba(255,255,255,.06);color:var(--text);border-radius:999px;padding:6px 12px;cursor:pointer;font-weight:700;font-size:.85rem}
 .tab.active{background:var(--accent);color:#06111f}
 .chip{border:1px solid var(--line);background:rgba(255,255,255,.06);color:var(--text);border-radius:999px;padding:6px 12px;cursor:pointer;font-size:.85rem}
 .chip:hover{border-color:var(--accent)}
+/* Status-row chips sit over the map, not on a solid sheet: use the shared
+   near-opaque chip background (same as Val Thorens / Alpe d'Huez) so the
+   text stays readable in both themes. The translucent .chip above stays
+   for the search quick chips, which sit on the solid sheet. (P1-3) */
+#statusRow .chip{background:var(--sf-chip-bg);color:var(--sf-text);border-color:var(--sf-border);}
 #results{max-height:220px;overflow:auto;display:grid;gap:4px}
 .res{display:flex;justify-content:space-between;gap:8px;text-align:right;background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:10px;padding:8px 10px;cursor:pointer}
 .res:hover{border-color:var(--accent)}
@@ -42,57 +43,52 @@ input[type=text],input[type=time],input[type=number],select{background:rgba(5,16
 .muted{color:var(--muted);font-size:.85rem}
 .warn{border:1px solid rgba(250,204,21,.5);background:rgba(250,204,21,.08);border-radius:12px;padding:10px}
 .warn b{color:#facc15}
-.leaflet-popup-content{color:#111827;direction:rtl;text-align:right}
 .pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:2px 10px;font-size:.8rem;font-weight:800;color:var(--muted)}
 .legend{display:flex;gap:10px;flex-wrap:wrap;font-size:.85rem}
 .dot{display:inline-block;width:14px;height:4px;border-radius:2px;vertical-align:middle}
-#sosPanel{display:none}
-#status{font-size:.9rem}
 progress{width:100%}
 html[dir="ltr"] .res{text-align:left}
-html[dir="ltr"] .leaflet-popup-content{direction:ltr;text-align:left}
+
+@media (prefers-color-scheme: light){:root{--bg:#eef4f8;--card:rgba(255,255,255,.95);--line:rgba(15,40,60,.16);--text:#0b1c2c;--muted:#4b6172;--accent:#0284c7;--green:#16a34a;--blue:#2563eb;--red:#dc2626;--black:#111827}}
+html[data-theme="light"]{--bg:#eef4f8;--card:rgba(255,255,255,.95);--line:rgba(15,40,60,.16);--text:#0b1c2c;--muted:#4b6172;--accent:#0284c7;--green:#16a34a;--blue:#2563eb;--red:#dc2626;--black:#111827}
+html[data-theme="dark"]{--bg:#06111f;--card:rgba(16,38,61,.92);--line:rgba(255,255,255,.14);--text:#f6fbff;--muted:#9fb3c8;--accent:#7dd3fc;--green:#22c55e;--blue:#3b82f6;--red:#ef4444;--black:#e5e7eb}
+#map{flex:1;min-height:0;width:100%}
 </style>
 </head>
 <body>
-<header>
-  <a class="btn secondary" href="/guides/la-plagne" data-i18n="ui.backGuide">← המדריך</a>
-  <h1 data-i18n="meta.h1">🗺️ לה פלאן — מפת ניווט חיה</h1>
-  <span class="sub" data-i18n="meta.sub">La Plagne · Paradiski — מסלולים ומעליות מנתוני OpenStreetMap</span>
-  <span style="flex:1"></span>
-  <button class="btn secondary" id="langToggle" onclick="toggleLang()">EN</button>
-  <button class="btn danger" id="sosBtn">🆘 SOS · 112</button>
-</header>
-
-<div id="map"></div>
-
-<div class="panel">
-  <div class="card" id="sosPanel">
-    <h2 data-i18n="sos.title">🆘 חירום — SOS</h2>
-    <p data-i18n-html="sos.number">מספר החירום האירופי: <a href="tel:112" style="font-size:1.3rem;font-weight:900">112</a> (גם 15 — SAMU, 18 — כיבוי אש).</p>
-    <p id="sosCoords" class="muted" data-i18n="sos.coordsHint">המיקום שלכם יופיע כאן כשה־GPS פעיל — אמרו אותו למוקד.</p>
-    <p class="muted" data-i18n="sos.note">המפה אינה מחליפה את הוראות הסקי־פטרול והשילוט בשטח. במקרה של פציעה — אל תזיזו את הפצוע, סמנו את המקום.</p>
-    <button class="btn secondary" id="sosClose" data-i18n="sos.close">סגירה</button>
-  </div>
-
-  <div class="card">
-    <div class="row">
-      <button class="btn" id="gpsBtn" data-i18n="nav.gps">📍 איפה אני</button>
-      <button class="btn secondary" id="demoBtn" data-i18n="nav.demo">🎬 הדמיה — Plagne Centre</button>
-      <button class="btn secondary" id="markBtn" data-i18n="nav.mark">📌 סמן יעד במפה</button>
-      <button class="btn secondary" id="offlineBtn" data-i18n="offline.save">💾 שמור מפה לאופליין</button>
-      <button class="btn secondary" id="clearOfflineBtn" data-i18n="offline.clear">🗑️ מחק שמירה</button>
-      <span id="status" class="muted" data-i18n="status.loading">טוען נתוני מסלולים…</span>
+<div id="app">
+  <div id="mapWrap">
+    <div id="map"></div>
+<div id="topPill">
+      <a href="/guides/la-plagne" aria-label="Back to guide">‹</a>
+      <span class="resort">La Plagne</span>
+      <a class="liftlink" href="https://en.la-plagne.com/discover/ski-area" target="_blank" rel="noopener" data-i18n="ui.liftStatus">סטטוס מעליות ↗</a>
+      <button class="pillbtn bar-item" id="gearBtn" data-sheet="settings" aria-label="Settings">⚙️</button>
+      <button class="pillbtn" id="langToggle" onclick="toggleLang()" aria-label="Language">EN</button>
     </div>
-    <div class="row" style="margin-top:8px">
-      <span class="pill" id="startLabel">מוצא: —</span>
-      <span class="pill" id="destLabel">יעד: —</span>
-      <button class="btn secondary" id="clearBtn" data-i18n="nav.clear">נקה ניווט</button>
+    <div id="statusRow">
+      <button class="chip" id="startLabel"><span class="dot demo"></span><span>הכפר (דמו)</span></button>
+      <div class="chip group-chip" id="tripChip"><span class="trip-label">👥 קבוצות טיול</span><button class="switch" role="switch" aria-checked="false" aria-label="שיתוף מיקום">כבוי</button></div>
+      <button class="chip" id="offlineChip">💾 <span data-i18n="offline.save">שמור מפה לאופליין</span></button>
     </div>
-    <div id="offlineBox" class="muted"></div>
-  </div>
+    <div id="status" class="toast" role="status"></div>
+    <button class="fab" id="gpsFab" aria-label="GPS">◎</button>
+    <div id="routeCard">
+      <div class="rc-dest" id="destName"></div>
+      <div class="rc-sum" id="routeTotal"></div>
+      <div class="rc-steps" id="routeStepsPeek"></div>
+      <div class="rc-actions">
+        <button id="rcDetails" data-i18n="nav.stepsBtn">שלבי המסלול</button>
+        <button id="rcStart" class="primary" data-i18n="nav.start">▶ התחל ניווט</button>
+        <button id="rcEnd" class="danger" data-i18n="nav.clear">✕ נקה ניווט</button>
+      </div>
+    </div>
+    <div id="scrim"></div>
+    <div id="sheet">
+      <div class="sheet-handle"></div>
+<div class="pane" id="pane-search">
 
-  <div class="card">
-    <h2 data-i18n="search.title">🔍 לאן? חיפוש יעד</h2>
+    <h2><span data-i18n="search.title">🔍 לאן? חיפוש יעד</span><button class="x" aria-label="Close">✕</button></h2>
     <div class="row"><input type="text" id="search" data-i18n-ph="search.ph" placeholder="חפשו מעלית, מסלול, כפר, בקתה… (למשל: Roche de Mio, Vanoise, Montchavin)" autocomplete="off"></div>
     <div class="tabs" id="tabs" style="margin-top:8px">
       <button class="tab active" data-tab="all" data-i18n="search.tabAll">הכל</button>
@@ -112,30 +108,53 @@ html[dir="ltr"] .leaflet-popup-content{direction:ltr;text-align:left}
       <button class="chip" data-chip="amenity:atm" data-i18n="search.chipAtm">🏧 כספומט</button>
       <button class="chip" data-chip="amenity:restaurant" data-i18n="search.chipRestaurant">🍽️ מסעדה</button>
     </div>
+    <div id="recentList"></div>
     <div id="results" style="margin-top:8px"></div>
-  </div>
+    </div>
+<div class="pane" id="pane-route">
+    <div class="row">
+<div class="row">
+      <button class="btn" id="gpsBtn" data-i18n="nav.gps">📍 איפה אני</button>
+      <button class="btn secondary" id="demoBtn" data-i18n="nav.demo">🎬 הדמיה — Plagne Centre</button>
+    </div>    </div>
+    <div class="row" style="margin-top:8px">
+      <span class="pill" id="destLabel">יעד: —</span>
+      <button class="btn secondary" id="clearBtn" data-i18n="nav.clear">נקה ניווט</button>
+    </div>
 
-  <div class="card">
-    <h2 data-i18n="route.title">🧭 מסלול — הגדרות</h2>
+    <h2><span data-i18n="route.title">🧭 מסלול — הגדרות</span><button class="x" aria-label="Close">✕</button></h2>
     <div class="row">
       <span data-i18n="route.levelLabel">רמה:</span>
-      <button class="tab level active" data-level="blue" data-i18n="route.blueOnly">כחולים בלבד</button>
-      <button class="tab level" data-level="red" data-i18n="route.toRed">עד אדומים</button>
+      <button class="tab level" data-level="blue" data-i18n="route.blueOnly">כחולים בלבד</button>
+      <button class="tab level active" data-level="red" data-i18n="route.toRed">עד אדומים</button>
       <button class="tab level" data-level="black" data-i18n="route.withBlack">כולל שחורים</button>
     </div>
     <div class="row" style="margin-top:8px">
-      <label><input type="checkbox" id="snowboard"> <span data-i18n="route.snowboard">🏂 מצב סנובורד — להימנע מקטעים שטוחים</span></label>
-      <label><input type="checkbox" id="descend" checked> <span data-i18n="route.descend">🚡 ירידה בתאים (גונדולה/רכבל) מותרת</span></label>
+      <div class="row"><span data-i18n="route.snowboard">🏂 מצב סנובורד — להימנע מקטעים שטוחים</span><button class="switch" role="switch" aria-checked="false" data-pref="snowboard" onclick="togglePref('snowboard',this)" aria-label="מצב סנובורד">כבוי</button><input type="checkbox" id="snowboard" class="sr-only"></div>
+      <div class="row"><span data-i18n="route.descend">🚡 ירידה בתאים (גונדולה/רכבל) מותרת</span><button class="switch" role="switch" aria-checked="true" data-pref="descend" onclick="togglePref('descend',this)" aria-label="ירידה בתאים">פעיל</button><input type="checkbox" id="descend" class="sr-only" checked></div>
     </div>
     <div class="row" style="margin-top:8px">
       <button class="tab route-mode active" data-mode="fast" data-i18n="route.fast">הכי מהיר</button>
       <button class="tab route-mode" data-mode="fewlifts" data-i18n="route.fewlifts">הכי פחות מעליות</button>
     </div>
     <div id="routeBox" style="margin-top:10px"><p class="muted" data-i18n="route.hint">בחרו יעד בחיפוש או סמנו אותו במפה — המסלול יחושב מהמיקום שלכם (או מנקודת ההדמיה).</p></div>
-  </div>
+<div class="card">
+<h3 data-i18n="friend.title">👥 חברים</h3>
+<p class="muted" data-i18n="friend.demoNote">חבר דמו — הקש על הסמן במפה כדי לנווט אליו. נקודות של חברים מגיעות מקישורי שיתוף — תמונת מצב, לא מעקב חי — ופגות אחרי 60 דקות.</p>
+<div class="row"><button class="btn block" id="friendsEntryRoute" data-i18n="friends.openRow">👥 Friends & trips</button></div>
+<div id="friendList"></div>
+<div class="row"><input type="text" id="friendName" data-i18n-ph="friend.namePh" placeholder="שם החבר"></div>
+<div class="row"><input type="number" id="friendLat" placeholder="45.09" step="any" aria-label="Latitude"><input type="number" id="friendLon" placeholder="6.07" step="any" aria-label="Longitude"></div>
+<div class="row"><input type="text" id="friendLink" data-i18n-ph="friend.linkPh" placeholder="הדבק קישור (Google Maps / geo:)"></div>
+<div class="row"><button class="btn" id="friendPlaceBtn" data-i18n="friend.placeBtn">סמן על המפה</button><button class="btn primary" id="friendAddBtn" data-i18n="friend.addBtn">הוספה</button><button class="btn" id="friendShareBtn" data-i18n="friend.shareBtn">שיתוף המיקום שלי</button></div>
+</div>
+</div>
+<div class="pane" id="pane-friends"><h2><span data-i18n="friends.title">👥 חברים וטיולים</span><button class="x" aria-label="Close">✕</button></h2>
+<div id="friendsBody"></div>
+</div>
+<div class="pane" id="pane-plan">
 
-  <div class="card">
-    <h2 data-i18n="plan.title">⏱️ תכנון לפי זמן</h2>
+    <h2><span data-i18n="plan.title">⏱️ תכנון לפי זמן</span><button class="x" aria-label="Close">✕</button></h2>
     <div class="row">
       <label><span data-i18n="plan.have">יש לי</span> <input type="number" id="haveMin" min="10" max="480" value="60" style="width:80px"> <span data-i18n="plan.minutes">דקות</span></label>
       <button class="btn secondary" id="haveBtn" data-i18n="plan.check">האם אספיק לחזור?</button>
@@ -154,10 +173,30 @@ html[dir="ltr"] .leaflet-popup-content{direction:ltr;text-align:left}
     </div>
     <div id="timeBox" style="margin-top:8px"></div>
     <p class="muted" data-i18n-html="plan.note">הזמנים משוערים (מהירות גלישה + כ־5 דקות המתנה למעלית). אין כאן שעות סגירה חיות — בדקו את סטטוס המעליות באתר הרשמי / באפליקציית Yuge לפני יציאה למסלול ארוך, ובמיוחד לפני חציית ה־Vanoise Express (דורש סקי־פס Paradiski; הקישור נסגר 17 באפריל 2027).</p>
-  </div>
+    </div>
+<div class="pane" id="pane-settings"><h2><span data-i18n="settings.title">⚙️ הגדרות</span><button class="x" aria-label="Close">✕</button></h2>
 
-  <div class="card">
-    <h2 data-i18n="legend.title">🗺️ מקרא ומקורות</h2>
+    <h3 data-i18n="offline.title">💾 אופליין</h3>
+<div class="row">
+      <button class="btn secondary" id="offlineBtn" data-i18n="offline.save">💾 שמור מפה לאופליין</button>
+      <button class="btn secondary" id="clearOfflineBtn" data-i18n="offline.clear">🗑️ מחק שמירה</button>
+    </div>
+    <div id="offlineBox" class="muted"></div>
+    <h3 data-i18n="settings.theme">ערכת נושא</h3>
+    <div class="seg"><button data-theme-btn="auto" data-i18n="settings.themeAuto">לפי המכשיר</button><button data-theme-btn="light" data-i18n="settings.themeLight">☀️ בהיר</button><button data-theme-btn="dark" data-i18n="settings.themeDark">🌙 כהה</button></div>
+    <h3 data-i18n="settings.language">שפה</h3>
+    <div class="row"><div class="segToggle">
+      <button data-lang-seg data-lang="he" aria-pressed="true" onclick="setLang('he')">HE</button>
+      <button data-lang-seg data-lang="en" aria-pressed="false" onclick="setLang('en')">EN</button>
+    </div></div>
+<div class="row"><button class="btn block" id="friendsEntrySettings" data-i18n="friends.openRow">👥 Friends & trips</button></div>
+    <h3 data-i18n="settings.layers">שכבות מפה</h3>
+    <div class="row"><span data-i18n="settings.base">מפת בסיס (OSM)</span><button class="switch" role="switch" aria-checked="true" data-pref="layerBase" onclick="togglePref('layerBase',this)" aria-label="מפת בסיס">פעיל</button><input type="checkbox" id="layerBase" class="sr-only" checked onchange="toggleLayer('base')"></div>
+    <div class="row"><span data-i18n="settings.pistes">שכבת מסלולים (OpenSnowMap)</span><button class="switch" role="switch" aria-checked="true" data-pref="layerPistes" onclick="togglePref('layerPistes',this)" aria-label="שכבת מסלולים">פעיל</button><input type="checkbox" id="layerPistes" class="sr-only" checked onchange="toggleLayer('pistes')"></div>
+
+    <h3 data-i18n="trips.title">👥 קבוצות טיול</h3>
+<div id="tripList"></div>
+<h3 data-i18n="legend.title">🗺️ מקרא ומקורות</h3>
     <div class="legend">
       <span data-i18n-html="legend.green"><i class="dot" style="background:#22c55e"></i> ירוק — מתחילים</span>
       <span data-i18n-html="legend.blue"><i class="dot" style="background:#3b82f6"></i> כחול — קל</span>
@@ -168,6 +207,56 @@ html[dir="ltr"] .leaflet-popup-content{direction:ltr;text-align:left}
     </div>
     <p class="muted" data-i18n-html="legend.sources">נתוני מסלולים, מעליות ומקומות: © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> (ODbL), נשלפו 27 בנובמבר 2026. שכבת המסלולים: © <a href="https://www.opensnowmap.org/" target="_blank" rel="noopener">OpenSnowMap</a> (CC-BY-SA). בסיס: © OpenStreetMap. הגבהים מ־Open-Meteo (SRTM) — משוערים, לכיוון עלייה/ירידה בלבד.</p>
     <p class="muted" data-i18n-html="legend.known">ידוע וחסר בנתונים: 197 מסלולים ב־OSM ללא שם (מוצגים כקו בלי שם); החיבור לקרחון Bellecôte עובר בירידה בגונדולת Glaciers 1 מ־Roche de Mio — כך זה ממופה ב־OSM וכך ממליץ גם המדריך. <a href="https://en.la-plagne.com/discover/ski-area" target="_blank" rel="noopener">מפת מסלולים וסטטוס מעליות — האתר הרשמי ↗</a> · <a href="/guides/la-plagne">חזרה למדריך ←</a></p>
+    </div>
+<div class="pane" id="pane-sos">
+    <h2><span data-i18n="sos.title">🆘 חירום — SOS</span><button class="x" aria-label="Close">✕</button></h2>
+    <a class="big112" href="tel:112" data-i18n="sos.call112">📞 התקשרו 112</a>
+    <div class="row">
+      <a class="btn" href="tel:15" data-i18n="sos.samu">15 — SAMU (רפואה)</a>
+      <a class="btn" href="tel:18" data-i18n="sos.fire">18 — כיבוי אש</a>
+    </div>
+
+    <p data-i18n-html="sos.number">מספר החירום האירופי: <a href="tel:112" style="font-size:1.3rem;font-weight:900">112</a> (גם 15 — SAMU, 18 — כיבוי אש).</p>
+    <div class="row">
+      <button class="btn secondary" id="sosCopyBtn" data-i18n="sos.copy">📋 העתק קואורדינטות</button>
+      <button class="btn secondary" id="sosShareBtn" data-i18n="sos.share">↗️ שתף מיקום</button>
+      <button class="btn secondary" id="sosWaBtn" data-i18n="sos.whatsapp">💬 וואטסאפ</button>
+    </div>
+    <p id="sosCoords" class="muted" data-i18n="sos.coordsHint">המיקום שלכם יופיע כאן כשה־GPS פעיל — אמרו אותו למוקד.</p>
+    <p class="muted" data-i18n="sos.note">המפה אינה מחליפה את הוראות הסקי־פטרול והשילוט בשטח. במקרה של פציעה — אל תזיזו את הפצוע, סמנו את המקום.</p>
+    </div>
+<div class="pane" id="pane-summary"><h2><span>סיכום היום</span><button class="x" aria-label="Close">✕</button></h2><div class="summary-body"></div></div>
+<div class="pane" id="pane-detail"><h2><span data-i18n="detail.title">פרטים</span><button class="x" aria-label="Close">✕</button></h2>
+
+    <div id="detailBody"></div>
+    <div class="row" style="margin-top:10px"><button class="btn" onclick="goToPendingDest()" data-i18n="detail.navigate">🧭 נווט לכאן</button></div>
+  </div>
+    </div>
+    <div id="navCard">
+      <span class="nc-badge"></span>
+      <div class="nc-dist"></div>
+      <div class="nc-inst"></div>
+      <div class="nc-then"></div>
+      <div class="nc-actions">
+        <button data-nav-next data-i18n="nav.nextStepBtn">הצעד הבא ›</button>
+        <button data-nav-follow data-i18n="nav.followBtn">שחרר</button>
+        <button data-nav-plan data-i18n="nav.planReturnBtn">תכנון חזרה</button>
+      </div>
+    </div>
+    <div id="offRouteBanner"><span data-i18n="nav.offRoute">סטית מהמסלול</span><button id="rrBtn" data-i18n="nav.reroute">נתב מחדש</button></div>
+    <div id="gpsBanner"><span data-i18n="nav.searchingGps">מחפש GPS…</span></div>
+    <button id="sosFab" aria-label="SOS">🆘</button>
+  </div>
+<nav id="actionbar">
+    <button class="navbtn bar-item" data-pane="search" data-sheet="search" aria-pressed="false"><span class="ic">🔍</span><span class="navlbl" data-i18n="bar.search">חיפוש</span></button>
+    <button class="navbtn bar-item" data-pane="route" data-sheet="route" aria-pressed="false"><span class="ic">🧭</span><span class="navlbl" data-i18n="bar.route">מסלול</span><span class="bar-sub" id="routeBadge"></span></button>
+    <button class="navbtn rec" id="recBtn" aria-label="Record"><span class="recbtn" aria-hidden="true">●</span><span class="reclbl">הקלטה</span></button>
+    <button class="navbtn bar-item" data-pane="plan" data-sheet="plan" aria-pressed="false"><span class="ic">⏱</span><span class="navlbl" data-i18n="bar.plan">תכנון</span></button>
+    <button class="navbtn bar-item sosbtn" data-pane="sos" data-sheet="sos" aria-pressed="false"><span class="ic">🆘</span><span class="navlbl" data-i18n="bar.sos">SOS</span></button>
+  </nav>
+<div id="navStrip">
+    <div class="ns-nums"><div class="ns-time"></div><div class="ns-sub"></div></div>
+    <button class="ns-end" id="nsEnd" aria-label="End navigation">✕</button>
   </div>
 </div>
 
@@ -184,7 +273,10 @@ const DIFF_HE = {green:'ירוק', blue:'כחול', red:'אדום', black:'שח�
 const LANG_KEY='sf-lang';
 let lang='he';
 try{ lang=localStorage.getItem(LANG_KEY)||'he'; if(lang!=='he'&&lang!=='en') lang='he'; }catch(e){}
-const STR={"he": {"meta.title": "מפת ניווט חיה — לה פלאן | SnowForecast", "meta.h1": "🗺️ לה פלאן — מפת ניווט חיה", "meta.sub": "La Plagne · Paradiski — מסלולים ומעליות מנתוני OpenStreetMap", "ui.backGuide": "← המדריך", "sos.btn": "🆘 SOS · 112", "sos.title": "🆘 חירום — SOS", "sos.number": "מספר החירום האירופי: <a href=\"tel:112\" style=\"font-size:1.3rem;font-weight:900\">112</a> (גם 15 — SAMU, 18 — כיבוי אש).", "sos.coordsHint": "המיקום שלכם יופיע כאן כשה־GPS פעיל — אמרו אותו למוקד.", "sos.note": "המפה אינה מחליפה את הוראות הסקי־פטרול והשילוט בשטח. במקרה של פציעה — אל תזיזו את הפצוע, סמנו את המקום.", "sos.close": "סגירה", "nav.gps": "📍 איפה אני", "nav.demo": "🎬 הדמיה — Plagne Centre", "nav.mark": "📌 סמן יעד במפה", "nav.clear": "נקה ניווט", "status.loading": "טוען נתוני מסלולים…", "status.loaded": "נטענו {p} מסלולים, {l} מעליות, {pl} מקומות (OSM, 27.11.2026).", "status.loadError": "שגיאה בטעינת נתוני המסלולים: {msg} — בדקו חיבור ורעננו.", "status.demo": "מצב הדמיה: המוצא הוא Plagne Centre. לחצו ״איפה אני״ כשאתם באתר.", "pill.start": "מוצא: {label}", "pill.dest": "יעד: {label}", "search.title": "🔍 לאן? חיפוש יעד", "search.ph": "חפשו מעלית, מסלול, כפר, בקתה… (למשל: Roche de Mio, Vanoise, Montchavin)", "search.tabAll": "הכל", "search.tabVillage": "כפרים", "search.tabLift": "מעליות", "search.tabPiste": "מסלולים", "search.tabHut": "בקתות ושירותים", "search.chipHut": "🛖 בקתה", "search.chipToilets": "🚻 שירותים", "search.chipLift": "🚡 מעלית", "search.chipDoctors": "🩺 רפואה", "search.chipPharmacy": "💊 בית מרקחת", "search.chipSports": "🎿 השכרת ציוד", "search.chipParking": "🅿️ חניה", "search.chipAtm": "🏧 כספומט", "search.chipRestaurant": "🍽️ מסעדה", "search.notFound": "לא נמצאו תוצאות — נסו שם אחר, או בחרו יעד במפה.", "search.noChipResults": "אין תוצאות לסוג זה באתר.", "search.lift": "מעלית · ", "search.piste": "מסלול · ", "route.title": "🧭 מסלול — הגדרות", "route.levelLabel": "רמה:", "route.blueOnly": "כחולים בלבד", "route.toRed": "עד אדומים", "route.withBlack": "כולל שחורים", "route.snowboard": "🏂 מצב סנובורד — להימנע מקטעים שטוחים", "route.descend": "🚡 ירידה בתאים (גונדולה/רכבל) מותרת", "route.fast": "הכי מהיר", "route.fewlifts": "<p class=\"muted\">אין מסלול עם פחות מעליות ליעד הזה — מוצג המסלול הכי מהיר.</p>", "route.hint": "בחרו יעד בחיפוש או סמנו אותו במפה — המסלול יחושב מהמיקום שלכם (או מנקודת ההדמיה).", "route.hintCleared": "בחרו יעד בחיפוש או סמנו אותו במפה.", "route.none": "<div class=\"warn\"><b>לא נמצא מסלול</b> ברמה שנבחרה מ־{start} אל {dest}. נסו רמה גבוהה יותר, או יעד אחר. שימו לב: החיבור לקרחון Bellecôte דורש ירידה בגונדולת Glaciers 1 — ודאו ש״ירידה בתאים״ מסומנת.</div>", "route.head": "<p><b>{start} ← {dest}</b> · כ־<b>{total} דקות</b> (משוער, כולל המתנה) · {km} ק״מ · {lifts} מעליות</p>", "route.stepLift": "🚡 {dir} {lift} <b>{name}</b>{down} — כ־{min} דק׳", "route.liftUp": "עלו ב", "route.liftDown": "רדו ב", "route.liftDownNote": " (ירידה בתא)", "route.stepPiste": "⛷️ גלשו במסלול <b>{name}</b> ({diff}) — כ־{min} דק׳", "route.stepWalk": "🚶 {kind} — כ־{min} דק׳ ({m} מ׳)", "route.walkVillage": "הליכה בכפר", "route.walkShort": "הליכה קצרה", "route.veWarn": "<div class=\"warn\"><b>⚠️ חציית Vanoise Express:</b> המעבר ללי זארק דורש <b>סקי־פס Paradiski</b> (לא מספיק פס מקומי של לה פלאן). בדקו שהמעבר פתוח ומה שעת החצייה האחרונה חזרה.</div>", "route.descendNote": "<p class=\"muted\">המסלול כולל ירידה בתא גונדולה/רכבל — זה חלק מהתכנון באתר (למשל לקרחון Bellecôte), לא טעות.</p>", "fmt.min": "{m} דק׳", "plan.title": "⏱️ תכנון לפי זמן", "plan.have": "יש לי", "plan.minutes": "דקות", "plan.check": "האם אספיק לחזור?", "plan.wantDown": "רוצה להיות למטה ב־", "plan.at": "ב־", "plan.calc": "חשבו מתי לצאת", "plan.finishHere": "איפה שאני", "plan.atMe": "המיקום שלי", "plan.note": "הזמנים משוערים (מהירות גלישה + כ־5 דקות המתנה למעלית). אין כאן שעות סגירה חיות — בדקו את סטטוס המעליות באתר הרשמי / באפליקציית Yuge לפני יציאה למסלול ארוך, ובמיוחד לפני חציית ה־Vanoise Express (דורש סקי־פס Paradiski; הקישור נסגר 17 באפריל 2027).", "plan.needRoute": "קודם בחרו יעד (המסלול מחושב מהמיקום שלכם).", "plan.noRoute": "לא נמצא מסלול הלוך או חזור ברמה שנבחרה.", "plan.noRouteArrive": "לא נמצא מסלול ליעד הסיום ברמה שנבחרה.", "plan.needTime": "בחרו שעת הגעה.", "plan.needStart": "צריך מיקום מוצא (GPS או הדמיה).", "plan.fits": "✅ הלוך־חזור ל<b>{dest}</b> לוקח כ־<b>{total} דקות</b> — נכנס ב־{mins} דקות, עם עודף של כ־{left} דקות.", "plan.tooLong": "<div class=\"warn\"><b>לא תספיקו:</b> הלוך־חזור ל<b>{dest}</b> לוקח כ־<b>{total} דקות</b> (הלוך {out} + חזור {back}) — יותר מ־{mins} הדקות שיש לכם. בחרו יעד קרוב יותר.</div>", "plan.leaveBy": "להיות ב<b>{dest}</b> ב־<b>{time}</b>: המסלול לוקח כ־{min} דקות — <b>צאו עד {leave}</b> (כולל 10 דקות ביטחון). אם אתם חוצים את ה־Vanoise Express, ודאו את שעת החצייה האחרונה חזרה באתר הרשמי.", "legend.title": "🗺️ מקרא ומקורות", "legend.green": "<i class=\"dot\" style=\"background:#22c55e\"></i> ירוק — מתחילים", "legend.blue": "<i class=\"dot\" style=\"background:#3b82f6\"></i> כחול — קל", "legend.red": "<i class=\"dot\" style=\"background:#ef4444\"></i> אדום — בינוני", "legend.black": "<i class=\"dot\" style=\"background:#111827;border:1px solid #fff\"></i> שחור — קשה", "legend.lift": "<i class=\"dot\" style=\"background:#111827\"></i> מעלית (שחור)", "legend.route": "<i class=\"dot\" style=\"background:#7dd3fc\"></i> המסלול שלכם", "legend.sources": "נתוני מסלולים, מעליות ומקומות: © <a href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\" rel=\"noopener\">OpenStreetMap</a> (ODbL), נשלפו 27 בנובמבר 2026. שכבת המסלולים: © <a href=\"https://www.opensnowmap.org/\" target=\"_blank\" rel=\"noopener\">OpenSnowMap</a> (CC-BY-SA). בסיס: © OpenStreetMap. הגבהים מ־Open-Meteo (SRTM) — משוערים, לכיוון עלייה/ירידה בלבד.", "legend.known": "ידוע וחסר בנתונים: 197 מסלולים ב־OSM ללא שם (מוצגים כקו בלי שם); החיבור לקרחון Bellecôte עובר בירידה בגונדולת Glaciers 1 מ־Roche de Mio — כך זה ממופה ב־OSM וכך ממליץ גם המדריך. <a href=\"https://en.la-plagne.com/discover/ski-area\" target=\"_blank\" rel=\"noopener\">מפת מסלולים וסטטוס מעליות — האתר הרשמי ↗</a> · <a href=\"/guides/la-plagne\">חזרה למדריך ←</a>", "start.demo": "Plagne Centre (הדמיה)", "start.gps": "המיקום שלי (GPS)", "dest.mapPoint": "נקודה במפה", "popup.piste": "מסלול {diff}", "popup.pisteUnnamed": "מסלול {diff} (ללא שם ב־OSM)", "popup.ele": " · {ele} מ׳", "popup.start": "מוצא: {label}", "popup.dest": "יעד: {label}", "popup.gps": "המיקום שלכם (GPS, נשאר במכשיר)", "gps.unsupported": "הדפדפן לא תומך במיקום — משתמשים בנקודת הדמיה (Plagne Centre).", "gps.requesting": "מבקש מיקום… (המיקום נשאר במכשיר ולא נשלח לשום שרת)", "gps.error": "לא הצלחנו לקבל GPS ({msg}) — משתמשים בנקודת הדמיה (Plagne Centre).", "gps.active": "מיקום GPS פעיל (±{acc} מ׳). המיקום נשאר במכשיר.", "sos.coords": "המיקום שלכם: {lat}, {lon} (דיוק כ־{acc} מ׳).", "mark.on": "👆 לחצו על המפה לבחירת יעד…", "mark.off": "📌 סמן יעד במפה", "offline.save": "💾 שמור מפה לאופליין", "offline.clear": "🗑️ מחק שמירה", "offline.unsupported": "הדפדפן לא תומך בשמירת אופליין (Cache API).", "offline.saving": "שומר {n} אריחים לאופליין…", "offline.saved": "✅ נשמרו {n} אריחים לאופליין ({failed} נכשלו — ייטענו מהרשת כשיש קליטה). הנתונים (מסלולים/מעליות) נשמרו גם הם. שימו לב: אריחים שמורים תופסים מקום במכשיר; נקו דרך הגדרות הדפדפן אם צריך.", "offline.cleared": "השמירה נמחקה."}, "en": {"meta.title": "Live navigation map — La Plagne | SnowForecast", "meta.h1": "🗺️ La Plagne — Live navigation map", "meta.sub": "La Plagne · Paradiski — Pistes and lifts from OpenStreetMap data", "ui.backGuide": "← Back to the guide", "sos.btn": "🆘 SOS · 112", "sos.title": "🆘 Emergency — SOS", "sos.number": "European emergency number: <a href=\"tel:112\" style=\"font-size:1.3rem;font-weight:900\">112</a> (also 15 — SAMU, 18 — fire brigade).", "sos.coordsHint": "Your location will appear here once GPS is active — give it to the emergency operator.", "sos.note": "The map does not replace ski-patrol instructions and on-mountain signs. If someone is injured — do not move them, mark the spot.", "sos.close": "Close", "nav.gps": "📍 Where am I", "nav.demo": "🎬 Demo — Plagne Centre", "nav.mark": "📌 Mark a destination on the map", "nav.clear": "Clear navigation", "status.loading": "Loading piste data…", "status.loaded": "Loaded {p} pistes, {l} lifts, {pl} places (OSM, 27.11.2026).", "status.loadError": "Error loading piste data: {msg} — check your connection and refresh.", "status.demo": "Demo mode: the start point is Plagne Centre. Tap “Where am I” when you are in the resort.", "pill.start": "Start: {label}", "pill.dest": "Destination: {label}", "search.title": "🔍 Where to? Search a destination", "search.ph": "Search a lift, piste, village, hut… (e.g. Roche de Mio, Vanoise, Montchavin)", "search.tabAll": "All", "search.tabVillage": "Villages", "search.tabLift": "Lifts", "search.tabPiste": "Pistes", "search.tabHut": "Huts & services", "search.chipHut": "🛖 Hut", "search.chipToilets": "🚻 Toilets", "search.chipLift": "🚡 Lift", "search.chipDoctors": "🩺 Medical", "search.chipPharmacy": "💊 Pharmacy", "search.chipSports": "🎿 Equipment rental", "search.chipParking": "🅿️ Parking", "search.chipAtm": "🏧 ATM", "search.chipRestaurant": "🍽️ Restaurant", "search.notFound": "No results — try another name, or pick a destination on the map.", "search.noChipResults": "No results of this type in the resort.", "search.lift": "Lift · ", "search.piste": "Piste · ", "route.title": "🧭 Route — settings", "route.levelLabel": "Level:", "route.blueOnly": "Blue only", "route.toRed": "Up to reds", "route.withBlack": "Including blacks", "route.snowboard": "🏂 Snowboard mode — avoid flat sections", "route.descend": "🚡 Riding down in cabins (gondola/cable car) allowed", "route.fast": "Fastest", "route.fewlifts": "<p class=\"muted\">There is no route with fewer lifts to this destination — showing the fastest route.</p>", "route.hint": "Pick a destination in the search or mark it on the map — the route is calculated from your location (or the demo point).", "route.hintCleared": "Pick a destination in the search or mark it on the map.", "route.none": "<div class=\"warn\"><b>No route found</b> at the chosen level from {start} to {dest}. Try a higher level, or another destination. Note: the connection to the Bellecôte glacier requires riding down in the Glaciers 1 gondola — make sure “riding down in cabins” is checked.</div>", "route.head": "<p><b>{start} ← {dest}</b> · about <b>{total} minutes</b> (estimated, incl. waits) · {km} km · {lifts} lifts</p>", "route.stepLift": "🚡 {dir} {lift} <b>{name}</b>{down} — about {min} min", "route.liftUp": "Board the", "route.liftDown": "Ride down on the", "route.liftDownNote": " (riding down)", "route.stepPiste": "⛷️ Ski piste <b>{name}</b> ({diff}) — about {min} min", "route.stepWalk": "🚶 {kind} — about {min} min ({m} m)", "route.walkVillage": "Walk through the village", "route.walkShort": "Short walk", "route.veWarn": "<div class=\"warn\"><b>⚠️ Crossing the Vanoise Express:</b> crossing to Les Arcs requires a <b>Paradiski ski pass</b> (a local La Plagne pass is not enough). Check that the crossing is open and the time of the last return crossing.</div>", "route.descendNote": "<p class=\"muted\">The route includes riding down in a gondola/cable car — that is part of the plan here (e.g. to the Bellecôte glacier), not a mistake.</p>", "fmt.min": "{m} min", "plan.title": "⏱️ Plan by time", "plan.have": "I have", "plan.minutes": "minutes", "plan.check": "Will I make it back?", "plan.wantDown": "I want to be down by", "plan.at": "at", "plan.calc": "Calculate when to leave", "plan.finishHere": "Where I am", "plan.atMe": "My location", "plan.note": "Times are estimates (skiing speed + about 5 minutes’ wait per lift). There are no live closing times here — check lift status on the official site / in the Yuge app before a long route, especially before crossing the Vanoise Express (requires a Paradiski ski pass; the link closes 17 April 2027).", "plan.needRoute": "First pick a destination (the route is calculated from your location).", "plan.noRoute": "No route there or back at the chosen level.", "plan.noRouteArrive": "No route to the finish destination at the chosen level.", "plan.needTime": "Pick an arrival time.", "plan.needStart": "A start location is needed (GPS or demo).", "plan.fits": "✅ There and back to <b>{dest}</b> takes about <b>{total} minutes</b> — it fits in {mins} minutes, with about {left} minutes to spare.", "plan.tooLong": "<div class=\"warn\"><b>You won’t make it:</b> there and back to <b>{dest}</b> takes about <b>{total} minutes</b> (there {out} + back {back}) — more than the {mins} minutes you have. Pick a closer destination.</div>", "plan.leaveBy": "To be at <b>{dest}</b> by <b>{time}</b>: the route takes about {min} minutes — <b>leave by {leave}</b> (including a 10-minute buffer). If you cross the Vanoise Express, check the time of the last return crossing on the official site.", "legend.title": "🗺️ Legend & sources", "legend.green": "<i class=\"dot\" style=\"background:#22c55e\"></i> Green — beginners", "legend.blue": "<i class=\"dot\" style=\"background:#3b82f6\"></i> Blue — easy", "legend.red": "<i class=\"dot\" style=\"background:#ef4444\"></i> Red — intermediate", "legend.black": "<i class=\"dot\" style=\"background:#111827;border:1px solid #fff\"></i> Black — difficult", "legend.lift": "<i class=\"dot\" style=\"background:#111827\"></i> Lift (black)", "legend.route": "<i class=\"dot\" style=\"background:#7dd3fc\"></i> Your route", "legend.sources": "Piste, lift and place data: © <a href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\" rel=\"noopener\">OpenStreetMap</a> (ODbL), pulled 27 November 2026. Piste layer: © <a href=\"https://www.opensnowmap.org/\" target=\"_blank\" rel=\"noopener\">OpenSnowMap</a> (CC-BY-SA). Base map: © OpenStreetMap. Elevations from Open-Meteo (SRTM) — estimates, for up/down direction only.", "legend.known": "Known gaps in the data: 197 pistes in OSM have no name (shown as an unnamed line); the connection to the Bellecôte glacier goes down in the Glaciers 1 gondola from Roche de Mio — that is how it is mapped in OSM and what the guide recommends. <a href=\"https://en.la-plagne.com/discover/ski-area\" target=\"_blank\" rel=\"noopener\">Official piste map & lift status ↗</a> · <a href=\"/guides/la-plagne\">Back to the guide ←</a>", "start.demo": "Plagne Centre (demo)", "start.gps": "My location (GPS)", "dest.mapPoint": "Point on the map", "popup.piste": "Piste {diff}", "popup.pisteUnnamed": "Piste {diff} (unnamed in OSM)", "popup.ele": " · {ele} m", "popup.start": "Start: {label}", "popup.dest": "Destination: {label}", "popup.gps": "Your location (GPS, stays on device)", "gps.unsupported": "This browser does not support location — using the demo point (Plagne Centre).", "gps.requesting": "Requesting location… (your location stays on the device and is not sent to any server)", "gps.error": "Could not get GPS ({msg}) — using the demo point (Plagne Centre).", "gps.active": "GPS location active (±{acc} m). Your location stays on the device.", "sos.coords": "Your location: {lat}, {lon} (accuracy about {acc} m).", "mark.on": "👆 Tap the map to pick a destination…", "mark.off": "📌 Mark a destination on the map", "offline.save": "💾 Save map for offline", "offline.clear": "🗑️ Delete saved map", "offline.unsupported": "This browser does not support offline saving (Cache API).", "offline.saving": "Saving {n} tiles for offline…", "offline.saved": "✅ {n} tiles saved for offline ({failed} failed — they will load from the network when you have signal). Piste/lift data was saved too. Note: saved tiles take space on the device; clear them in the browser settings if needed.", "offline.cleared": "Saved map deleted."}};
+const STR={"he": {"meta.title": "מפת ניווט חיה — לה פלאן | SnowForecast", "meta.h1": "🗺️ לה פלאן — מפת ניווט חיה", "meta.sub": "La Plagne · Paradiski — מסלולים ומעליות מנתוני OpenStreetMap", "ui.backGuide": "← המדריך", "bar.search": "חיפוש", "bar.route": "מסלול", "bar.plan": "תכנון", "bar.settings": "הגדרות", "bar.sos": "SOS", "settings.theme": "ערכת נושא", "settings.language": "שפה", "settings.themeLight": "☀️ בהיר", "settings.themeDark": "🌙 כהה", "settings.language": "שפה", "settings.layers": "שכבות מפה", "settings.base": "מפת בסיס (OSM)", "settings.pistes": "שכבת מסלולים (OpenSnowMap)", "ui.liftStatus": "סטטוס מעליות ↗", "nav.stepsBtn": "שלבי המסלול", "offline.title": "💾 אופליין", "detail.navigate": "🧭 נווט לכאן", "sos.call112": "📞 התקשרו 112", "sos.samu": "15 — SAMU (רפואה)", "sos.fire": "18 — כיבוי אש", "sos.btn": "🆘 SOS · 112", "sos.title": "🆘 חירום — SOS", "sos.number": "מספר החירום האירופי: <a href=\"tel:112\" style=\"font-size:1.3rem;font-weight:900\">112</a> (גם 15 — SAMU, 18 — כיבוי אש).", "sos.coordsHint": "המיקום שלכם יופיע כאן כשה־GPS פעיל — אמרו אותו למוקד.", "sos.note": "המפה אינה מחליפה את הוראות הסקי־פטרול והשילוט בשטח. במקרה של פציעה — אל תזיזו את הפצוע, סמנו את המקום.", "sos.close": "סגירה", "nav.gps": "📍 איפה אני", "nav.demo": "🎬 הדמיה — Plagne Centre", "nav.mark": "📌 סמן יעד במפה", "nav.clear": "נקה ניווט", "status.loading": "טוען נתוני מסלולים…", "status.loaded": "נטענו {p} מסלולים, {l} מעליות, {pl} מקומות (OSM, 27.11.2026).", "status.loadError": "שגיאה בטעינת נתוני המסלולים: {msg} — בדקו חיבור ורעננו.", "status.demo": "מצב הדמיה: המוצא הוא Plagne Centre. לחצו ״איפה אני״ כשאתם באתר.", "pill.start": "מוצא: {label}", "pill.dest": "יעד: {label}", "search.title": "🔍 לאן? חיפוש יעד", "search.ph": "חפשו מעלית, מסלול, כפר, בקתה… (למשל: Roche de Mio, Vanoise, Montchavin)", "search.tabAll": "הכל", "search.tabVillage": "כפרים", "search.tabLift": "מעליות", "search.tabPiste": "מסלולים", "search.tabHut": "בקתות ושירותים", "search.chipHut": "🛖 בקתה", "search.chipToilets": "🚻 שירותים", "search.chipLift": "🚡 מעלית", "search.chipDoctors": "🩺 רפואה", "search.chipPharmacy": "💊 בית מרקחת", "search.chipSports": "🎿 השכרת ציוד", "search.chipParking": "🅿️ חניה", "search.chipAtm": "🏧 כספומט", "search.chipRestaurant": "🍽️ מסעדה", "search.notFound": "לא נמצאו תוצאות — נסו שם אחר, או בחרו יעד במפה.", "search.noChipResults": "אין תוצאות לסוג זה באתר.", "search.lift": "מעלית · ", "search.piste": "מסלול · ", "route.title": "🧭 מסלול — הגדרות", "route.levelLabel": "רמה:", "route.blueOnly": "כחולים בלבד", "route.toRed": "עד אדומים", "route.withBlack": "כולל שחורים", "route.snowboard": "🏂 מצב סנובורד — להימנע מקטעים שטוחים", "route.descend": "🚡 ירידה בתאים (גונדולה/רכבל) מותרת", "route.fast": "הכי מהיר", "route.fewlifts": "<p class=\"muted\">אין מסלול עם פחות מעליות ליעד הזה — מוצג המסלול הכי מהיר.</p>", "route.hint": "בחרו יעד בחיפוש או סמנו אותו במפה — המסלול יחושב מהמיקום שלכם (או מנקודת ההדמיה).", "route.hintCleared": "בחרו יעד בחיפוש או סמנו אותו במפה.", "route.none": "<div class=\"warn\"><b>לא נמצא מסלול</b> ברמה שנבחרה מ־{start} אל {dest}. נסו רמה גבוהה יותר, או יעד אחר. שימו לב: החיבור לקרחון Bellecôte דורש ירידה בגונדולת Glaciers 1 — ודאו ש״ירידה בתאים״ מסומנת.</div>", "route.head": "<p><b>{start} ← {dest}</b> · כ־<b>{total} דקות</b> (משוער, כולל המתנה) · {km} ק״מ · {lifts} מעליות</p>", "route.stepLift": "🚡 {dir} {lift} <b>{name}</b>{down} — כ־{min} דק׳", "route.liftUp": "עלו ב", "route.liftDown": "רדו ב", "route.liftDownNote": " (ירידה בתא)", "route.stepPiste": "⛷️ גלשו במסלול <b>{name}</b> ({diff}) — כ־{min} דק׳", "route.stepWalk": "🚶 {kind} — כ־{min} דק׳ ({m} מ׳)", "route.walkVillage": "הליכה בכפר", "route.walkShort": "הליכה קצרה", "route.veWarn": "<div class=\"warn\"><b>⚠️ חציית Vanoise Express:</b> המעבר ללי זארק דורש <b>סקי־פס Paradiski</b> (לא מספיק פס מקומי של לה פלאן). בדקו שהמעבר פתוח ומה שעת החצייה האחרונה חזרה.</div>", "route.descendNote": "<p class=\"muted\">המסלול כולל ירידה בתא גונדולה/רכבל — זה חלק מהתכנון באתר (למשל לקרחון Bellecôte), לא טעות.</p>", "fmt.min": "{m} דק׳", "plan.title": "⏱️ תכנון לפי זמן", "plan.have": "יש לי", "plan.minutes": "דקות", "plan.check": "האם אספיק לחזור?", "plan.wantDown": "רוצה להיות למטה ב־", "plan.at": "ב־", "plan.calc": "חשבו מתי לצאת", "plan.finishHere": "איפה שאני", "plan.atMe": "המיקום שלי", "plan.note": "הזמנים משוערים (מהירות גלישה + כ־5 דקות המתנה למעלית). אין כאן שעות סגירה חיות — בדקו את סטטוס המעליות באתר הרשמי / באפליקציית Yuge לפני יציאה למסלול ארוך, ובמיוחד לפני חציית ה־Vanoise Express (דורש סקי־פס Paradiski; הקישור נסגר 17 באפריל 2027).", "plan.needRoute": "קודם בחרו יעד (המסלול מחושב מהמיקום שלכם).", "plan.noRoute": "לא נמצא מסלול הלוך או חזור ברמה שנבחרה.", "plan.noRouteArrive": "לא נמצא מסלול ליעד הסיום ברמה שנבחרה.", "plan.needTime": "בחרו שעת הגעה.", "plan.needStart": "צריך מיקום מוצא (GPS או הדמיה).", "plan.fits": "✅ הלוך־חזור ל<b>{dest}</b> לוקח כ־<b>{total} דקות</b> — נכנס ב־{mins} דקות, עם עודף של כ־{left} דקות.", "plan.tooLong": "<div class=\"warn\"><b>לא תספיקו:</b> הלוך־חזור ל<b>{dest}</b> לוקח כ־<b>{total} דקות</b> (הלוך {out} + חזור {back}) — יותר מ־{mins} הדקות שיש לכם. בחרו יעד קרוב יותר.</div>", "plan.leaveBy": "להיות ב<b>{dest}</b> ב־<b>{time}</b>: המסלול לוקח כ־{min} דקות — <b>צאו עד {leave}</b> (כולל 10 דקות ביטחון). אם אתם חוצים את ה־Vanoise Express, ודאו את שעת החצייה האחרונה חזרה באתר הרשמי.", "legend.title": "🗺️ מקרא ומקורות", "legend.green": "<i class=\"dot\" style=\"background:#22c55e\"></i> ירוק — מתחילים", "legend.blue": "<i class=\"dot\" style=\"background:#3b82f6\"></i> כחול — קל", "legend.red": "<i class=\"dot\" style=\"background:#ef4444\"></i> אדום — בינוני", "legend.black": "<i class=\"dot\" style=\"background:#111827;border:1px solid #fff\"></i> שחור — קשה", "legend.lift": "<i class=\"dot\" style=\"background:#111827\"></i> מעלית (שחור)", "legend.route": "<i class=\"dot\" style=\"background:#7dd3fc\"></i> המסלול שלכם", "legend.sources": "נתוני מסלולים, מעליות ומקומות: © <a href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\" rel=\"noopener\">OpenStreetMap</a> (ODbL), נשלפו 27 בנובמבר 2026. שכבת המסלולים: © <a href=\"https://www.opensnowmap.org/\" target=\"_blank\" rel=\"noopener\">OpenSnowMap</a> (CC-BY-SA). בסיס: © OpenStreetMap. הגבהים מ־Open-Meteo (SRTM) — משוערים, לכיוון עלייה/ירידה בלבד.", "legend.known": "ידוע וחסר בנתונים: 197 מסלולים ב־OSM ללא שם (מוצגים כקו בלי שם); החיבור לקרחון Bellecôte עובר בירידה בגונדולת Glaciers 1 מ־Roche de Mio — כך זה ממופה ב־OSM וכך ממליץ גם המדריך. <a href=\"https://en.la-plagne.com/discover/ski-area\" target=\"_blank\" rel=\"noopener\">מפת מסלולים וסטטוס מעליות — האתר הרשמי ↗</a> · <a href=\"/guides/la-plagne\">חזרה למדריך ←</a>", "start.demo": "Plagne Centre (הדמיה)", "start.gps": "המיקום שלי (GPS)", "dest.mapPoint": "נקודה במפה", "popup.piste": "מסלול {diff}", "popup.pisteUnnamed": "מסלול {diff} (ללא שם ב־OSM)", "popup.ele": " · {ele} מ׳", "popup.start": "מוצא: {label}", "popup.dest": "יעד: {label}", "popup.gps": "המיקום שלכם (GPS, נשאר במכשיר)", "gps.unsupported": "הדפדפן לא תומך במיקום — משתמשים בנקודת הדמיה (Plagne Centre).", "gps.requesting": "מבקש מיקום… (המיקום נשאר במכשיר ולא נשלח לשום שרת)", "gps.error": "לא הצלחנו לקבל GPS ({msg}) — משתמשים בנקודת הדמיה (Plagne Centre).", "gps.active": "מיקום GPS פעיל (±{acc} מ׳). המיקום נשאר במכשיר.", "sos.coords": "המיקום שלכם: {lat}, {lon} (דיוק כ־{acc} מ׳).", "mark.on": "👆 לחצו על המפה לבחירת יעד…", "mark.off": "📌 סמן יעד במפה", "offline.save": "שמור מפה לאופליין", "offline.clear": "🗑️ מחק שמירה", "offline.unsupported": "הדפדפן לא תומך בשמירת אופליין (Cache API).", "offline.saving": "שומר {n} אריחים לאופליין…", "offline.saved": "✅ נשמרו {n} אריחים לאופליין ({failed} נכשלו — ייטענו מהרשת כשיש קליטה). הנתונים (מסלולים/מעליות) נשמרו גם הם. שימו לב: אריחים שמורים תופסים מקום במכשיר; נקו דרך הגדרות הדפדפן אם צריך.", "offline.cleared": "השמירה נמחקה."}, "en": {"meta.title": "Live navigation map — La Plagne | SnowForecast", "meta.h1": "🗺️ La Plagne — Live navigation map", "meta.sub": "La Plagne · Paradiski — Pistes and lifts from OpenStreetMap data", "ui.backGuide": "← Back to the guide", "bar.search": "Search", "bar.route": "Route", "bar.plan": "Plan", "bar.settings": "Settings", "bar.sos": "SOS", "settings.theme": "Theme", "settings.language": "Language", "settings.themeLight": "☀️ Light", "settings.themeDark": "🌙 Dark", "settings.language": "Language", "settings.layers": "Map layers", "settings.base": "Base map (OSM)", "settings.pistes": "Piste overlay (OpenSnowMap)", "ui.liftStatus": "Lift status ↗", "nav.stepsBtn": "Route steps", "offline.title": "💾 Offline", "detail.navigate": "🧭 Navigate here", "sos.call112": "📞 Call 112", "sos.samu": "15 — SAMU (medical)", "sos.fire": "18 — Fire brigade", "sos.btn": "🆘 SOS · 112", "sos.title": "🆘 Emergency — SOS", "sos.number": "European emergency number: <a href=\"tel:112\" style=\"font-size:1.3rem;font-weight:900\">112</a> (also 15 — SAMU, 18 — fire brigade).", "sos.coordsHint": "Your location will appear here once GPS is active — give it to the emergency operator.", "sos.note": "The map does not replace ski-patrol instructions and on-mountain signs. If someone is injured — do not move them, mark the spot.", "sos.close": "Close", "nav.gps": "📍 Where am I", "nav.demo": "🎬 Demo — Plagne Centre", "nav.mark": "📌 Mark a destination on the map", "nav.clear": "Clear navigation", "status.loading": "Loading piste data…", "status.loaded": "Loaded {p} pistes, {l} lifts, {pl} places (OSM, 27.11.2026).", "status.loadError": "Error loading piste data: {msg} — check your connection and refresh.", "status.demo": "Demo mode: the start point is Plagne Centre. Tap “Where am I” when you are in the resort.", "pill.start": "Start: {label}", "pill.dest": "Destination: {label}", "search.title": "🔍 Where to? Search a destination", "search.ph": "Search a lift, piste, village, hut… (e.g. Roche de Mio, Vanoise, Montchavin)", "search.tabAll": "All", "search.tabVillage": "Villages", "search.tabLift": "Lifts", "search.tabPiste": "Pistes", "search.tabHut": "Huts & services", "search.chipHut": "🛖 Hut", "search.chipToilets": "🚻 Toilets", "search.chipLift": "🚡 Lift", "search.chipDoctors": "🩺 Medical", "search.chipPharmacy": "💊 Pharmacy", "search.chipSports": "🎿 Equipment rental", "search.chipParking": "🅿️ Parking", "search.chipAtm": "🏧 ATM", "search.chipRestaurant": "🍽️ Restaurant", "search.notFound": "No results — try another name, or pick a destination on the map.", "search.noChipResults": "No results of this type in the resort.", "search.lift": "Lift · ", "search.piste": "Piste · ", "route.title": "🧭 Route — settings", "route.levelLabel": "Level:", "route.blueOnly": "Blue only", "route.toRed": "Up to reds", "route.withBlack": "Including blacks", "route.snowboard": "🏂 Snowboard mode — avoid flat sections", "route.descend": "🚡 Riding down in cabins (gondola/cable car) allowed", "route.fast": "Fastest", "route.fewlifts": "<p class=\"muted\">There is no route with fewer lifts to this destination — showing the fastest route.</p>", "route.hint": "Pick a destination in the search or mark it on the map — the route is calculated from your location (or the demo point).", "route.hintCleared": "Pick a destination in the search or mark it on the map.", "route.none": "<div class=\"warn\"><b>No route found</b> at the chosen level from {start} to {dest}. Try a higher level, or another destination. Note: the connection to the Bellecôte glacier requires riding down in the Glaciers 1 gondola — make sure “riding down in cabins” is checked.</div>", "route.head": "<p><b>{start} ← {dest}</b> · about <b>{total} minutes</b> (estimated, incl. waits) · {km} km · {lifts} lifts</p>", "route.stepLift": "🚡 {dir} {lift} <b>{name}</b>{down} — about {min} min", "route.liftUp": "Board the", "route.liftDown": "Ride down on the", "route.liftDownNote": " (riding down)", "route.stepPiste": "⛷️ Ski piste <b>{name}</b> ({diff}) — about {min} min", "route.stepWalk": "🚶 {kind} — about {min} min ({m} m)", "route.walkVillage": "Walk through the village", "route.walkShort": "Short walk", "route.veWarn": "<div class=\"warn\"><b>⚠️ Crossing the Vanoise Express:</b> crossing to Les Arcs requires a <b>Paradiski ski pass</b> (a local La Plagne pass is not enough). Check that the crossing is open and the time of the last return crossing.</div>", "route.descendNote": "<p class=\"muted\">The route includes riding down in a gondola/cable car — that is part of the plan here (e.g. to the Bellecôte glacier), not a mistake.</p>", "fmt.min": "{m} min", "plan.title": "⏱️ Plan by time", "plan.have": "I have", "plan.minutes": "minutes", "plan.check": "Will I make it back?", "plan.wantDown": "I want to be down by", "plan.at": "at", "plan.calc": "Calculate when to leave", "plan.finishHere": "Where I am", "plan.atMe": "My location", "plan.note": "Times are estimates (skiing speed + about 5 minutes’ wait per lift). There are no live closing times here — check lift status on the official site / in the Yuge app before a long route, especially before crossing the Vanoise Express (requires a Paradiski ski pass; the link closes 17 April 2027).", "plan.needRoute": "First pick a destination (the route is calculated from your location).", "plan.noRoute": "No route there or back at the chosen level.", "plan.noRouteArrive": "No route to the finish destination at the chosen level.", "plan.needTime": "Pick an arrival time.", "plan.needStart": "A start location is needed (GPS or demo).", "plan.fits": "✅ There and back to <b>{dest}</b> takes about <b>{total} minutes</b> — it fits in {mins} minutes, with about {left} minutes to spare.", "plan.tooLong": "<div class=\"warn\"><b>You won’t make it:</b> there and back to <b>{dest}</b> takes about <b>{total} minutes</b> (there {out} + back {back}) — more than the {mins} minutes you have. Pick a closer destination.</div>", "plan.leaveBy": "To be at <b>{dest}</b> by <b>{time}</b>: the route takes about {min} minutes — <b>leave by {leave}</b> (including a 10-minute buffer). If you cross the Vanoise Express, check the time of the last return crossing on the official site.", "legend.title": "🗺️ Legend & sources", "legend.green": "<i class=\"dot\" style=\"background:#22c55e\"></i> Green — beginners", "legend.blue": "<i class=\"dot\" style=\"background:#3b82f6\"></i> Blue — easy", "legend.red": "<i class=\"dot\" style=\"background:#ef4444\"></i> Red — intermediate", "legend.black": "<i class=\"dot\" style=\"background:#111827;border:1px solid #fff\"></i> Black — difficult", "legend.lift": "<i class=\"dot\" style=\"background:#111827\"></i> Lift (black)", "legend.route": "<i class=\"dot\" style=\"background:#7dd3fc\"></i> Your route", "legend.sources": "Piste, lift and place data: © <a href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\" rel=\"noopener\">OpenStreetMap</a> (ODbL), pulled 27 November 2026. Piste layer: © <a href=\"https://www.opensnowmap.org/\" target=\"_blank\" rel=\"noopener\">OpenSnowMap</a> (CC-BY-SA). Base map: © OpenStreetMap. Elevations from Open-Meteo (SRTM) — estimates, for up/down direction only.", "legend.known": "Known gaps in the data: 197 pistes in OSM have no name (shown as an unnamed line); the connection to the Bellecôte glacier goes down in the Glaciers 1 gondola from Roche de Mio — that is how it is mapped in OSM and what the guide recommends. <a href=\"https://en.la-plagne.com/discover/ski-area\" target=\"_blank\" rel=\"noopener\">Official piste map & lift status ↗</a> · <a href=\"/guides/la-plagne\">Back to the guide ←</a>", "start.demo": "Plagne Centre (demo)", "start.gps": "My location (GPS)", "dest.mapPoint": "Point on the map", "popup.piste": "Piste {diff}", "popup.pisteUnnamed": "Piste {diff} (unnamed in OSM)", "popup.ele": " · {ele} m", "popup.start": "Start: {label}", "popup.dest": "Destination: {label}", "popup.gps": "Your location (GPS, stays on device)", "gps.unsupported": "This browser does not support location — using the demo point (Plagne Centre).", "gps.requesting": "Requesting location… (your location stays on the device and is not sent to any server)", "gps.error": "Could not get GPS ({msg}) — using the demo point (Plagne Centre).", "gps.active": "GPS location active (±{acc} m). Your location stays on the device.", "sos.coords": "Your location: {lat}, {lon} (accuracy about {acc} m).", "mark.on": "👆 Tap the map to pick a destination…", "mark.off": "📌 Mark a destination on the map", "offline.save": "Save map for offline", "offline.clear": "🗑️ Delete saved map", "offline.unsupported": "This browser does not support offline saving (Cache API).", "offline.saving": "Saving {n} tiles for offline…", "offline.saved": "✅ {n} tiles saved for offline ({failed} failed — they will load from the network when you have signal). Piste/lift data was saved too. Note: saved tiles take space on the device; clear them in the browser settings if needed.", "offline.cleared": "Saved map deleted."}};
+Object.assign(STR.he, {"bar.record":"הקלטה","nav.start":"▶ התחל ניווט","nav.nextStepBtn":"הצעד הבא ›","nav.followBtn":"שחרר","nav.planReturnBtn":"תכנון חזרה","nav.offRoute":"סטית מהמסלול","nav.reroute":"נתב מחדש","nav.searchingGps":"מחפש GPS…","plan.decidingLift":"המעלית המכריעה: {lift} — צאו לפני שהיא נסגרת.","search.recents":"אחרונים","start.myLocChip":"המיקום שלי","start.demoChip":"Plagne Centre (דמו)","prefs.on":"פעיל","prefs.off":"כבוי","sos.copy":"📋 העתק קואורדינטות","sos.share":"↗️ שתף מיקום","sos.whatsapp":"💬 וואטסאפ","settings.title":"⚙️ הגדרות","settings.themeAuto":"לפי המכשיר","trips.title":"👥 קבוצות טיול","friend.title":"👥 חברים","friend.demoNote":"חבר דמו — הקש על הסמן במפה כדי לנווט אליו. נקודות של חברים מגיעות מקישורי שיתוף — תמונת מצב, לא מעקב חי — ופגות אחרי 60 דקות.","friend.namePh":"שם החבר","friend.linkPh":"הדבק קישור (Google Maps / geo:)","friend.placeBtn":"סמן על המפה","friend.addBtn":"הוספה","friend.shareBtn":"שיתוף המיקום שלי","detail.title":"פרטים"});
+Object.assign(STR.en, {"bar.record":"Record","nav.start":"▶ Start navigation","nav.nextStepBtn":"Next step ›","nav.followBtn":"Free","nav.planReturnBtn":"Plan return","nav.offRoute":"You are off route","nav.reroute":"Re-route","nav.searchingGps":"Searching for GPS…","plan.decidingLift":"Deciding lift: {lift} — leave before it closes.","search.recents":"Recent","start.myLocChip":"My location","start.demoChip":"Plagne Centre (demo)","prefs.on":"On","prefs.off":"Off","sos.copy":"📋 Copy coordinates","sos.share":"↗️ Share location","sos.whatsapp":"💬 WhatsApp","settings.title":"⚙️ Settings","settings.themeAuto":"Device","trips.title":"👥 Trip groups","friend.title":"👥 Friends","friend.demoNote":"Demo friend — tap the marker on the map to navigate to them. Friends' points arrive from share links — a snapshot, not live tracking — and expire after 60 minutes.","friend.namePh":"Friend’s name","friend.linkPh":"Paste link (Google Maps / geo:)","friend.placeBtn":"Place on map","friend.addBtn":"Add","friend.shareBtn":"Share my location","detail.title":"Details"});
+if(typeof SF_STR!=='undefined'){for(const _l of['he','en'])Object.assign(STR[_l],SF_STR[_l]);}
 function t(k,vars){ let s=(STR[lang]&&STR[lang][k]!==undefined)?STR[lang][k]:(STR.he[k]!==undefined?STR.he[k]:k); if(vars) for(const a in vars) s=s.split('{'+a+'}').join(vars[a]); return s; }
 const DIFF_EN={green:'Green',blue:'Blue',red:'Red',black:'Black'};
 const LIFT_EN={gondola:'Gondola',cable_car:'Cable car',chair_lift:'Chairlift',mixed_lift:'Mixed lift',platter:'Button lift','t-bar':'T-bar',magic_carpet:'Magic carpet',drag_lift:'Drag lift',funitel:'Funitel'};
@@ -297,7 +389,8 @@ if (typeof window !== 'undefined') window.SkiRouter = {LEVELS, LIFT_HE, DIFF_HE,
   };
   const DIFF_COLOR = {green:'#22c55e', blue:'#3b82f6', red:'#ef4444', black:'#111827'};
   let DATA=null, GRAPH=null, map, routeLayer, startMarker, destMarker, gpsMarker;
-  let startCoord=null, startLabel='—', destCoord=null, destName=null, marking=false, gpsOn=false, watchId=null;
+  let suppressMapClickUntil = 0; // layer clicks must not also fire the map tap handler
+  let startCoord=null, startLabel='—', destCoord=null, destName=null, gpsOn=false, watchId=null;
   let currentTab='all', currentLevel='red', routeMode='fast';
   let lastOffline=null, lastGps=null, lastPlan=null;
   let curStatus={key:'status.loading',vars:{}};
@@ -309,13 +402,15 @@ if (typeof window !== 'undefined') window.SkiRouter = {LEVELS, LIFT_HE, DIFF_HE,
     document.querySelectorAll('[data-i18n]').forEach(el=>{ el.textContent=t(el.getAttribute('data-i18n')); });
     document.querySelectorAll('[data-i18n-ph]').forEach(el=>{ el.placeholder=t(el.getAttribute('data-i18n-ph')); });
     document.querySelectorAll('[data-i18n-html]').forEach(el=>{ el.innerHTML=t(el.getAttribute('data-i18n-html')); });
-    const tg=$('langToggle'); if(tg) tg.textContent=lang==='he'?'EN':'עב';
+    document.querySelectorAll('[data-lang-seg]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.lang===lang?'true':'false'));
     try{ localStorage.setItem(LANG_KEY,lang); }catch(e){}
     document.title=t('meta.title');
     refreshDynamicLang();
   }
   function toggleLang(){ lang=lang==='he'?'en':'he'; applyLang(); }
   window.toggleLang=toggleLang;
+  function setLang(l){ lang=(l==='en')?'en':'he'; applyLang(); }
+  window.setLang=setLang;
   function refreshDynamicLang(){
     setStatus(t(curStatus.key,curStatus.vars));
     if (DATA){
@@ -326,7 +421,7 @@ if (typeof window !== 'undefined') window.SkiRouter = {LEVELS, LIFT_HE, DIFF_HE,
       } else if (startCoord && startCoord[0]===DEMO_START[0] && startCoord[1]===DEMO_START[1]){
         setStart(DEMO_START, t('start.demo'));
       } else if (startCoord){
-        $('startLabel').textContent=t('pill.start',{label:startLabel});
+        if(window.SF) SF.setStartLabel(startLabel, false); else $('startLabel').textContent=t('pill.start',{label:startLabel});
       }
       if (destCoord) $('destLabel').textContent=t('pill.dest',{label:destName});
       INDEX=[]; renderSearch();
@@ -334,19 +429,23 @@ if (typeof window !== 'undefined') window.SkiRouter = {LEVELS, LIFT_HE, DIFF_HE,
       if ($('timeBox').innerHTML.trim() && lastPlan==='have') haveCheck();
       else if ($('timeBox').innerHTML.trim() && lastPlan==='arrive') arriveCheck();
     }
-    $('markBtn').textContent = marking ? t('mark.on') : t('mark.off');
     if (lastOffline) setOfflineMsg(lastOffline.key,lastOffline.vars);
+    applyTheme();
+    refreshSwitches();
+    var _lt=$('langToggle'); if(_lt) _lt.textContent = lang==='he'?'EN':'עב';
+    if(window.SF) SF.renderDynamic();
   }
 
   const $ = id => document.getElementById(id);
   const statusEl = $('status');
 
   map = L.map('map').setView(CENTRE, 13);
-  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19, attribution:'© OpenStreetMap contributors'}).addTo(map);
-  L.tileLayer('https://tiles.opensnowmap.org/pistes/{z}/{x}/{y}.png', {maxZoom:18, attribution:'Map style: © OpenSnowMap.org (CC-BY-SA)'}).addTo(map);
+  map.zoomControl.setPosition('topright');
+  const osmBaseLayer=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19, attribution:'© OpenStreetMap contributors'}).addTo(map);
+  const osmPisteLayer=L.tileLayer('https://tiles.opensnowmap.org/pistes/{z}/{x}/{y}.png', {maxZoom:18, attribution:'Map style: © OpenSnowMap.org (CC-BY-SA)'}).addTo(map);
   routeLayer = L.layerGroup().addTo(map);
 
-  function setStatus(t){ statusEl.textContent = t; }
+  function setStatus(msg){ if(window.SF) SF.toast(msg); else statusEl.textContent = msg; }
 
   fetch(DATA_URL).then(r => { if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
   .then(d => {
@@ -362,8 +461,7 @@ if (typeof window !== 'undefined') window.SkiRouter = {LEVELS, LIFT_HE, DIFF_HE,
     for (const p of d.pistes){
       const latlngs = p.coords.map(c => [c[1], c[0]]);
       const line = L.polyline(latlngs, {color: DIFF_COLOR[p.difficulty] || '#888', weight: p.difficulty==='black'?5:4, opacity:.85});
-      line.bindPopup(()=> p.name ? `<b>${esc(p.name)}</b><br>${t('popup.piste',{diff:diffName(p.difficulty)})}` : t('popup.pisteUnnamed',{diff:diffName(p.difficulty)}));
-      line.on('click', () => setDest(p.coords[Math.floor(p.coords.length/2)], p.name || (t('search.piste')+diffName(p.difficulty))));
+      line.on('click', (e) => { suppressMapClickUntil=Date.now()+300; const mid=p.coords[Math.floor(p.coords.length/2)]; const nm=p.name || (t('search.piste')+diffName(p.difficulty)); setDest([e.latlng.lng, e.latlng.lat], nm); showFeature(p.name ? `<b>${esc(p.name)}</b><br>${t('popup.piste',{diff:diffName(p.difficulty)})}` : t('popup.pisteUnnamed',{diff:diffName(p.difficulty)}), [mid[1], mid[0]], nm); });
       pisteLayer.addLayer(line);
     }
     const liftLayer = L.layerGroup().addTo(map);
@@ -371,8 +469,7 @@ if (typeof window !== 'undefined') window.SkiRouter = {LEVELS, LIFT_HE, DIFF_HE,
       const latlngs = l.coords.map(c => [c[1], c[0]]);
       const line = L.polyline(latlngs, {color:'#111827', weight:2.5, opacity:.9,
         dashArray: (l.type==='platter'||l.type==='drag_lift'||l.type==='t-bar') ? '6 4' : null});
-      line.bindPopup(()=>{ const lt=liftName(l.type); return l.name ? `<b>${esc(l.name)}</b><br>${lt}` : lt; });
-      line.on('click', () => setDest(l.coords[Math.floor(l.coords.length/2)], l.name || liftName(l.type)));
+      line.on('click', (e) => { suppressMapClickUntil=Date.now()+300; const mid=l.coords[Math.floor(l.coords.length/2)]; const lt=liftName(l.type); const nm=l.name || lt; setDest([e.latlng.lng, e.latlng.lat], nm); showFeature(l.name ? `<b>${esc(l.name)}</b><br>${lt}` : lt, [mid[1], mid[0]], nm); });
       liftLayer.addLayer(line);
     }
     const placeLayer = L.layerGroup().addTo(map);
@@ -383,8 +480,7 @@ if (typeof window !== 'undefined') window.SkiRouter = {LEVELS, LIFT_HE, DIFF_HE,
       if (pl.kind==='peak' && !pl.ele) continue;
       const icon = pl.kind==='village' ? '🏘️' : pl.kind==='peak' ? '▲' : pl.kind==='hut' ? '🛖' : '🚡';
       const m = L.marker([pl.coords[1], pl.coords[0]], {icon: L.divIcon({html:`<span style="font-size:18px">${icon}</span>`, className:'', iconSize:[20,20], iconAnchor:[10,10]})});
-      m.bindPopup(()=>`<b>${esc(pl.name)}</b><br>${kindName(pl.kind)}${pl.ele?t('popup.ele',{ele:esc(pl.ele)}):''}`);
-      m.on('click', () => setDest(pl.coords, pl.name));
+      m.on('click', (e) => { suppressMapClickUntil=Date.now()+300; setDest([e.latlng.lng, e.latlng.lat], pl.name); showFeature(`<b>${esc(pl.name)}</b><br>${kindName(pl.kind)}${pl.ele?t('popup.ele',{ele:esc(pl.ele)}):''}`, [pl.coords[1], pl.coords[0]], pl.name); });
       placeLayer.addLayer(m);
     }
   }
@@ -392,18 +488,25 @@ if (typeof window !== 'undefined') window.SkiRouter = {LEVELS, LIFT_HE, DIFF_HE,
 
   function setStart(coord, label){
     startCoord = coord; startLabel = label;
-    $('startLabel').textContent = t('pill.start',{label:label});
+    if(window.SF) SF.setStartLabel(label, label===t('start.demo')); else $('startLabel').textContent = t('pill.start',{label:label});
     if (startMarker) map.removeLayer(startMarker);
-    startMarker = L.marker([coord[1], coord[0]], {icon: L.divIcon({html:'<span style="font-size:22px">🟢</span>', className:'', iconSize:[24,24], iconAnchor:[12,12]})}).addTo(map).bindPopup(()=>t('popup.start',{label:esc(startLabel)}));
+    startMarker = L.marker([coord[1], coord[0]], {icon: L.divIcon({html:'<span style="font-size:22px">🟢</span>', className:'', iconSize:[24,24], iconAnchor:[12,12]})}).addTo(map);
+    startMarker.on('click',()=>{ suppressMapClickUntil=Date.now()+300; showFeature(t('popup.start',{label:esc(startLabel)}), [coord[1], coord[0]], startLabel); });
     if (destCoord) computeRoute();
   }
   function setDest(coord, name){
+    if(window.SF&&SF.Nav&&!SF.Nav.confirmReplace()) return;
+    if(window.SF&&SF.Nav&&SF.Nav.active) SF.Nav.end();
     destCoord = coord; destName = name;
+    if(window.SF) SF.Recents.add(name, coord[1], coord[0], '');
     $('destLabel').textContent = t('pill.dest',{label:name});
+    const _dn=$('destName'); if(_dn) _dn.textContent='🎯 '+name;
     if (destMarker) map.removeLayer(destMarker);
-    destMarker = L.marker([coord[1], coord[0]], {icon: L.divIcon({html:'<span style="font-size:22px">🔴</span>', className:'', iconSize:[24,24], iconAnchor:[12,12]})}).addTo(map).bindPopup(()=>t('popup.dest',{label:esc(destName)}));
+    destMarker = L.marker([coord[1], coord[0]], {icon: L.divIcon({html:'<span style="font-size:22px">🔴</span>', className:'', iconSize:[24,24], iconAnchor:[12,12]})}).addTo(map);
+    destMarker.on('click',()=>{ suppressMapClickUntil=Date.now()+300; showFeature(t('popup.dest',{label:esc(destName)}), [coord[1], coord[0]], destName); });
     map.panTo([coord[1], coord[0]]);
     computeRoute();
+    syncRouteCard();
   }
   function routeOpts(){
     return {level: currentLevel, snowboard: $('snowboard').checked, descendCabins: $('descend').checked,
@@ -422,7 +525,11 @@ if (typeof window !== 'undefined') window.SkiRouter = {LEVELS, LIFT_HE, DIFF_HE,
     }
     const box = $('routeBox');
     if (!r){
+      window.__route=null;
       box.innerHTML = t('route.none',{start:esc(startLabel),dest:esc(destName)});
+      const _rt=$('routeTotal'); if(_rt) _rt.textContent='';
+      const _rb=$('routeBadge'); if(_rb) _rb.textContent='';
+      syncRouteCard();
       return;
     }
     const totalKm = r.steps.reduce((a,s)=>a+s.length_m,0)/1000;
@@ -440,6 +547,12 @@ if (typeof window !== 'undefined') window.SkiRouter = {LEVELS, LIFT_HE, DIFF_HE,
     if (usesDescend) html += t('route.descendNote');
     html += note;
     box.innerHTML = html;
+    window.__route={legs:r.steps.map(function(s){ return {kind:s.kind==='lift'?'lift':(s.kind==='piste'?'piste':'walk'),name:s.name||'',dist:s.length_m||0,time:s.minutes||0}; }), totalMin:r.totalMin, totalDist:r.steps.reduce(function(a,s){ return a+(s.length_m||0); },0), destName:destName, destLL:[destCoord[1],destCoord[0]], polyline:[[startCoord[1],startCoord[0]]].concat(r.steps.flatMap(function(s){ return s.coords.map(function(c){ return [c[1],c[0]]; }); })).concat([[destCoord[1],destCoord[0]]])};
+    var _rp=$('routeStepsPeek'); if(_rp) _rp.textContent = r.steps.slice(0,2).map(function(s){ return (s.kind==='lift'?'🚡 ':'⛷️ ')+(s.name||''); }).join(' › ');
+    const _bt=t('fmt.min',{m:Math.round(r.totalMin)});
+    const _rt=$('routeTotal'); if(_rt) _rt.textContent=_bt;
+    const _rb=$('routeBadge'); if(_rb) _rb.textContent=_bt;
+    syncRouteCard();
     const line = L.polyline(r.steps.flatMap(s => s.coords.map(c=>[c[1],c[0]])), {color:'#38bdf8', weight:6, opacity:.9}).addTo(routeLayer);
     map.fitBounds(line.getBounds().pad(0.15));
   }
@@ -447,9 +560,9 @@ if (typeof window !== 'undefined') window.SkiRouter = {LEVELS, LIFT_HE, DIFF_HE,
   // ---- search ----
   function searchIndex(){
     const items=[];
-    for (const pl of DATA.places) items.push({name:pl.name, kind:kindName(pl.kind), coords:pl.coords, tab: pl.kind==='village'?'village':(pl.kind==='lift_station'?'lift':'hut')});
-    for (const l of DATA.lifts) if (l.name) items.push({name:l.name, kind:t('search.lift')+liftName(l.type), coords:l.coords[Math.floor(l.coords.length/2)], tab:'lift'});
-    for (const p of DATA.pistes) if (p.name) items.push({name:p.name, kind:t('search.piste')+diffName(p.difficulty), coords:p.coords[Math.floor(p.coords.length/2)], tab:'piste'});
+    for (const pl of DATA.places) items.push({name:pl.name, kind:kindName(pl.kind), kindCode:pl.kind, coords:pl.coords, tab: pl.kind==='village'?'village':(pl.kind==='lift_station'?'lift':'hut')});
+    for (const l of DATA.lifts) if (l.name) items.push({name:l.name, kind:t('search.lift')+liftName(l.type), kindCode:'lift', coords:l.coords[Math.floor(l.coords.length/2)], tab:'lift'});
+    for (const p of DATA.pistes) if (p.name) items.push({name:p.name, kind:t('search.piste')+diffName(p.difficulty), kindCode:'piste', coords:p.coords[Math.floor(p.coords.length/2)], tab:'piste'});
     const seen=new Set(), out=[];
     for (const it of items){ const k=it.name+'|'+it.coords.join(','); if(!seen.has(k)){seen.add(k);out.push(it);} }
     return out;
@@ -458,8 +571,30 @@ if (typeof window !== 'undefined') window.SkiRouter = {LEVELS, LIFT_HE, DIFF_HE,
   function renderSearch(){
     if (!DATA) return;
     if (!INDEX.length) INDEX = searchIndex();
-    const q = $('search').value.trim().toLowerCase();
-    const res = INDEX.filter(it => (currentTab==='all' || it.tab===currentTab) && (!q || it.name.toLowerCase().includes(q))).slice(0,40);
+    const raw = $('search').value;
+    const q = window.SF ? SF.searchFold(raw) : raw.trim().toLowerCase();
+    const recBox = $('recentList'); if (recBox) recBox.innerHTML='';
+    if (!q){
+      // recents (L9), sorted by distance from the current start
+      if (recBox && window.SF){
+        const recs = SF.Recents.sorted();
+        if (recs.length){
+          recBox.innerHTML='<div class="muted" style="margin:6px 0">'+t('search.recents')+'</div>';
+          for (const r of recs){
+            const div=document.createElement('div'); div.className='res';
+            div.innerHTML='<span></span>';
+            div.querySelector('span').textContent=r.name;
+            div.addEventListener('click', ()=>{ setDest([r.lon,r.lat], r.name); });
+            recBox.appendChild(div);
+          }
+        }
+      }
+    }
+    const catK = window.SF ? SF.matchCategory(raw) : null;
+    const catKind = (catK==='lift'||catK==='piste'||catK==='village'||catK==='hut') ? catK : null;
+    const res = INDEX.filter(it => (currentTab==='all' || it.tab===currentTab) && (!catKind||it.tab===catKind) && (!q || (window.SF?SF.searchFold(it.name).includes(q):it.name.toLowerCase().includes(q))))
+      .sort((a,b)=>{ const s=startCoord||DEMO_START; return haversineM(s,a.coords)-haversineM(s,b.coords); })
+      .slice(0,40);
     $('results').innerHTML = res.map((it,i)=>`<div class="res" data-i="${INDEX.indexOf(it)}"><span>${esc(it.name)}</span><span class="k">${esc(it.kind)}</span></div>`).join('')
       || '<p class="muted">'+t('search.notFound')+'</p>';
     document.querySelectorAll('#results .res').forEach(el => el.addEventListener('click', () => {
@@ -477,7 +612,7 @@ if (typeof window !== 'undefined') window.SkiRouter = {LEVELS, LIFT_HE, DIFF_HE,
     currentTab = 'hut';
     document.querySelectorAll('#tabs .tab').forEach(x=>x.classList.toggle('active', x.dataset.tab==='hut'));
     $('search').value = '';
-    INDEX = searchIndex().filter(it => want==='lift' ? it.tab==='lift' : it.kind===want || it.kind.indexOf(want)===0);
+    INDEX = searchIndex().filter(it => want==='lift' ? it.tab==='lift' : it.kindCode===want);
     const res = INDEX.slice(0,40);
     $('results').innerHTML = res.map((it,i)=>`<div class="res" data-i="${i}"><span>${esc(it.name)}</span><span class="k">${esc(it.kind)}</span></div>`).join('') || '<p class="muted">'+t('search.noChipResults')+'</p>';
     document.querySelectorAll('#results .res').forEach(el => el.addEventListener('click', () => {
@@ -495,19 +630,25 @@ if (typeof window !== 'undefined') window.SkiRouter = {LEVELS, LIFT_HE, DIFF_HE,
   }));
   $('snowboard').addEventListener('change', computeRoute);
   $('descend').addEventListener('change', computeRoute);
-  $('clearBtn').addEventListener('click', () => {
-    destCoord=null; destName=null; $('destLabel').textContent=t('pill.dest',{label:'—'});
+  function clearNav(){
+    destCoord=null; destName=null; window.__route=null; $('destLabel').textContent=t('pill.dest',{label:'—'});
     if (destMarker) map.removeLayer(destMarker);
     routeLayer.clearLayers();
     $('routeBox').innerHTML = '<p class="muted">'+t('route.hintCleared')+'</p>';
-  });
+    const _dn=$('destName'); if(_dn) _dn.textContent='';
+    const _rt=$('routeTotal'); if(_rt) _rt.textContent='';
+    const _rb=$('routeBadge'); if(_rb) _rb.textContent='';
+    syncRouteCard();
+  }
+  window.clearNav=clearNav;
+  $('clearBtn').addEventListener('click', clearNav);
 
   // ---- GPS ----
   function onPos(pos){
     const c = [pos.coords.longitude, pos.coords.latitude];
     if (gpsMarker) map.removeLayer(gpsMarker);
     gpsMarker = L.circleMarker([c[1], c[0]], {radius:8, color:'#38bdf8', fillColor:'#38bdf8', fillOpacity:.8}).addTo(map);
-    gpsMarker.bindPopup(()=>t('popup.gps'));
+    gpsMarker.on('click',()=>{ suppressMapClickUntil=Date.now()+300; showFeature(t('popup.gps'), [c[1], c[0]], t('start.gps')); });
     lastGps={lat:c[1].toFixed(5), lon:c[0].toFixed(5), acc:Math.round(pos.coords.accuracy)};
     $('sosCoords').textContent = t('sos.coords',{lat:lastGps.lat,lon:lastGps.lon,acc:lastGps.acc});
     setStatusT('gps.active',{acc:lastGps.acc});
@@ -530,16 +671,9 @@ if (typeof window !== 'undefined') window.SkiRouter = {LEVELS, LIFT_HE, DIFF_HE,
     map.setView(CENTRE, 13);
     setStatusT('status.demo');
   });
-  $('markBtn').addEventListener('click', () => {
-    marking = !marking;
-    $('markBtn').classList.toggle('active', marking);
-    $('markBtn').textContent = marking ? t('mark.on') : t('mark.off');
-  });
-  map.on('click', e => { if (marking){ marking=false; $('markBtn').classList.remove('active'); $('markBtn').textContent=t('mark.off'); setDest([e.latlng.lng, e.latlng.lat], t('dest.mapPoint')); } });
+  map.on('click', e => { if(Date.now()<suppressMapClickUntil) return; if(window.SF){ if(SF.onMapTap(e.latlng.lat, e.latlng.lng)==='friend') return; } else if(sheetIsOpen()){ closeSheet(); } setDest([e.latlng.lng, e.latlng.lat], t('dest.mapPoint')); });
 
-  // ---- SOS ----
-  $('sosBtn').addEventListener('click', () => { $('sosPanel').style.display='block'; $('sosPanel').scrollIntoView({behavior:'smooth'}); });
-  $('sosClose').addEventListener('click', () => { $('sosPanel').style.display='none'; });
+  // ---- SOS ---- (bar item opens the SOS sheet; no panel to toggle)
 
   // ---- plan by time ----
   function haveCheck(){
@@ -567,20 +701,23 @@ if (typeof window !== 'undefined') window.SkiRouter = {LEVELS, LIFT_HE, DIFF_HE,
     const leave = new Date(arrive.getTime() - (r.totalMin + 10) * 60000); // +10 min buffer
     const fmt = d => String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
     lastPlan='arrive';
-    $('timeBox').innerHTML = '<p>'+t('plan.leaveBy',{dest:esc(destNm),time:tv,min:Math.round(r.totalMin),leave:fmt(leave)})+'</p>';
+    const lastLift = r.steps.slice().reverse().find(function(s){ return s.kind==='lift'; });
+    let planHtml = '<p>'+t('plan.leaveBy',{dest:esc(destNm),time:tv,min:Math.round(r.totalMin),leave:fmt(leave)})+'</p>';
+    if (lastLift) planHtml += '<p>'+t('plan.decidingLift',{lift:esc(lastLift.name||'')})+'</p>';
+    $('timeBox').innerHTML = planHtml;
   }
   $('haveBtn').addEventListener('click', haveCheck);
   $('arriveBtn').addEventListener('click', arriveCheck);
 
   // ---- offline: cache tiles + data in the Cache API; tile layer reads cache first ----
-  const CACHE = 'laplagne-map-v2';
+  const CACHE = 'laplagne-map-v3';
   async function cacheTiles(){
     const box = $('offlineBox');
     if (!('caches' in window)){ setOfflineMsg('offline.unsupported'); return; }
     const cache = await caches.open(CACHE);
     try { await cache.add(DATA_URL); } catch(e){}
     // app shell too (Leaflet CDN + this page), so an offline reload works
-    for (const u of ['https://unpkg.com/leaflet@1.9.4/dist/leaflet.js','https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', location.pathname]) {
+    for (const u of ['https://unpkg.com/leaflet@1.9.4/dist/leaflet.js','https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', location.pathname, 'map-shared.js', 'sf-tokens.css', 'map-shared.css']) {
       try { const r = await fetch(u, {mode: u.startsWith('http') ? 'no-cors' : 'same-origin'}); if (r.ok || r.type === 'opaque') await cache.put(u, r); } catch(e){}
     }
     // resort bbox zooms 12-15, OSM base + OpenSnowMap pistes overlay
@@ -607,14 +744,102 @@ if (typeof window !== 'undefined') window.SkiRouter = {LEVELS, LIFT_HE, DIFF_HE,
     }
     bar.value = done;
     setOfflineMsg('offline.saved',{n:done-failed,failed:failed});
+    if(window.SF) SF.Offline.markSaved((done-failed)*15/1024);
   }
   $('offlineBtn').addEventListener('click', cacheTiles);
   $('clearOfflineBtn').addEventListener('click', async () => {
     await caches.delete(CACHE);
     setOfflineMsg('offline.cleared');
+    if(window.SF) SF.Offline.clearSaved();
   });
   if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw-lp.js').catch(()=>{}); }
+
+    let pendingDest=null;
+  function showFeature(html, ll, name){
+    if(window.SF&&SF.Nav&&SF.Nav.active) return; // no popups while navigating (WS6)
+    pendingDest = (ll && name) ? {ll:ll, name:name} : null;
+    const b=$('detailBody'); if(b) b.innerHTML=html;
+    if(window.SF) SF.openSheet('detail');
+  }
+  function goToPendingDest(){
+    if(!pendingDest) return;
+    setDest([pendingDest.ll[1], pendingDest.ll[0]], pendingDest.name); // LP coords are [lon,lat]
+    if(window.SF) SF.closeSheet();
+  }
+  function syncRouteCard(){
+    const rc=$('routeCard'); if(!rc) return;
+    rc.classList.toggle('show', !!(destCoord && !(window.SF&&SF.sheetOpen&&SF.sheetOpen())));
+  }
+  function applyTheme(){ if(window.SF) SF.applyTheme(); }
+  function toggleTheme(){
+    if(!window.SF) return;
+    const cur=document.documentElement.getAttribute('data-theme')||'dark';
+    SF.setTheme(cur==='dark'?'light':'dark');
+  }
+  function toggleLayer(which){
+    if(which==='base' && typeof osmBaseLayer!=='undefined'){ const on=$('layerBase').checked; if(on) osmBaseLayer.addTo(map); else map.removeLayer(osmBaseLayer); }
+    if(which==='pistes' && typeof osmPisteLayer!=='undefined'){ const on=$('layerPistes').checked; if(on) osmPisteLayer.addTo(map); else map.removeLayer(osmPisteLayer); }
+  }
+  function locateMe(){ const b=$('gpsBtn'); if(b) b.click(); }
+  window.goToPendingDest=goToPendingDest; window.toggleTheme=toggleTheme; window.toggleLayer=toggleLayer;
+  window.locateMe=locateMe;
+/* ---- Round 2 shared shell (SF) adapter ---- */
+  function togglePref(id, btn){
+    const cb=$(id); if(!cb) return;
+    cb.checked=!cb.checked;
+    cb.dispatchEvent(new Event('change'));
+    refreshSwitches();
+  }
+  function refreshSwitches(){
+    document.querySelectorAll('.switch[data-pref]').forEach(function(b){
+      const cb=$(b.getAttribute('data-pref')); if(!cb) return;
+      const on=!!cb.checked;
+      b.setAttribute('aria-checked', on?'true':'false');
+      b.textContent = on ? t('prefs.on') : t('prefs.off');
+    });
+  }
+  function wireFriendsForm(){
+    const pb=$('friendPlaceBtn');
+    if(pb) pb.addEventListener('click', function(){
+      const n=(($('friendName')||{}).value||'').trim();
+      if(window.SF) SF.Friends.startPlacing(n||SF.t('friend'));
+    });
+    const ab=$('friendAddBtn');
+    if(ab) ab.addEventListener('click', function(){
+      const n=(($('friendName')||{}).value||'').trim();
+      let la=parseFloat((($('friendLat')||{}).value||''));
+      let lo=parseFloat((($('friendLon')||{}).value||''));
+      const link=(($('friendLink')||{}).value||'').trim();
+      if(link && window.SF){ const p=SF.Friends.parseLink(link); if(p){ la=p.lat; lo=p.lon; } }
+      if(isNaN(la)||isNaN(lo)){ if(window.SF) SF.toast(SF.t('invalidLink'), true); return; }
+      if(window.SF){ SF.Friends.add({name:n||SF.t('friend'), lat:la, lon:lo}); SF.toast(SF.t('friendAdded')); }
+    });
+    const sb=$('friendShareBtn');
+    if(sb) sb.addEventListener('click', function(){ if(window.SF) SF.Friends.shareMyLocation(); });
+  }
+  window.SFMap = {
+    getMap:function(){ return map; },
+    setDest:function(lat,lon,name){ setDest([lon,lat], name); },
+    locate:function(){ locateMe(); },
+    getStart:function(){ return startCoord ? [startCoord[1], startCoord[0]] : null; },
+    isDemo:function(){ return !!startCoord && startCoord[0]===DEMO_START[0] && startCoord[1]===DEMO_START[1]; },
+    setStartLL:function(lat,lon){ setStart([lon,lat], t('start.gps')); },
+    getRoute:function(){ return window.__route||null; },
+    clearRoute:function(){ clearNav(); },
+    saveOffline:function(){ cacheTiles(); },
+    rerouteFrom:function(lat,lon){ setStart([lon,lat], t('start.gps')); if(destCoord){ computeRoute(); return !!window.__route; } return false; },
+    planReturn:function(totalMin){ const hm=$('haveMin'); if(hm) hm.value=Math.max(10,Math.round(totalMin)); if(window.SF) SF.openSheet('plan','half'); haveCheck(); }
+  };
+  if(typeof SF!=='undefined'&&SF.init){
+    SF.init({slug:'la-plagne', resortName:'La Plagne', centre:[45.506, 6.683],
+      demoFriend:{name:'Demo', lat:45.51035, lon:6.67662, place:'Mélèzes'},
+      activeTrip:'laplagne-2027'});
+  }
+  wireFriendsForm();
+  refreshSwitches();
   applyLang();
+  applyTheme(); syncRouteCard();
+  if(window.SF) SF.Offline.renderBadge();
 })();
 </script>
 </body>

@@ -1,5 +1,14 @@
 #!/usr/bin/env python3
-"""Flask web application for Snow Forecast."""
+"""Flask web application for Snow Forecast.
+
+UNIFIED-SITE CHANGE (2026-11-27, staging only — see unified-site-plan.md):
+- '/' now serves home.html (resort picker + sign-in, the new home page);
+  '/forecast.html' still serves forecast.html exactly as before.
+- Added _serve_home_html(), mirroring _serve_forecast_html() but WITHOUT
+  the forecast-page JS enhancement (home.html is a standalone page).
+- Everything else in this file is byte-identical to the previous app.py
+  (all /api, /data, /share, /share-card routes untouched).
+"""
 
 from flask import Flask, Response, jsonify, render_template_string, request, send_from_directory
 import html
@@ -329,6 +338,14 @@ def _serve_forecast_html():
         return _enhance_forecast_html(f.read())
 
 
+def _serve_home_html():
+    # UNIFIED-SITE (2026-11-27): new home page. Plain file read, no JS
+    # enhancement — home.html is standalone (its own i18n + auth wiring).
+    html_path = os.path.join(BASE_DIR, 'home.html')
+    with open(html_path, 'r', encoding='utf-8') as f:
+        return f.read()
+
+
 _FONT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'fonts')
 
 
@@ -494,6 +511,14 @@ def _share_card_png(summary):
 
 
 @app.route('/')
+def home():
+    # UNIFIED-SITE (2026-11-27): '/' serves the new home page (home.html).
+    try:
+        return _serve_home_html()
+    except FileNotFoundError:
+        return 'Home page not found', 404
+
+
 @app.route('/forecast.html')
 def index():
     try:

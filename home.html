@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>try{var _l=localStorage.getItem('sf-lang')||'he';document.documentElement.lang=_l;document.documentElement.dir=_l==='en'?'ltr':'rtl';var _t=localStorage.getItem('sf-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<link rel="icon" href="guides/favicon.svg">
+<link rel="stylesheet" href="guides/sf-tokens.css">
+<script src="guides/guide-i18n.js"></script>
+<script src="guides/supabase-config.js"></script>
+<script src="guides/sf-auth.js"></script>
+<title>SnowForecast — תחזית שלג וניווט סקי</title>
+<meta name="description" content="SnowForecast — בחרו אתר סקי: תחזית שלג ל־7 ימים, מפת ניווט חיה, מדריכים בעברית, חברים וסיכומי גלישה.">
+<style>
+/* Visual language reused from guides/index.html (same CSS variables, cards, dark/light). */
+:root{color-scheme:dark;--bg:#06111f;--card:rgba(16,38,61,.74);--line:rgba(255,255,255,.14);--text:#f6fbff;--muted:#9fb3c8;--accent:#7dd3fc;--on-accent:#06111f;--green:#8ef7bd;--yellow:#facc15;--red:#fb7185;--lead:#c9d8e8;--cell-bg:rgba(5,16,30,.55);--th-bg:rgba(255,255,255,.07);--route-bg:rgba(255,255,255,.04);--chip-bg:rgba(255,255,255,.07);--btn2-bg:rgba(255,255,255,.09);--body-bg:radial-gradient(circle at 0% 0%,rgba(56,189,248,.26),transparent 34rem),linear-gradient(135deg,#06111f 0%,#081827 48%,#10121e 100%)}
+@media (prefers-color-scheme: light){:root{--bg:#eef4f8;--card:rgba(255,255,255,.92);--line:rgba(15,40,60,.16);--text:#0b1c2c;--muted:#4b6172;--accent:#0284c7;--on-accent:#fff;--green:#15803d;--yellow:#a16207;--red:#dc2626;--lead:#334155;--cell-bg:rgba(255,255,255,.75);--th-bg:rgba(15,40,60,.06);--route-bg:rgba(15,40,60,.04);--chip-bg:rgba(255,255,255,.85);--btn2-bg:rgba(255,255,255,.85);--body-bg:radial-gradient(circle at 0% 0%,rgba(2,132,199,.14),transparent 34rem),linear-gradient(135deg,#eef4f8 0%,#e2ecf3 48%,#dbe7ef 100%)}}
+html[data-theme="light"]{--bg:#eef4f8;--card:rgba(255,255,255,.92);--line:rgba(15,40,60,.16);--text:#0b1c2c;--muted:#4b6172;--accent:#0284c7;--on-accent:#fff;--green:#15803d;--yellow:#a16207;--red:#dc2626;--lead:#334155;--cell-bg:rgba(255,255,255,.75);--th-bg:rgba(15,40,60,.06);--route-bg:rgba(15,40,60,.04);--chip-bg:rgba(255,255,255,.85);--btn2-bg:rgba(255,255,255,.85);--body-bg:radial-gradient(circle at 0% 0%,rgba(2,132,199,.14),transparent 34rem),linear-gradient(135deg,#eef4f8 0%,#e2ecf3 48%,#dbe7ef 100%)}
+html[data-theme="dark"]{--bg:#06111f;--card:rgba(16,38,61,.74);--line:rgba(255,255,255,.14);--text:#f6fbff;--muted:#9fb3c8;--accent:#7dd3fc;--on-accent:#06111f;--green:#8ef7bd;--yellow:#facc15;--red:#fb7185;--lead:#c9d8e8;--cell-bg:rgba(5,16,30,.55);--th-bg:rgba(255,255,255,.07);--route-bg:rgba(255,255,255,.04);--chip-bg:rgba(255,255,255,.07);--btn2-bg:rgba(255,255,255,.09);--body-bg:radial-gradient(circle at 0% 0%,rgba(56,189,248,.26),transparent 34rem),linear-gradient(135deg,#06111f 0%,#081827 48%,#10121e 100%)}
+.segToggle{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;flex:none}
+.segToggle button{border:0;border-radius:0;padding:6px 12px;min-height:44px;background:transparent;margin:0;color:var(--text);font-weight:700;cursor:pointer;font-size:14px}
+.segToggle button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--body-bg);color:var(--text)}
+a{color:var(--accent)}
+.shell{width:min(1100px,calc(100% - 32px));margin:0 auto;padding:24px 0 56px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+.brand{display:inline-flex;align-items:center;gap:12px;font-size:1.25rem;font-weight:900;text-decoration:none;color:var(--text)}
+.brand-mark{width:44px;height:44px;display:grid;place-items:center;border-radius:16px;background:linear-gradient(135deg,rgba(125,211,252,.95),rgba(14,165,233,.55))}
+.top-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.iconbtn{min-height:44px;min-width:44px;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--btn2-bg);color:var(--text);font-weight:700;cursor:pointer;font-size:14px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:12px 18px;border-radius:999px;font-weight:900;text-decoration:none;color:#06111f;background:linear-gradient(135deg,#e0f7ff,var(--accent));border:0;cursor:pointer}
+.btn.secondary{color:var(--text);background:var(--btn2-bg);border:1px solid var(--line)}
+h1{font-size:clamp(2rem,5vw,3.2rem);line-height:1.1;margin:0 0 12px;letter-spacing:-.02em}
+.lead{color:var(--lead);font-size:1.1rem;line-height:1.6;max-width:760px}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:28px}
+@media(max-width:900px){.cards{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:22px;display:flex;flex-direction:column;gap:10px}
+.card h2{margin:0;font-size:1.4rem}
+.card h2 small{display:block;color:var(--muted);font-size:.9rem;font-weight:700;margin-top:4px}
+.facts{color:var(--muted);line-height:1.7;font-size:.95rem}
+.facts b{color:var(--text)}
+.card .btn{margin-top:auto;align-self:flex-start}
+.snowchip{display:none;align-self:flex-start;border:1px solid var(--line);background:var(--chip-bg);border-radius:999px;padding:6px 12px;font-weight:800;font-size:.9rem}
+.snowchip.show{display:inline-flex}
+.snowchip small{font-weight:600;color:var(--muted)}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:22px;margin-top:16px;line-height:1.7}
+.panel h2{margin-top:0}
+.muted{color:var(--muted)}
+.note{font-size:.9rem;color:var(--muted)}
+.quicklinks{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+footer{margin-top:32px;border-top:1px solid var(--line);padding-top:18px;display:flex;gap:18px;flex-wrap:wrap}
+footer a{font-weight:700}
+/* Account card (rendered by guides/sf-auth.js into #sfAuthBox). */
+#sfAuthBox h3{margin:0 0 8px;font-size:1rem}
+#sfAuthBox .member{display:flex;align-items:center;gap:10px;padding:6px 0}
+#sfAuthBox .member .who{flex:1;min-width:0}
+#sfAuthBox .member .who b{display:block}
+#sfAuthBox .member .who small{color:var(--muted);font-size:.85rem;word-break:break-all}
+#sfAuthBox .sf-auth-avatar{flex:0 0 auto;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:var(--on-accent);font-weight:900;font-size:1.2rem}
+#sfAuthBox .row{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+#sfAuthBox .btn.block{flex:1}
+#sfAuthBox button:disabled{opacity:.55;cursor:not-allowed}
+</style>
+</head>
+<body>
+<main class="shell">
+  <div class="topbar">
+    <a class="brand" href="/"><span class="brand-mark">❄️</span><span>SnowForecast</span></a>
+    <div class="top-actions">
+      <div class="segToggle" role="group" aria-label="Language / שפה"><button data-lang-seg data-lang="he" aria-pressed="true" onclick="GuideI18n.setLang('he')">HE</button><button data-lang-seg data-lang="en" aria-pressed="false" onclick="GuideI18n.setLang('en')">EN</button></div>
+      <button class="iconbtn" id="themeToggle" type="button" aria-label="Theme">🌙</button>
+    </div>
+  </div>
+
+  <h1 data-i18n="h1">לאן גולשים היום? ⛷️</h1>
+  <p class="lead" data-i18n="h2">בחרו אתר — מפת ניווט חיה עם GPS, תחזית שלג ל־7 ימים ומדריך בעברית. בלי הרשמה: הכל עובד גם כאורחים, והנתונים נשמרים רק במכשיר שלכם.</p>
+
+  <section class="panel" aria-label="Account">
+    <div id="sfAuthBox"></div>
+  </section>
+
+  <div class="cards">
+    <article class="card">
+      <h2 data-i18n-html="h3">ואל טוראנס<small>Val Thorens · ‏3 Vallées</small></h2>
+      <div class="facts" data-i18n-html="h4">הכפר הגבוה באירופה — <b>2,300 מ׳</b>, פסגה <b>3,230 מ׳</b><br><b>150 ק״מ</b> מקומי · <b>600 ק״מ</b> ב־3 Vallées<br>עונה: <b>21 בנוב׳ 2026 – 2 במאי 2027</b><br>סקי פס 6 ימים: <b>€367.50</b> מקומי · <b>€421</b> מלא</div>
+      <span class="snowchip" data-snow-chip data-resort="Val-Thorens"></span>
+      <a class="btn" href="/guides/map-val-thorens" data-i18n="h5">🗺️ פתיחת המפה ←</a>
+      <a class="btn secondary" href="/guides/val-thorens" style="margin-top:8px" data-i18n="h6">למדריך ואל טוראנס ←</a>
+    </article>
+    <article class="card">
+      <h2 data-i18n-html="h7">לה פלאן<small>La Plagne · Paradiski</small></h2>
+      <div class="facts" data-i18n-html="h8">קערה ענקית, כפרים בגובה <b>1,800–2,100 מ׳</b>, קרחון <b>3,250 מ׳</b><br><b>225 ק״מ</b> מקומי · <b>425 ק״מ</b> פרדיסקי<br>עונה: <b>12 בדצמ׳ 2026 – 24 באפר׳ 2027</b><br>סקי פס 6 ימים: <b>€370</b> מקומי · <b>€412</b> פרדיסקי</div>
+      <span class="snowchip" data-snow-chip data-resort="La-Plagne"></span>
+      <a class="btn" href="/guides/map-la-plagne" data-i18n="h9">🗺️ פתיחת המפה ←</a>
+      <a class="btn secondary" href="/guides/la-plagne" style="margin-top:8px" data-i18n="h10">למדריך לה פלאן ←</a>
+    </article>
+    <article class="card">
+      <h2 data-i18n-html="h11">אלפ דואז<small>Alpe d'Huez · Grand Domaine</small></h2>
+      <div class="facts" data-i18n-html="h12">האי בשמש — כפר <b>1,860 מ׳</b>, פסגה <b>3,330 מ׳</b> (Pic Blanc)<br><b>250 ק״מ</b> · 5 כפרים מקושרים · סרן 16 ק״מ<br>עונה: <b>5 בדצמ׳ 2026 – 25 באפר׳ 2027</b><br>סקי פס 6 ימים: <b>€336.50</b></div>
+      <span class="snowchip" data-snow-chip data-resort="Alpe-d-Huez"></span>
+      <a class="btn" href="/guides/map-alpe-d-huez" data-i18n="h13">🗺️ פתיחת המפה ←</a>
+      <a class="btn secondary" href="/guides/alpe-d-huez" style="margin-top:8px" data-i18n="h14">למדריך אלפ דואז ←</a>
+    </article>
+  </div>
+
+  <div class="quicklinks">
+    <a class="btn secondary" href="/guides/recap" data-i18n="h15">📊 הסיכומים והחופשות שלי</a>
+    <a class="btn secondary" href="/guides/recap?view=friends" data-i18n="h16">👥 חברים</a>
+    <a class="btn secondary" href="/forecast.html" data-i18n="h17">🌨️ תחזית מלאה — כל האתרים</a>
+  </div>
+
+  <section class="panel">
+    <h2 data-i18n="h18">איך זה עובד</h2>
+    <p class="muted" data-i18n-html="h19">כל כרטיס נפתח ל<b>מפת הניווט החיה</b> של האתר — GPS, חיפוש יעדים, תכנון לפי זמן, הקלטת גלישה וניווט לחברים. מספרי השלג בכרטיסים נטענים חיים מהתחזית של SnowForecast (גובה אמצע ההר, 7 ימים); אם הטעינה נכשלת, הכרטיס פשוט לא מוצג — בלי מספרים מומצאים. המחירים והתאריכים נבדקו ב־<b>27 בנובמבר 2026</b> מול האתרים הרשמיים.</p>
+  </section>
+
+  <footer>
+    <a href="/forecast.html" data-i18n="h20">תחזית מלאה</a>
+    <a href="/guides/" data-i18n="h21">מדריכי סקי</a>
+    <a href="/guides/recap" data-i18n="h22">סיכומים וחופשות</a>
+    <a href="/guides/privacy" data-i18n="h23">פרטיות</a>
+  </footer>
+</main>
+<script>
+/* HOME_STR — same shape as guides/index.html GUIDE_STR; GuideI18n applies it. */
+window.GUIDE_STR={"he": {"h1": "לאן גולשים היום? ⛷️", "h2": "בחרו אתר — מפת ניווט חיה עם GPS, תחזית שלג ל־7 ימים ומדריך בעברית. בלי הרשמה: הכל עובד גם כאורחים, והנתונים נשמרים רק במכשיר שלכם.", "h3": "ואל טוראנס<small>Val Thorens · ‏3 Vallées</small>", "h4": "הכפר הגבוה באירופה — <b>2,300 מ׳</b>, פסגה <b>3,230 מ׳</b><br><b>150 ק״מ</b> מקומי · <b>600 ק״מ</b> ב־3 Vallées<br>עונה: <b>21 בנוב׳ 2026 – 2 במאי 2027</b><br>סקי פס 6 ימים: <b>€367.50</b> מקומי · <b>€421</b> מלא", "h5": "🗺️ פתיחת המפה ←", "h6": "למדריך ואל טוראנס ←", "h7": "לה פלאן<small>La Plagne · Paradiski</small>", "h8": "קערה ענקית, כפרים בגובה <b>1,800–2,100 מ׳</b>, קרחון <b>3,250 מ׳</b><br><b>225 ק״מ</b> מקומי · <b>425 ק״מ</b> פרדיסקי<br>עונה: <b>12 בדצמ׳ 2026 – 24 באפר׳ 2027</b><br>סקי פס 6 ימים: <b>€370</b> מקומי · <b>€412</b> פרדיסקי", "h9": "🗺️ פתיחת המפה ←", "h10": "למדריך לה פלאן ←", "h11": "אלפ דואז<small>Alpe d'Huez · Grand Domaine</small>", "h12": "האי בשמש — כפר <b>1,860 מ׳</b>, פסגה <b>3,330 מ׳</b> (Pic Blanc)<br><b>250 ק״מ</b> · 5 כפרים מקושרים · סרן 16 ק״מ<br>עונה: <b>5 בדצמ׳ 2026 – 25 באפר׳ 2027</b><br>סקי פס 6 ימים: <b>€336.50</b>", "h13": "🗺️ פתיחת המפה ←", "h14": "למדריך אלפ דואז ←", "h15": "📊 הסיכומים והחופשות שלי", "h16": "👥 חברים", "h17": "🌨️ תחזית מלאה — כל האתרים", "h18": "איך זה עובד", "h19": "כל כרטיס נפתח ל<b>מפת הניווט החיה</b> של האתר — GPS, חיפוש יעדים, תכנון לפי זמן, הקלטת גלישה וניווט לחברים. מספרי השלג בכרטיסים נטענים חיים מהתחזית של SnowForecast (גובה אמצע ההר, 7 ימים); אם הטעינה נכשלת, הכרטיס פשוט לא מוצג — בלי מספרים מומצאים. המחירים והתאריכים נבדקו ב־<b>27 בנובמבר 2026</b> מול האתרים הרשמיים.", "h20": "תחזית מלאה", "h21": "מדריכי סקי", "h22": "סיכומים וחופשות", "h23": "פרטיות", "title": "SnowForecast — תחזית שלג וניווט סקי", "description": "SnowForecast — בחרו אתר סקי: תחזית שלג ל־7 ימים, מפת ניווט חיה, מדריכים בעברית, חברים וסיכומי גלישה."}, "en": {"h1": "Where are we skiing today? ⛷️", "h2": "Pick a resort — live navigation map with GPS, 7-day snow forecast and a Hebrew guide. No sign-up needed: everything works as a guest, and your data stays on your device.", "h3": "Val Thorens<small>3 Vallées</small>", "h4": "Europe's highest village — <b>2,300 m</b>, summit <b>3,230 m</b><br><b>150 km</b> local · <b>600 km</b> in 3 Vallées<br>Season: <b>21 Nov 2026 – 2 May 2027</b><br>6-day ski pass: <b>€367.50</b> local · <b>€421</b> full", "h5": "🗺️ Open the map →", "h6": "Val Thorens guide →", "h7": "La Plagne<small>Paradiski</small>", "h8": "A giant bowl, villages at <b>1,800–2,100 m</b>, glacier <b>3,250 m</b><br><b>225 km</b> local · <b>425 km</b> Paradiski<br>Season: <b>12 Dec 2026 – 24 Apr 2027</b><br>6-day ski pass: <b>€370</b> local · <b>€412</b> Paradiski", "h9": "🗺️ Open the map →", "h10": "La Plagne guide →", "h11": "Alpe d'Huez<small>Grand Domaine</small>", "h12": "The island in the sun — village <b>1,860 m</b>, summit <b>3,330 m</b> (Pic Blanc)<br><b>250 km</b> · 5 linked villages · Sarenne 16 km<br>Season: <b>5 Dec 2026 – 25 Apr 2027</b><br>6-day ski pass: <b>€336.50</b>", "h13": "🗺️ Open the map →", "h14": "Alpe d'Huez guide →", "h15": "📊 My recaps & vacations", "h16": "👥 Friends", "h17": "🌨️ Full forecast — all resorts", "h18": "How it works", "h19": "Each card opens that resort's <b>live navigation map</b> — GPS, destination search, plan-by-time, track recording and navigating to friends. The snow numbers on the cards load live from SnowForecast's own forecast (mid-mountain, 7 days); if loading fails the chip is simply hidden — no invented numbers. Prices and dates were checked on <b>27 November 2026</b> against the official resort sites.", "h20": "Full forecast", "h21": "Ski guides", "h22": "Recaps & vacations", "h23": "Privacy", "title": "SnowForecast — snow forecast & ski navigation", "description": "SnowForecast — pick a ski resort: 7-day snow forecast, live navigation map, Hebrew guides, friends and ski recaps."}};
+if(window.GuideI18n)GuideI18n.init(window.GUIDE_STR);
+(function(){
+  /* Theme toggle: light/dark manual override (localStorage 'sf-theme'); no
+     stored value = follow the device (prefers-color-scheme in CSS). */
+  var btn=document.getElementById('themeToggle');
+  function effective(){ var t=null; try{ t=localStorage.getItem('sf-theme'); }catch(e){}
+    if(t==='light'||t==='dark') return t;
+    try{ return window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'; }catch(e){ return 'dark'; } }
+  function paint(){ btn.textContent = effective()==='light' ? '🌙' : '☀️'; }
+  btn.addEventListener('click', function(){
+    var next = effective()==='light' ? 'dark' : 'light';
+    try{ localStorage.setItem('sf-theme', next); }catch(e){}
+    document.documentElement.setAttribute('data-theme', next); paint();
+  });
+  paint();
+  /* Live snow chips: 7-day total at mid elevation, ONLY from /api/forecast.
+     Any failure (network, bad payload, non-OK) hides the chip — never a fake number. */
+  function lang(){ return (document.documentElement.getAttribute('lang')||'he').indexOf('en')===0?'en':'he'; }
+  function loadChips(){
+    document.querySelectorAll('[data-snow-chip]').forEach(function(chip){
+      var resort=chip.getAttribute('data-resort'); if(!resort) return;
+      fetch('/api/forecast?resort='+encodeURIComponent(resort)+'&elevation=mid')
+        .then(function(r){ if(!r.ok) throw new Error('http '+r.status); return r.json(); })
+        .then(function(j){
+          var snow = j && j.summary && typeof j.summary.snow==='number' ? j.summary.snow : null;
+          if(snow==null || !isFinite(snow)) return; /* hide chip */
+          chip.textContent = '🌨️ ' + Math.round(snow) + ' cm ' + (lang()==='en' ? '/ 7 days' : '/ 7 ימים');
+          chip.classList.add('show');
+        })
+        .catch(function(){ /* chip stays hidden — honest "unavailable" by omission */ });
+    });
+  }
+  loadChips();
+  document.addEventListener('guide-lang', loadChips);
+})();
+</script>
+</body>
+</html>

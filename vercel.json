@@ -59,6 +59,54 @@
         {
             "src": "guides/guide-i18n.js",
             "use": "@vercel/static"
+        },
+        {
+            "src": "guides/supabase-config.js",
+            "use": "@vercel/static"
+        },
+        {
+            "src": "guides/sf-auth.js",
+            "use": "@vercel/static"
+        },
+        {
+            "src": "guides/sf-sync.js",
+            "use": "@vercel/static"
+        },
+        {
+            "src": "guides/sf-stats.js",
+            "use": "@vercel/static"
+        },
+        {
+            "src": "home.html",
+            "use": "@vercel/static"
+        },
+        {
+            "src": "guides/sf-hub.js",
+            "use": "@vercel/static"
+        },
+        {
+            "src": "guides/sf-hub.css",
+            "use": "@vercel/static"
+        },
+        {
+            "src": "guides/sf-me.css",
+            "use": "@vercel/static"
+        },
+        {
+            "src": "guides/sf-friends.js",
+            "use": "@vercel/static"
+        },
+        {
+            "src": "guides/sf-recap.js",
+            "use": "@vercel/static"
+        },
+        {
+            "src": "guides/sf-vacations.js",
+            "use": "@vercel/static"
+        },
+        {
+            "src": "guides/sf-share.js",
+            "use": "@vercel/static"
         }
     ],
     "routes": [
@@ -68,7 +116,7 @@
         },
         {
             "dest": "/guides/$1.html",
-            "src": "/guides/(val-thorens|la-plagne|alpe-d-huez|map-val-thorens|map-la-plagne|map-alpe-d-huez|privacy)/?"
+            "src": "/guides/(val-thorens|la-plagne|alpe-d-huez|map-val-thorens|map-la-plagne|map-alpe-d-huez|privacy|recap|share)/?"
         },
         {
             "dest": "app.py",
@@ -137,6 +185,50 @@
         {
             "dest": "/guides/guide-i18n.js",
             "src": "/guides/guide-i18n.js"
+        },
+        {
+            "dest": "/guides/supabase-config.js",
+            "src": "/guides/supabase-config.js"
+        },
+        {
+            "dest": "/guides/sf-auth.js",
+            "src": "/guides/sf-auth.js"
+        },
+        {
+            "dest": "/guides/sf-sync.js",
+            "src": "/guides/sf-sync.js"
+        },
+        {
+            "dest": "/guides/sf-stats.js",
+            "src": "/guides/sf-stats.js"
+        },
+        {
+            "dest": "/guides/sf-hub.js",
+            "src": "/guides/sf-hub.js"
+        },
+        {
+            "dest": "/guides/sf-hub.css",
+            "src": "/guides/sf-hub.css"
+        },
+        {
+            "dest": "/guides/sf-me.css",
+            "src": "/guides/sf-me.css"
+        },
+        {
+            "dest": "/guides/sf-friends.js",
+            "src": "/guides/sf-friends.js"
+        },
+        {
+            "dest": "/guides/sf-recap.js",
+            "src": "/guides/sf-recap.js"
+        },
+        {
+            "dest": "/guides/sf-vacations.js",
+            "src": "/guides/sf-vacations.js"
+        },
+        {
+            "dest": "/guides/sf-share.js",
+            "src": "/guides/sf-share.js"
         },
         {
             "dest": "app.py",

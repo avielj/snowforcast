@@ -35,6 +35,10 @@
         {
             "src": "guides/sw-alpe.js",
             "use": "@vercel/static"
+        },
+        {
+            "src": "guides/sw-lp.js",
+            "use": "@vercel/static"
         }
     ],
     "routes": [
@@ -89,6 +93,10 @@
         {
             "dest": "/guides/sw-alpe.js",
             "src": "/guides/sw-alpe.js"
+        },
+        {
+            "dest": "/guides/sw-lp.js",
+            "src": "/guides/sw-lp.js"
         },
         {
             "dest": "app.py",

@@ -1,63 +1,75 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "app.py",
-      "use": "@vercel/python"
-    },
-    {
-      "src": "forecast.html",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "forecast-dark.html",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "forecast-modern.html",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "forecast_new.html",
-      "use": "@vercel/static"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/forecast.html",
-      "dest": "app.py"
-    },
-    {
-      "src": "/forecast-dark.html",
-      "dest": "/forecast-dark.html"
-    },
-    {
-      "src": "/forecast-modern.html",
-      "dest": "/forecast-modern.html"
-    },
-    {
-      "src": "/forecast_new.html",
-      "dest": "/forecast_new.html"
-    },
-    {
-      "src": "/api/(.*)",
-      "dest": "app.py"
-    },
-    {
-      "src": "/data/(.*)",
-      "dest": "app.py"
-    },
-    {
-      "src": "/share/(.*)",
-      "dest": "app.py"
-    },
-    {
-      "src": "/share-card/(.*)",
-      "dest": "app.py"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "app.py"
-    }
-  ]
+    "builds": [
+        {
+            "src": "app.py",
+            "use": "@vercel/python"
+        },
+        {
+            "src": "forecast.html",
+            "use": "@vercel/static"
+        },
+        {
+            "src": "forecast-dark.html",
+            "use": "@vercel/static"
+        },
+        {
+            "src": "forecast-modern.html",
+            "use": "@vercel/static"
+        },
+        {
+            "src": "forecast_new.html",
+            "use": "@vercel/static"
+        },
+        {
+            "src": "guides/*.html",
+            "use": "@vercel/static"
+        }
+    ],
+    "routes": [
+        {
+            "dest": "/guides/index.html",
+            "src": "/guides/?"
+        },
+        {
+            "dest": "/guides/$1.html",
+            "src": "/guides/(val-thorens|la-plagne|alpe-d-huez)/?"
+        },
+        {
+            "dest": "app.py",
+            "src": "/forecast.html"
+        },
+        {
+            "dest": "/forecast-dark.html",
+            "src": "/forecast-dark.html"
+        },
+        {
+            "dest": "/forecast-modern.html",
+            "src": "/forecast-modern.html"
+        },
+        {
+            "dest": "/forecast_new.html",
+            "src": "/forecast_new.html"
+        },
+        {
+            "dest": "app.py",
+            "src": "/api/(.*)"
+        },
+        {
+            "dest": "app.py",
+            "src": "/data/(.*)"
+        },
+        {
+            "dest": "app.py",
+            "src": "/share/(.*)"
+        },
+        {
+            "dest": "app.py",
+            "src": "/share-card/(.*)"
+        },
+        {
+            "dest": "app.py",
+            "src": "/(.*)"
+        }
+    ],
+    "version": 2
 }
